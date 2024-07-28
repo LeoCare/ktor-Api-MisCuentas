@@ -9,7 +9,6 @@ class AppConfig {
 
     //MYSQL
     val driverClassName: String = applicationConfiguration.property("storage.driverClassName").getString()
-    val applicationPort: Int = applicationConfiguration.property("ktor.deployment.port").getString().toInt()
     val jdbcURL: String = applicationConfiguration.property("storage.jdbcURL").getString()
 
     //JWT

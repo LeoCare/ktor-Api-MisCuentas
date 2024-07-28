@@ -1,6 +1,7 @@
 package com.miscuentas.entities
 
 import com.miscuentas.models.TipoPerfiles
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
@@ -12,6 +13,16 @@ object UsuariosTable : Table("USUARIOS") {
     val perfil = varchar("perfil", 2).references(TipoPerfiles.tipo, ReferenceOption.CASCADE)
 
     override val primaryKey = PrimaryKey(id_usuario, name = "PK_id_usuario") // el nombre es opcional
+
+    fun getColumnByName(columnName: String): Column<String>? {
+        return when (columnName) {
+            "nombre" -> nombre
+            "correo" -> correo
+            "contrasenna" -> contrasenna
+            "perfil" -> perfil
+            else -> null
+        }
+    }
 }
 
 data class UsuarioEntity(

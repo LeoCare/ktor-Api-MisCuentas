@@ -16,11 +16,19 @@ fun Routing.usuarioRoute(usuarioService: UsuarioService) {
 
         // OBTENCION DE USUARIO:
         get {
-            val usuarios = usuarioService.getAllUsuarios()
-            call.respond(HttpStatusCode.OK, usuarios.toResponse() )
+            val column = call.request.queryParameters["c"] //Con parametros pasado en la query
+            val query = call.request.queryParameters["q"]
+            if (!column.isNullOrEmpty() && !query.isNullOrEmpty()) {
+                val users = usuarioService.getUsuariosBy(column, query)
+                call.respond(HttpStatusCode.OK,users)
+            }
+            else {
+                val usuarios = usuarioService.getAllUsuarios()
+                call.respond(HttpStatusCode.OK, usuarios.toResponse() )
+            }
         }
 
-        get ("/{id}"){
+        get ("{id}"){ //Con parametro pasado en la url
             val id = call.parameters["id"]?.toLongOrNull()
             id?.let {
                 usuarioService.getUsuarioById(it)?.let {user->
@@ -28,6 +36,7 @@ fun Routing.usuarioRoute(usuarioService: UsuarioService) {
                 } ?: call.respond(HttpStatusCode.NotFound,"No se ha encontrado ese usuario")
             } ?: call.respond(HttpStatusCode.BadGateway,"Indique un valor!!")
         }
+
 
         //AGREGAR USUARIO:
         post {
@@ -68,12 +77,5 @@ fun Routing.usuarioRoute(usuarioService: UsuarioService) {
             }
         }
 
-        //BUSQUEDA USUARIO:
-        get("/buscar"){
-            val column = call.request.queryParameters["c"].toString()
-            val query = call.request.queryParameters["q"].toString()
-            val users=usuarioService.getUsuariosBy(column, query)
-            call.respond(HttpStatusCode.OK,users)
-        }
     }
 }

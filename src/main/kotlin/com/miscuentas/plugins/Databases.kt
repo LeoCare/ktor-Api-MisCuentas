@@ -37,7 +37,6 @@ private fun provideDataSource(url:String,driverClass:String): HikariDataSource {
 fun Application.configureDatabases(
     myConfig: AppConfig
 ) {
-//    val driverClass = environment.config.property("storage.driverClassName").getString()
     val driverClass = myConfig.driverClassName
     val jdbcUrl = myConfig.jdbcURL
     val db = Database.connect(provideDataSource(jdbcUrl,driverClass))

@@ -1,10 +1,20 @@
 val kotlin_version: String by project
-val logback_version: String by project
-val mysqlVersion:String by project
-val hikaricpVersion: String by project
 val ktor_version: String by project
+val logback_version: String by project
+// MySql
+val mysqlVersion:String by project
+// Agrupa conexiones
+val hikaricpVersion: String by project
+// DI
 val koinKtor: String by project
+// BCrypt
 val bcrypt_version: String by project
+// Logger
+val micrologging_version: String by project
+val logbackclassic_version: String by project
+
+
+
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -35,23 +45,26 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
-    //ORM
+    // ORM
     implementation("org.jetbrains.exposed:exposed-core:0.37.3")
     implementation("org.jetbrains.exposed:exposed-dao:0.37.3")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.37.3")
     implementation("org.jetbrains.exposed:exposed-java-time:0.37.3")
-    //CONECTOR
+    // MySql
     implementation("mysql:mysql-connector-java:$mysqlVersion")
-    //AGRUPACION DE CONEXIONES
+    // Agrupa conexiones
     implementation("com.zaxxer:HikariCP:$hikaricpVersion")
-    //MONITORIZACION
+    // Monitorizacion
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
-    //INJECCION DE DEPENDENCIAS
+    // Dependencias
     implementation("io.insert-koin:koin-ktor:$koinKtor")
-    //AUTH JWT
+    // Auth JWT
     implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
-    //BCRYPT
+    // BCrypt
     implementation("com.ToxicBakery.library.bcrypt:bcrypt:$bcrypt_version")
+    // Logging
+    implementation("ch.qos.logback:logback-classic:$logbackclassic_version")
+    implementation("io.github.microutils:kotlin-logging-jvm:$micrologging_version")
 }

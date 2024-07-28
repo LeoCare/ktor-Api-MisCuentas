@@ -1,5 +1,6 @@
 package com.miscuentas.services.usuarios
 
+import com.miscuentas.entities.UsuariosTable
 import com.miscuentas.entities.UsuariosTable.varchar
 import com.miscuentas.models.Usuario
 import com.miscuentas.repositories.usuarios.UsuarioRepository
@@ -18,7 +19,8 @@ class UsuarioServiceImp(
     }
 
     override suspend fun getUsuariosBy(column: String, query: String): List<Usuario> {
-        val clmn: Column<String> = varchar(column, 255)
+        val clmn = UsuariosTable.getColumnByName(column)
+            ?: throw IllegalArgumentException("La columna $column no existe.")
         return usuarioRepository.getAllBy(clmn, query)
     }
 

@@ -15,13 +15,3 @@ data class Usuario(
 )
 
 
-//object Usuarios : Table("USUARIOS") {
-//    val id_usuario = integer("id_usuario").autoIncrement()
-//    val nombre = varchar("nombre", 255)
-//    val correo = varchar("correo", 255).uniqueIndex()
-//    val contrasenna = varchar("contrasenna", 255)
-//    val perfil = varchar("perfil", 2).references(TipoPerfiles.tipo, ReferenceOption.CASCADE)
-//
-//    override val primaryKey = PrimaryKey(id_usuario, name = "PK_id_usuario") // el nombre es opcional
-//}
-
