@@ -19,9 +19,7 @@ class UsuarioServiceImp(
     }
 
     override suspend fun getUsuariosBy(column: String, query: String): List<Usuario> {
-        val clmn = UsuariosTable.getColumnByName(column)
-            ?: throw IllegalArgumentException("La columna $column no existe.")
-        return usuarioRepository.getAllBy(clmn, query)
+        return usuarioRepository.getAllBy(column, query)
     }
 
     override suspend fun updateUsuario(usuario: Usuario): Usuario? {

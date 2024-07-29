@@ -6,9 +6,12 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.miscuentas.config.AppConfig
 import com.miscuentas.models.Usuario
 import io.ktor.server.config.*
+import mu.KotlinLogging
 import org.jetbrains.exposed.sql.exposedLogger
 import java.util.*
 import kotlin.lazy
+
+private val logger = KotlinLogging.logger {}
 
 sealed class TokenException(message: String) : RuntimeException(message) {
     class InvalidTokenException(message: String) : TokenException(message)
@@ -18,9 +21,7 @@ sealed class TokenException(message: String) : RuntimeException(message) {
 class TokensService(
     private val myConfig: AppConfig
 ) {
-
     val audience by lazy {
-//        myConfig.applicationConfiguration.propertyOrNull("jwt.audience")?.getString() ?: "jwt-audience"
         myConfig.audience
     }
     val realm by lazy {
@@ -36,10 +37,11 @@ class TokensService(
         myConfig.secret
     }
 
-//    init {
-//        logger.debug { "Servicio de token iniciado por: $audience" }
-//    }
+    init {
+        logger.debug { "Servicio de token iniciado por: $audience" }
+    }
 
+    /** GENERACION DEL TOKEN **/
     fun generateJWT(usuario: Usuario): String {
         return JWT.create()
             .withAudience(audience)
@@ -57,8 +59,9 @@ class TokensService(
             )
     }
 
-    fun verifyJWT(): JWTVerifier {
 
+    /** VERIFICACION DEL TOKEN **/
+    fun verifyJWT(): JWTVerifier {
         return try {
             JWT.require(Algorithm.HMAC512(secret))
                 .withAudience(audience)

@@ -1,5 +1,6 @@
 package com.miscuentas.repositories.usuarios
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.miscuentas.entities.UsuariosTable
 import com.miscuentas.plugins.dbQuery
 import com.miscuentas.models.Usuario
@@ -11,6 +12,13 @@ import com.miscuentas.entities.UsuariosTable.id_usuario
 import com.miscuentas.entities.UsuariosTable.nombre
 import com.miscuentas.entities.UsuariosTable.perfil
 import com.miscuentas.mappers.toResponse
+import com.toxicbakery.bcrypt.Bcrypt
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+private const val BCRYPT_SALT = 12
 
 class UsuarioRepositoryImpl: UsuarioRepository {
 
@@ -23,7 +31,11 @@ class UsuarioRepositoryImpl: UsuarioRepository {
             perfil = resultRow[perfil]
         )
     }
+
+    override fun hashedPassword(contrasenna: String) = Bcrypt.hash(contrasenna, BCRYPT_SALT).decodeToString()
+
     override suspend fun getAll(): List<Usuario> = dbQuery{
+        logger.debug { "Obtener todos" }
         UsuariosTable.selectAll().map { resultRowToUsuario(it) }
     }
 
@@ -31,8 +43,10 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         UsuariosTable.select { (id_usuario eq id) }.map { resultRowToUsuario(it) }.singleOrNull()
     }
 
-    override suspend fun getAllBy(c: Column<String>, q: String?): List<Usuario>  = dbQuery{
-        UsuariosTable.select { (c.lowerCase() like "%${q?.lowercase()}%")}
+    override suspend fun getAllBy(c: String, q: String?): List<Usuario>  = dbQuery{
+        val column = UsuariosTable.getColumnByName(c)
+            ?: throw IllegalArgumentException("La columna $c no existe.")
+        UsuariosTable.select { (column.lowerCase() like "%${q?.lowercase()}%")}
             .map { resultRowToUsuario(it) }
     }
 
@@ -47,7 +61,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         val insertStmt = UsuariosTable.insert {
             it[nombre] = entity.nombre
             it[correo] = entity.correo
-            it[contrasenna] = entity.contrasenna
+            it[contrasenna] = hashedPassword(entity.contrasenna)
             it[perfil] = entity.perfil
         }
         insertStmt.resultedValues?.singleOrNull()?.let { resultRowToUsuario(it) }
@@ -66,4 +80,10 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         UsuariosTable.deleteAll() > 0
     }
 
+    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Boolean = dbQuery{
+        val usuarios = getAllBy("nombre", nombre) // Suponiendo que getAllBy retorna una lista de Usuario
+        usuarios.any { usuario ->
+            Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())
+        }
+    }
 }

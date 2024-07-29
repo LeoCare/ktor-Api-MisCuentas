@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
-
 @Serializable
 data class Usuario(
     val id_usuario: Long,

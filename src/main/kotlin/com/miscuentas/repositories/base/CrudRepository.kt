@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.Column
 interface CrudRepository<T, ID> {
     suspend fun getAll(): List<T>
     suspend fun getById(id: ID): T?
-    suspend fun getAllBy(c: Column<String>, q: String?): List<T>
+    suspend fun getAllBy(c: String, q: String?): List<T>
     suspend fun update(entity: T): T?
     suspend fun save(entity: T): T?
     suspend fun saveAll(entities: Iterable<T>): List<T>
