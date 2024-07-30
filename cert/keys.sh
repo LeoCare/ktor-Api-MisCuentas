@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#/usr/bin/env bash
 
 ## Generar contraseñas seguras
 keyStorePassword=$(openssl rand -base64 32)
