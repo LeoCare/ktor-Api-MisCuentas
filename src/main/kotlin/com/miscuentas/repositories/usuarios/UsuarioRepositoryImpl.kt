@@ -12,6 +12,7 @@ import com.miscuentas.entities.UsuariosTable.id_usuario
 import com.miscuentas.entities.UsuariosTable.nombre
 import com.miscuentas.entities.UsuariosTable.perfil
 import com.miscuentas.mappers.toResponse
+import com.miscuentas.models.TipoPerfil
 import com.toxicbakery.bcrypt.Bcrypt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -62,7 +63,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
             it[nombre] = entity.nombre
             it[correo] = entity.correo
             it[contrasenna] = hashedPassword(entity.contrasenna)
-            it[perfil] = entity.perfil
+            it[perfil] = entity.perfil.toString()
         }
         insertStmt.resultedValues?.singleOrNull()?.let { resultRowToUsuario(it) }
     }
@@ -81,7 +82,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     }
 
     override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Boolean = dbQuery{
-        val usuarios = getAllBy("nombre", nombre) // Suponiendo que getAllBy retorna una lista de Usuario
+        val usuarios = getAllBy("nombre", nombre) // Lista de Usuarios con el mismo nombre.
         usuarios.any { usuario ->
             Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())
         }

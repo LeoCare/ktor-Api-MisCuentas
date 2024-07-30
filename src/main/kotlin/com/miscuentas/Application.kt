@@ -10,9 +10,12 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
+    configureSecurity()
     configureMonitoring()
     configureDI()
     configureSerialization()
     configureDatabases(AppConfig())
     configureRouting()
+    configureCors()
+    configureSwagger()
 }
