@@ -8,6 +8,7 @@ import com.miscuentas.models.Usuario
 import com.miscuentas.repositories.usuarios.UsuarioRepository
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.Column
+import org.koin.java.KoinJavaComponent.inject
 
 class UsuarioServiceImp(
     private val usuarioRepository: UsuarioRepository

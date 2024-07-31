@@ -3,6 +3,7 @@ package com.miscuentas.plugins
 import com.miscuentas.di.appModule
 import io.ktor.server.application.*
 import org.koin.ktor.plugin.Koin
+import org.koin.logger.slf4jLogger
 
 
 /** LEVANTAMOS EL PLUGIN KOIN PARA LA DI:
@@ -11,6 +12,7 @@ import org.koin.ktor.plugin.Koin
  **/
 fun Application.configureDI(){
     install(Koin){
+        slf4jLogger()
         modules(appModule)
     }
 }

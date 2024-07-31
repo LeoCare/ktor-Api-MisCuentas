@@ -14,7 +14,8 @@ val micrologging_version: String by project
 val logbackclassic_version: String by project
 // Swagger
 val ktor_swagger_ui_version: String by project
-
+// Exposed
+val exposed_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -48,10 +49,10 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     // ORM
-    implementation("org.jetbrains.exposed:exposed-core:0.37.3")
-    implementation("org.jetbrains.exposed:exposed-dao:0.37.3")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.37.3")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.37.3")
+    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
+    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
     // MySql
     implementation("mysql:mysql-connector-java:$mysqlVersion")
     // Agrupa conexiones
@@ -60,6 +61,8 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging:$ktor_version")
     // Dependencias
     implementation("io.insert-koin:koin-ktor:$koinKtor")
+    implementation("io.insert-koin:koin-core:$koinKtor")
+    implementation("io.insert-koin:koin-logger-slf4j:$koinKtor")
     // Auth JWT
     implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
@@ -75,4 +78,6 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktor_version")
     // To generate Swagger UI (para generar documentacion)
     implementation("io.github.smiley4:ktor-swagger-ui:$ktor_swagger_ui_version")
+    // Dotenv (para generar documentacion)
+    implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
 }

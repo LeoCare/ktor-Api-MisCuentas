@@ -22,6 +22,7 @@ sealed class TokenException(message: String) : RuntimeException(message) {
 class TokensService(
     private val myConfig: AppConfig
 ) {
+
     val audience by lazy {
         myConfig.audience
     }

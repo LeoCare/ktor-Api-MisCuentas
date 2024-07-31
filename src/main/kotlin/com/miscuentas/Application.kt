@@ -44,9 +44,9 @@ fun main(args: Array<String>): Unit =
 
 @Suppress("unused")
 fun Application.module() {
-    configureSecurity(TokensService(AppConfig()))
-    configureMonitoring()
     configureDI()
+    configureSecurity()
+    configureMonitoring()
     configureSerialization()
     configureDatabases(AppConfig())
     configureRouting()

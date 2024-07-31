@@ -1,5 +1,6 @@
 package com.miscuentas.routes
 
+import com.miscuentas.config.AppConfig
 import com.miscuentas.dto.UsuarioCrearDto
 import com.miscuentas.dto.UsuarioLoginDto
 import com.miscuentas.dto.UsuarioWithTokenDto
@@ -8,6 +9,7 @@ import com.miscuentas.mappers.toModel
 import com.miscuentas.services.usuarios.UsuarioService
 import com.miscuentas.models.Usuario
 import com.miscuentas.services.auth.TokensService
+import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -17,13 +19,15 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import mu.KotlinLogging
 import org.jetbrains.exposed.exceptions.ExposedSQLException
+import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger {}
 
-fun Routing.usuarioRoute(
-    usuarioService: UsuarioService,
-    tokenService: TokensService
-) {
+fun Routing.usuarioRoute() {
+
+    val usuarioService by inject<UsuarioService>()
+    val tokenService by inject<TokensService>()
+
     route("/usuario") {
 
         // Register a new user --> POST /api/users/register
