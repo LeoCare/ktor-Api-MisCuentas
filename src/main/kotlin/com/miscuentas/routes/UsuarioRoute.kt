@@ -2,10 +2,12 @@ package com.miscuentas.routes
 
 import com.miscuentas.dto.UsuarioCrearDto
 import com.miscuentas.dto.UsuarioLoginDto
+import com.miscuentas.dto.UsuarioWithTokenDto
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
 import com.miscuentas.services.usuarios.UsuarioService
 import com.miscuentas.models.Usuario
+import com.miscuentas.services.auth.TokensService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -18,7 +20,10 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 
 private val logger = KotlinLogging.logger {}
 
-fun Routing.usuarioRoute(usuarioService: UsuarioService) {
+fun Routing.usuarioRoute(
+    usuarioService: UsuarioService,
+    tokenService: TokensService
+) {
     route("/usuario") {
 
         // Register a new user --> POST /api/users/register
@@ -38,7 +43,10 @@ fun Routing.usuarioRoute(usuarioService: UsuarioService) {
 
             val usuario = call.receive<UsuarioLoginDto>()
             val result = usuarioService.checkUserNameAndPassword(usuario.username, usuario.password)
-            call.respond(HttpStatusCode.OK, result)
+            if (result != null) {
+                val token = tokenService.generateJWT(result)
+                call.respond(HttpStatusCode.OK, UsuarioWithTokenDto(result.toDto(), token))
+            }
         }
 
         // Rutas con autenticacion JWT necesaria:

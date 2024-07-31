@@ -75,10 +75,13 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         UsuariosTable.deleteAll() > 0
     }
 
-    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Boolean = dbQuery{
+    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario? = dbQuery{
         val usuarios = getAllBy("nombre", nombre) // Lista de Usuarios con el mismo nombre.
-        usuarios.any { usuario ->
-            Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())
+        for (usuario in usuarios) {
+            if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
+                return@dbQuery usuario
+            }
         }
+        return@dbQuery null
     }
 }

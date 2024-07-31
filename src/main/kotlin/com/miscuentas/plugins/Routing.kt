@@ -9,9 +9,13 @@ import org.koin.ktor.ext.get
 
 fun Application.configureRouting(
     usuarioService: UsuarioService = get(), //la funcion get() permite a Koin usar las di. Tambien puedo usar 'by inject()' en lugar de '= get()'
-    tipoPerfilService: TipoPerfilService = get() //falta crear ruta para los perfiles
+    tipoPerfilService: TipoPerfilService = get(),//falta crear ruta para los perfiles
+    tokenService: TokenService = get()
 ) {
     routing {
-        usuarioRoute(usuarioService)
+        usuarioRoute(
+            usuarioService,
+            tokenService
+        )
     }
 }

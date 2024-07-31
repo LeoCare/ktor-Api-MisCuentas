@@ -13,5 +13,5 @@ interface UsuarioService {
     suspend fun deleteAllUsuarios(): Boolean
     suspend fun saveAllUsuarios(usuarios: Iterable<Usuario>): List<Usuario>
     suspend fun isAdmin(id: Long): Boolean
-    suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Boolean
+    suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario?
 }

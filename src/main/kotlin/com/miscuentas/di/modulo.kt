@@ -3,6 +3,7 @@ package com.miscuentas.di
 import com.miscuentas.config.AppConfig
 import com.miscuentas.repositories.usuarios.UsuarioRepository
 import com.miscuentas.repositories.usuarios.UsuarioRepositoryImpl
+import com.miscuentas.services.auth.TokensService
 import com.miscuentas.services.tipoperfiles.TipoPerfilService
 import com.miscuentas.services.tipoperfiles.TipoPerfilServiceImp
 import com.miscuentas.services.usuarios.UsuarioService
@@ -18,4 +19,5 @@ val appModule = module {
     single<UsuarioService> { UsuarioServiceImp(get()) }
     single<TipoPerfilService> { TipoPerfilServiceImp() }
     single<AppConfig> { AppConfig() }
+    single<TokensService> { TokensService() }
 }

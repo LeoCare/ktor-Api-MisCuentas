@@ -57,7 +57,7 @@ class UsuarioServiceImp(
     }
 
     /** COMPROBAR LOGEO **/
-    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Boolean{
+    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario? {
         logger.debug { "CheckUserAndPassword" }
         return usuarioRepository.checkUserNameAndPassword(nombre, contrasenna)
     }

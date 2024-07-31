@@ -2,6 +2,7 @@ package com.miscuentas
 
 import com.miscuentas.config.AppConfig
 import com.miscuentas.plugins.*
+import com.miscuentas.services.auth.TokensService
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -43,7 +44,7 @@ fun main(args: Array<String>): Unit =
 
 @Suppress("unused")
 fun Application.module() {
-    configureSecurity()
+    configureSecurity(TokensService(AppConfig()))
     configureMonitoring()
     configureDI()
     configureSerialization()
