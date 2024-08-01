@@ -15,6 +15,14 @@ fun Usuario.toDto() = UsuarioDto(
 )
 fun List<Usuario>.toDto() = this.map { it.toDto() }
 
+fun UsuarioDto.toModel() = Usuario(
+    id_usuario = this.id_usuario,
+    nombre = this.nombre,
+    correo = this.correo,
+    contrasenna = this.contrasenna,
+    perfil = this.perfil
+)
+
 fun UsuarioEntity.toModel() = Usuario(
     id_usuario = this.id_usuario,
     nombre = this.nombre,
@@ -22,12 +30,13 @@ fun UsuarioEntity.toModel() = Usuario(
     contrasenna = this.contrasenna,
     perfil = this.perfil
 )
-fun List<UsuarioEntity>.toModel() = this.map { it.toModel() }
+//fun List<UsuarioEntity>.toModel() = this.map { it.toModel() }
 
 fun UsuarioCrearDto.toModel() = Usuario(
-    id_usuario = this.id_usuario,
+    id_usuario = 0,
     nombre = this.nombre,
     correo = this.correo,
     contrasenna = this.contrasenna,
     perfil = this.perfil
 )
+//fun List<UsuarioCrearDto>.toModel() = this.map { it.toModel() }

@@ -16,6 +16,9 @@ val logbackclassic_version: String by project
 val ktor_swagger_ui_version: String by project
 // Exposed
 val exposed_version: String by project
+// Result Errors
+val result_version: String by project
+
 
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -80,4 +83,6 @@ dependencies {
     implementation("io.github.smiley4:ktor-swagger-ui:$ktor_swagger_ui_version")
     // Dotenv (para generar documentacion)
     implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
+    // Result for error handling Railway Oriented Programming
+    implementation("com.michael-bull.kotlin-result:kotlin-result:$result_version")
 }

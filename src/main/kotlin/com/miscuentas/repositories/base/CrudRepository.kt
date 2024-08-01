@@ -9,12 +9,12 @@ import org.jetbrains.exposed.sql.Column
  * @param ID es el tipo de nuestro ID
  */
 interface CrudRepository<T, ID> {
-    suspend fun getAll(): List<T>
+    suspend fun getAll(): List<T>?
     suspend fun getById(id: ID): T?
-    suspend fun getAllBy(c: String, q: String?): List<T>
+    suspend fun getAllBy(c: String, q: String?): List<T>?
     suspend fun update(entity: T): T?
     suspend fun save(entity: T): T?
-    suspend fun saveAll(entities: Iterable<T>): List<T>
+    suspend fun saveAll(entities: Iterable<T>): List<T>?
     suspend fun delete(entity: T): Boolean
     suspend fun deleteAll(): Boolean
 }

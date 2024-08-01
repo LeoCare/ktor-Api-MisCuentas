@@ -11,6 +11,7 @@ import com.miscuentas.plugins.dbQuery
 import com.toxicbakery.bcrypt.Bcrypt
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 private val logger = KotlinLogging.logger {}
 private const val BCRYPT_SALT = 12
@@ -62,7 +63,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         insertStmt.resultedValues?.singleOrNull()?.let { resultRowToUsuario(it) }
     }
 
-    override suspend fun saveAll(entities: Iterable<Usuario>): List<Usuario>  = dbQuery{
+    override suspend fun saveAll(entities: Iterable<Usuario>): List<Usuario>?  = dbQuery{
         entities.forEach { save(it) }
         this.getAll()
     }
@@ -78,10 +79,15 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario? = dbQuery{
         val usuarios = getAllBy("nombre", nombre) // Lista de Usuarios con el mismo nombre.
         for (usuario in usuarios) {
-            if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
+            //if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
+            if (contrasenna == usuario.contrasenna){
                 return@dbQuery usuario
             }
         }
         return@dbQuery null
+    }
+
+    override suspend fun checkCorreoExist(correo: String): Boolean = dbQuery {
+        UsuariosTable.select(UsuariosTable.correo eq correo).map { resultRowToUsuario(it) }.any()
     }
 }

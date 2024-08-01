@@ -7,4 +7,5 @@ interface UsuarioRepository: CrudRepository<Usuario, Long> {
     //aqui crearemos metodos especificos para el usuario:
     fun hashedPassword(contrasenna: String): String
     suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario?
+    suspend fun checkCorreoExist(correo: String): Boolean
 }

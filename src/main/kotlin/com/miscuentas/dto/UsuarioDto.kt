@@ -16,7 +16,6 @@ data class UsuarioDto (
 /** Usuario nuevo a crear **/
 @Serializable
 data class UsuarioCrearDto (
-    val id_usuario: Long,
     val nombre: String,
     val correo: String,
     val contrasenna: String,

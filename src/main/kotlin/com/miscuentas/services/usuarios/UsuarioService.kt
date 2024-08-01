@@ -1,17 +1,18 @@
 package com.miscuentas.services.usuarios
 
+import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.models.Usuario
-import kotlinx.coroutines.flow.Flow
+import com.github.michaelbull.result.*
 
 interface UsuarioService {
-    suspend fun getUsuarioById(idUsuario: Long): Usuario?
-    suspend fun getAllUsuarios(): List<Usuario>
-    suspend fun getUsuariosBy(column: String, query: String): List<Usuario>
-    suspend fun addUsuario(usuario: Usuario): Usuario?
-    suspend fun updateUsuario(usuario: Usuario): Usuario?
-    suspend fun deleteUsuario(usuario: Usuario): Boolean
-    suspend fun deleteAllUsuarios(): Boolean
-    suspend fun saveAllUsuarios(usuarios: Iterable<Usuario>): List<Usuario>
-    suspend fun isAdmin(id: Long): Boolean
-    suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario?
+    suspend fun getUsuarioById(idUsuario: Long): Result<Usuario, UsuarioErrores>
+    suspend fun getAllUsuarios(): Result<List<Usuario>, UsuarioErrores>
+    suspend fun getUsuariosBy(column: String, query: String): Result<List<Usuario>, UsuarioErrores>
+    suspend fun addUsuario(usuario: Usuario): Result<Usuario, UsuarioErrores>
+    suspend fun updateUsuario(usuario: Usuario): Result<Usuario, UsuarioErrores>
+    suspend fun deleteUsuario(usuario: Usuario): Result<Boolean, UsuarioErrores>
+    suspend fun saveAllUsuarios(usuarios: Iterable<Usuario>): Result<List<Usuario>, UsuarioErrores>
+    suspend fun isAdmin(id: Long): Result<Boolean, UsuarioErrores>
+    suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Result<Usuario, UsuarioErrores>
+    suspend fun checkCorreoExist(correo: String): Result<Boolean, UsuarioErrores>
 }

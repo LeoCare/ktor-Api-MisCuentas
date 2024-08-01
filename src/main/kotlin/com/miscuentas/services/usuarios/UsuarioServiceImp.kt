@@ -1,14 +1,12 @@
 package com.miscuentas.services.usuarios
 
-import com.miscuentas.entities.UsuariosTable
-import com.miscuentas.entities.UsuariosTable.varchar
+import com.github.michaelbull.result.*
+import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.models.TipoPerfil.Tipo
-import com.miscuentas.models.TipoPerfiles
 import com.miscuentas.models.Usuario
 import com.miscuentas.repositories.usuarios.UsuarioRepository
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.Column
-import org.koin.java.KoinJavaComponent.inject
+import kotlin.math.log
 
 class UsuarioServiceImp(
     private val usuarioRepository: UsuarioRepository
@@ -16,50 +14,102 @@ class UsuarioServiceImp(
 
     private val logger = KotlinLogging.logger {}
 
-    override suspend fun getAllUsuarios(): List<Usuario> {
-        return usuarioRepository.getAll()
+    override suspend fun getAllUsuarios(): Result<List<Usuario>, UsuarioErrores> {
+        logger.debug { "Servicio: getAllUsuarios()" }
+
+        return usuarioRepository.getAll()?.let {
+            logger.debug { "Servicio: usuarios encontrados en repositorio." }
+            Ok(it)
+        } ?: Err(UsuarioErrores.NotFound("Usuarios no encontados"))
     }
 
-    override suspend fun getUsuarioById(idUsuario: Long): Usuario? {
-        return usuarioRepository.getById(idUsuario)
+    override suspend fun getUsuarioById(idUsuario: Long): Result<Usuario, UsuarioErrores> {
+        logger.debug { "Servicio: getUsuarioById()" }
+
+        return usuarioRepository.getById(idUsuario)?.let {
+            logger.debug { "Servicio: usuario encontrado en repositorio." }
+            Ok(it)
+        } ?: Err(UsuarioErrores.NotFound("Usuario no encontrado"))
     }
 
-    override suspend fun getUsuariosBy(column: String, query: String): List<Usuario> {
-        return usuarioRepository.getAllBy(column, query)
+    override suspend fun getUsuariosBy(column: String, query: String): Result<List<Usuario>, UsuarioErrores> {
+        logger.debug { "Servicio: getUsuariosBy()" }
+
+        return usuarioRepository.getAllBy(column, query)?.let { usuarios ->
+            logger.debug { "Servicio: usuario encontrado en repositorio." }
+            Ok(usuarios)
+        } ?: Err(UsuarioErrores.NotFound("El usuario: $query no se ha encontrado"))
     }
 
-    override suspend fun updateUsuario(usuario: Usuario): Usuario? {
-        return usuarioRepository.update(usuario)
+    override suspend fun updateUsuario(usuario: Usuario): Result<Usuario, UsuarioErrores> {
+        logger.debug { "Servicio: updateUsuario()" }
+
+        return usuarioRepository.update(usuario)?.let {
+            logger.debug { "Servicio: usuario actualizado desde el repositorio." }
+            Ok(it)
+        } ?: Err(UsuarioErrores.Forbidden("Usuario no actualizado"))
     }
 
-    override suspend fun deleteUsuario(usuario: Usuario): Boolean {
-        return usuarioRepository.delete(usuario)
+    override suspend fun deleteUsuario(usuario: Usuario): Result<Boolean, UsuarioErrores> {
+        logger.debug { "Servicio: deleteUsuario()" }
+
+        return if (usuarioRepository.delete(usuario)) {
+            logger.debug { "Servicio: Usuario eliminado correctamente." }
+            Ok(true)
+        } else Err(UsuarioErrores.NotFound("Usuario no eliminado."))
     }
 
-    override suspend fun addUsuario(usuario: Usuario): Usuario? {
-        return usuarioRepository.save(usuario)
+    override suspend fun addUsuario(usuario: Usuario): Result<Usuario, UsuarioErrores> {
+        logger.debug { "Servicio: addUser()" }
+
+        return checkCorreoExist("correo").mapBoth(
+            success = {
+                logger.debug { "Servicio: checkCorreoExist() -> correo ya existente" }
+                Err(UsuarioErrores.BadRequest("El correo: ${usuario.correo} ya existe."))
+            },
+            failure = {
+                usuarioRepository.save(usuario)?.let {
+                    logger.debug { "Servicio: usuario guardado desde el repositorio." }
+                    Ok(it)
+                } ?: Err(UsuarioErrores.BadRequest("La insercion a fallado."))
+            }
+        )
     }
 
-    override suspend fun deleteAllUsuarios(): Boolean {
-        return usuarioRepository.deleteAll()
-    }
+    override suspend fun saveAllUsuarios(usuarios: Iterable<Usuario>): Result<List<Usuario>, UsuarioErrores> {
+        logger.debug { "Servicio: saveAllUsuarios()" }
 
-    override suspend fun saveAllUsuarios(usuarios: Iterable<Usuario>): List<Usuario> {
-        return usuarioRepository.saveAll(usuarios)
+        return usuarioRepository.saveAll(usuarios)?.let {
+            Ok(it)
+        } ?:Err(UsuarioErrores.Forbidden("La insercion a fallado."))
+
     }
 
     /** COMPROBAR SI TIENE PERFIL ADMIN **/
-    override suspend fun isAdmin(id: Long): Boolean {
-        logger.debug { "isAdmin Movil: comprobar si tiene perfil Admin de movil." }
-        getUsuarioById(id)?.let {
-            return it.perfil == Tipo.ADMIN.name
-        }
-        return false
+    override suspend fun isAdmin(id: Long): Result<Boolean, UsuarioErrores> {
+        logger.debug { "Servicio: isAdmin()" }
+        return getUsuarioById(id).mapBoth(
+            success = {
+                logger.debug { "Servicio: Usuario encotrado." }
+                if (it.perfil == Tipo.ADMIN.name) Ok(true)
+                else Ok(false)
+            },
+            failure = { Err(UsuarioErrores.Forbidden("No se ha encontrado ese usuario.")) }
+        )
     }
 
     /** COMPROBAR LOGEO **/
-    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario? {
-        logger.debug { "CheckUserAndPassword" }
-        return usuarioRepository.checkUserNameAndPassword(nombre, contrasenna)
+    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Result<Usuario, UsuarioErrores> {
+        logger.debug { "Servicio: CheckUserAndPassword" }
+        return usuarioRepository.checkUserNameAndPassword(nombre, contrasenna)?.let {
+            Ok(it)
+        } ?: Err(UsuarioErrores.NotFound("Usuario no registrado para logeo."))
+    }
+
+    override suspend fun checkCorreoExist(correo: String): Result<Boolean, UsuarioErrores> {
+        logger.debug { "Servicio: checkCorreoExist()" }
+        return if (usuarioRepository.checkCorreoExist(correo)) Ok(true)
+            else Err(UsuarioErrores.BadRequest( "Ese correo ya existe"))
+
     }
 }
