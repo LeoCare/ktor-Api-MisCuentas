@@ -1,24 +1,24 @@
 package com.miscuentas.routes
 
-import com.github.michaelbull.result.andThen
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onSuccess
-import com.miscuentas.config.AppConfig
 import com.miscuentas.dto.UsuarioCrearDto
 import com.miscuentas.dto.UsuarioDto
 import com.miscuentas.dto.UsuarioLoginDto
 import com.miscuentas.dto.UsuarioWithTokenDto
+import com.miscuentas.entities.UsuariosTable.id_usuario
 import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
-import com.miscuentas.services.usuarios.UsuarioService
-import com.miscuentas.models.Usuario
 import com.miscuentas.services.auth.TokensService
+import com.miscuentas.services.usuarios.UsuarioService
+import io.github.smiley4.ktorswaggerui.dsl.*
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -28,16 +28,39 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger {}
+private const val ENDPOINT = "/usuario"
 
 fun Routing.usuarioRoute() {
 
     val usuarioService by inject<UsuarioService>()
     val tokenService by inject<TokensService>()
 
-    route("/usuario") {
+    route("/$ENDPOINT") {
 
         // Register a new user --> POST /api/users/register
-        post("/registro") {
+        post("/registro", {
+            description = "REGISTRO DE LOS NUEVOS USUARIOS"
+            request {
+                queryParameter<UsuarioCrearDto>("Usuario") {
+                    description = "Instancia del usuario a crear."
+                    required = true // Optional
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Retorna el usuario que se acaba de crear."
+                    body<UsuarioDto> {}
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Retorna mensaje de error SQL."
+                    body<String> {}
+                }
+                HttpStatusCode.NotImplemented to {
+                    description = "Retorna mensaje de error en el servicio."
+                    body<String> {}
+                }
+            }
+        }) {
             logger.debug { "POST registro" }
 
             val usuario = call.receive<UsuarioCrearDto>().toModel()
@@ -48,7 +71,25 @@ fun Routing.usuarioRoute() {
         }
 
         // Login a user --> POST /api/users/login
-        post("/login") {
+        post("/login", {
+            description = "LOGEO DE LOS USUARIOS YA REGISTRADOS."
+            request {
+                queryParameter<UsuarioLoginDto>("Usuario y contraseña para el logeo") {
+                    description = "Instancia de un usuario con nombre y contraseña."
+                    required = true // Optional
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Retorna el usuario junto con el Token para futuras peticiones."
+                    body<UsuarioWithTokenDto> {}
+                }
+                HttpStatusCode.Unauthorized to {
+                    description = "Retorna mensaje de aviso, si el logeo no es aceptado."
+                    body<String> {}
+                }
+            }
+        }) {
             logger.debug { "POST login" }
 
             val usuario = call.receive<UsuarioLoginDto>()
@@ -64,7 +105,24 @@ fun Routing.usuarioRoute() {
         // Rutas con autenticacion JWT necesaria:
         authenticate {
             // OBTENCION DE USUARIO:
-            get("/personal") {
+            get("/personal", {
+                description = "SOLICITAR LOS DATOS DE USUARIOS PERSONALES. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna mi usuario para poder verificar los datos personales."
+                        body<UsuarioDto> { description = "Instancia del usuario personal." }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> { }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                }
+            }) {
                 try {
                     // El token viene con el usuario principal en el reclamo.
                     // Viene con comillas, por ello hay que reemplazarlas.
@@ -83,7 +141,24 @@ fun Routing.usuarioRoute() {
                 }
             }
 
-            get("/lista") {
+            get("/lista", {
+                description = "SOLICITAR LISTA DE LOS USUARIOS REGISTRADOS. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna lista de los usuarios registrados."
+                        body<List<UsuarioDto>> { description = "Lista de instancias de usuarios." }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> { }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                }
+            }) {
                 try {
                     val userId = call.principal<JWTPrincipal>()
                         ?.payload?.getClaim("userId")
@@ -101,7 +176,34 @@ fun Routing.usuarioRoute() {
                 }
             }
 
-            get("/WhenData") {
+            get("/WhenData", {
+                description = "SOLICITAR UNOS DATOS EN CONCRETO. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                request {
+                    queryParameter<String>("c") {
+                        description = "nombre de la columna a filtrar"
+                        required = true // Optional
+                    }
+                    queryParameter<String>("q") {
+                        description = "dato de la columna a filtrar"
+                        required = true // Optional
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna lista de usuarios que coincidan con ese valor."
+                        body<List<UsuarioDto>> { }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> {}
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL o si no se ha proporcionado los datos."
+                        body<String> {}
+                    }
+                }
+            }) {
                 try {
                     val userId = call.principal<JWTPrincipal>()
                         ?.payload?.getClaim("userId")
@@ -124,7 +226,30 @@ fun Routing.usuarioRoute() {
                 }
             }
 
-            get ("{id}"){ //Con parametro pasado en la url
+            get ("{id}", {
+                description = "SOLICITAR DATOS SEGUN ID PASADO POR PARAMETRO. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                request {
+                    pathParameter<Int>("id_usuario") {
+                        description = "id de un usuario en concreto."
+                        required = true // Optional
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna usuario segun el id pasado por parametro."
+                        body<UsuarioDto> { }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> { }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL o si no se ha proporcionado los datos."
+                        body<String> {}
+                    }
+                }
+            }) { //Con parametro pasado en la url
                 try {
                     val userId = call.principal<JWTPrincipal>()
                         ?.payload?.getClaim("userId")
@@ -146,8 +271,31 @@ fun Routing.usuarioRoute() {
             }
 
 
-            //ACTUALIZACION USUARIO:
-            put {
+            // ACTUALIZACION USUARIO: --> PUT /usuario
+            put ({
+                description = "SOLICITAR ACTUALIZACION DE UN USUARIO. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                request {
+                    queryParameter<UsuarioDto>("Intancia de un usuario") {
+                        description = "Intancia de un usuario."
+                        required = true // Optional
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna usuario ya actualizado."
+                        body<UsuarioDto> { }
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de aviso, si no ha actualizado los datos."
+                        body<String> {  }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> { }
+                    }
+                }
+            }) {
                 try {
                     val userId = call.principal<JWTPrincipal>()
                         ?.payload?.getClaim("userId")
@@ -166,7 +314,30 @@ fun Routing.usuarioRoute() {
             }
 
             //ELIMINACION USUARIO:
-            delete {
+            delete ({
+                description = "SOLICITAR ELIMINACION DE UN USUARIO. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                request {
+                    queryParameter<UsuarioDto>("Intancia de un usuario") {
+                        description = "Intancia de un usuario."
+                        required = true // Optional
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna aviso de eliminacion correcta."
+                        body<String> { }
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de aviso, si no se ha eliminado el usuario."
+                        body<String> {}
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> { }
+                    }
+                }
+            }) {
                 try {
                     val userId = call.principal<JWTPrincipal>()
                         ?.payload?.getClaim("userId")

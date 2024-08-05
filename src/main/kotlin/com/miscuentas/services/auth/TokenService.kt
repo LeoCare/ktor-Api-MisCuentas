@@ -8,6 +8,7 @@ import com.miscuentas.models.Usuario
 import io.ktor.server.config.*
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.exposedLogger
+import org.koin.ktor.ext.inject
 import java.util.*
 import kotlin.lazy
 
@@ -23,21 +24,12 @@ class TokensService(
     private val myConfig: AppConfig
 ) {
 
-    val audience by lazy {
-        myConfig.audience
-    }
-    val realm by lazy {
-        myConfig.realm
-    }
-    private val issuer by lazy {
-        myConfig.issuer
-    }
-    private val expiresIn by lazy {
-        myConfig.expiration.toLong()
-    }
-    private val secret by lazy {
-        myConfig.secret
-    }
+
+    val audience by lazy { myConfig.audience }
+    val realm by lazy { myConfig.realm }
+    private val issuer by lazy { myConfig.issuer }
+    private val expiresIn by lazy { myConfig.expiration.toLong() }
+    private val secret by lazy { myConfig.secret }
 
     init {
         logger.debug { "Servicio de token iniciado por: $audience" }

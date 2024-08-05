@@ -10,6 +10,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.koin.ktor.ext.inject
 
 
 /** HABILITA LA AGRUAPACION DE CONEXIONES:
@@ -34,9 +35,9 @@ private fun provideDataSource(url:String,driverClass:String): HikariDataSource {
     * Luego llamamos a la función Database.connect() y le pasamos la función provideDataSource() que creamos anteriormente.
     * Esto devuelve una base de datos que usamos en una función de transacción para crear las tablas indicadas, en la base de datos.
  */
-fun Application.configureDatabases(
-    myConfig: AppConfig
-) {
+fun Application.configureDatabases() {
+    val myConfig by inject<AppConfig>()
+
     val driverClass = myConfig.driverClassName
     val jdbcUrl = myConfig.jdbcURL
     val db = Database.connect(provideDataSource(jdbcUrl,driverClass))

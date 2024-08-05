@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  ktor-api-rest:
+    build: .
+    container_name: ktor-api-rest
+    restart: always
+    ports:
+      - "8080:8080"
+      - "8083:8083"
+    env_file:
+      - secrets.env
+
+    

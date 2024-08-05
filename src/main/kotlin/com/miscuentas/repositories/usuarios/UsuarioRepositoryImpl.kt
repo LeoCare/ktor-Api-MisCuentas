@@ -16,8 +16,15 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 private val logger = KotlinLogging.logger {}
 private const val BCRYPT_SALT = 12
 
+/** IMPLEMENTACION DEL REPOSITORIO PARA LA CLASE USUARIO:
+ * Hereda de UsuarioRepository
+ */
 class UsuarioRepositoryImpl: UsuarioRepository {
 
+    /** resultRowToUsuario() mapea el resultado devuelto a la clase Usuario.
+     * @param resultRow resultado devuelto de la BBDD.
+     * @return un tipo Usuario.
+     */
     private fun resultRowToUsuario(resultRow: ResultRow): Usuario {
         return Usuario(
             id_usuario = resultRow[id_usuario],
@@ -28,6 +35,10 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         )
     }
 
+    /** hashedPassword() codifica la contraseña antes de guardarla en persistencia.
+     * @param contrasenna introducida por el usuario.
+     * @return contasenna hasheada.
+     */
     override fun hashedPassword(contrasenna: String) = Bcrypt.hash(contrasenna, BCRYPT_SALT).decodeToString()
 
     override suspend fun getAll(): List<Usuario> = dbQuery{

@@ -11,7 +11,7 @@ fun Application.configureSwagger() {
     install(SwaggerUI) {
         swagger {
             swaggerUrl = "swagger"
-            forwardRoot = false
+            forwardRoot = true
         }
         info {
             title = "API REST - MIS CUENTAS -"
@@ -30,18 +30,20 @@ fun Application.configureSwagger() {
         schemasInComponentSection = true
         examplesInComponentSection = true
         automaticTagGenerator = { url -> url.firstOrNull() }
-        // We can filter paths and methods
-        pathFilter = { method, url ->
-            url.contains("usuarios")
+        // Filtramos rutas de los metodos
+        // pathFilter = { method, url ->
+            //url.contains("usuarios")
             //(method == HttpMethod.Get && url.firstOrNull() == "api")
             // || url.contains("test")
-        }
+        //}
 
-        // We can add security
+        // Agregamos segurida
         securityScheme("JWT-Auth") {
             type = AuthType.HTTP
             scheme = AuthScheme.BEARER
             bearerFormat = "jwt"
         }
+
+
     }
 }

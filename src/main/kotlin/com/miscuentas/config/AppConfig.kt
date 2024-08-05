@@ -8,8 +8,8 @@ class AppConfig {
     val applicationConfiguration: ApplicationConfig = ApplicationConfig("application.conf")
 
     //MYSQL
-    val driverClassName: String = applicationConfiguration.property("storage.driverClassName").getString()
-    val jdbcURL: String = applicationConfiguration.property("storage.jdbcURL").getString()
+    val driverClassName: String = applicationConfiguration.property("database.driverClassName").getString()
+    val jdbcURL: String = applicationConfiguration.property("database.jdbcURL").getString()
 
     //JWT
     val secret: String = applicationConfiguration.property("jwt.secret").getString()

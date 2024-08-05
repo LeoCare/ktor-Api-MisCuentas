@@ -1,5 +1,7 @@
 package com.miscuentas.plugins
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
 import com.miscuentas.services.auth.TokenException
 import com.miscuentas.services.auth.TokensService
 import io.ktor.server.application.*
@@ -9,6 +11,8 @@ import org.koin.ktor.ext.inject
 
 // Seguridad en base a JWT
 fun Application.configureSecurity() {
+
+
 
     // Injectamos el Token del servicio
     val jwtService: TokensService by inject()

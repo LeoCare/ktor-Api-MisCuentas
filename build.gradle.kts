@@ -18,6 +18,8 @@ val ktor_swagger_ui_version: String by project
 val exposed_version: String by project
 // Result Errors
 val result_version: String by project
+// Ksp
+val koin_ksp_version: String by project
 
 
 plugins {
@@ -26,6 +28,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
     // Dokka (para generar documentacion)
     id("org.jetbrains.dokka") version "1.8.10"
+    // KSP for Koin Annotations
+    id("com.google.devtools.ksp") version "1.8.21-1.0.11"
 }
 
 group = "com.miscuentas"
@@ -44,11 +48,13 @@ repositories {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
+    // Ktor Core
+    implementation("io.ktor:ktor-server-core-jvm:$ktor_version")
+    implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
+    // Content Negotiation and Serialization
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
+    // Test
     testImplementation("io.ktor:ktor-server-test-host-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     // ORM
@@ -70,10 +76,11 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
+    ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version") // Koin KSP Compiler for KSP
     // BCrypt
     implementation("com.ToxicBakery.library.bcrypt:bcrypt:$bcrypt_version")
     // Logging
-    implementation("ch.qos.logback:logback-classic:$logbackclassic_version")
+    implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.github.microutils:kotlin-logging-jvm:$micrologging_version")
     // SSL/TLS
     implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
@@ -81,8 +88,20 @@ dependencies {
     implementation("io.ktor:ktor-server-cors:$ktor_version")
     // To generate Swagger UI (para generar documentacion)
     implementation("io.github.smiley4:ktor-swagger-ui:$ktor_swagger_ui_version")
-    // Dotenv (para generar documentacion)
-    implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
-    // Result for error handling Railway Oriented Programming
+    // Resultados en consultas segun POC (programacion orientada sobre carriles)
     implementation("com.michael-bull.kotlin-result:kotlin-result:$result_version")
+}
+
+tasks{
+    shadowJar {
+        manifest {
+            attributes(Pair("Main-Class", "com.miscuentas.ApplicationKt"))
+        }
+    }
+}
+
+ktor {
+    fatJar {
+        archiveFileName.set("com.miscuentas.ktor-Api-MisCuentas-$version-all.jar")
+    }
 }
