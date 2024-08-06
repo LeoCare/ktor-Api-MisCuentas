@@ -1,16 +1,16 @@
 package com.miscuentas.plugins
 
-import com.miscuentas.config.AppConfig
 import com.miscuentas.entities.UsuariosTable
 import com.miscuentas.models.TipoPerfiles
-import com.zaxxer.hikari.*
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.server.application.*
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.koin.ktor.ext.inject
 
 
 /** HABILITA LA AGRUAPACION DE CONEXIONES:
@@ -36,10 +36,10 @@ private fun provideDataSource(url:String,driverClass:String): HikariDataSource {
     * Esto devuelve una base de datos que usamos en una función de transacción para crear las tablas indicadas, en la base de datos.
  */
 fun Application.configureDatabases() {
-    val myConfig by inject<AppConfig>()
+    val dotenv = Dotenv.configure().ignoreIfMissing().load()
 
-    val driverClass = myConfig.driverClassName
-    val jdbcUrl = myConfig.jdbcURL
+    val driverClass = dotenv["DB_DRIVER"]
+    val jdbcUrl = dotenv["DB_URL"]
     val db = Database.connect(provideDataSource(jdbcUrl,driverClass))
     transaction(db){
         SchemaUtils.create(UsuariosTable, TipoPerfiles)

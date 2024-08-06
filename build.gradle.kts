@@ -24,12 +24,12 @@ val koin_ksp_version: String by project
 
 plugins {
     kotlin("jvm") version "2.0.0"
-    id("io.ktor.plugin") version "2.3.12"
+    id("io.ktor.plugin") version "2.3.11"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.0.0"
     // Dokka (para generar documentacion)
     id("org.jetbrains.dokka") version "1.8.10"
     // KSP for Koin Annotations
-    id("com.google.devtools.ksp") version "1.8.21-1.0.11"
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
 group = "com.miscuentas"
@@ -77,6 +77,7 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version") // Koin KSP Compiler for KSP
+
     // BCrypt
     implementation("com.ToxicBakery.library.bcrypt:bcrypt:$bcrypt_version")
     // Logging
@@ -90,6 +91,8 @@ dependencies {
     implementation("io.github.smiley4:ktor-swagger-ui:$ktor_swagger_ui_version")
     // Resultados en consultas segun POC (programacion orientada sobre carriles)
     implementation("com.michael-bull.kotlin-result:kotlin-result:$result_version")
+    // Dotenv
+    implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")
 }
 
 tasks{

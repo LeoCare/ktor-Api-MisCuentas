@@ -3,14 +3,10 @@ package com.miscuentas.services.auth
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import com.miscuentas.config.AppConfig
 import com.miscuentas.models.Usuario
-import io.ktor.server.config.*
+import io.github.cdimascio.dotenv.Dotenv
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.exposedLogger
-import org.koin.ktor.ext.inject
 import java.util.*
-import kotlin.lazy
 
 
 private val logger = KotlinLogging.logger {}
@@ -21,15 +17,15 @@ sealed class TokenException(message: String) : RuntimeException(message) {
 
 
 class TokensService(
-    private val myConfig: AppConfig
+    //private val myConfig: AppConfig
 ) {
+    val dotenv = Dotenv.configure().ignoreIfMissing().load()
 
-
-    val audience by lazy { myConfig.audience }
-    val realm by lazy { myConfig.realm }
-    private val issuer by lazy { myConfig.issuer }
-    private val expiresIn by lazy { myConfig.expiration.toLong() }
-    private val secret by lazy { myConfig.secret }
+    val audience by lazy { dotenv["JWT_AUDIENCE"] }
+    val realm by lazy { dotenv["JWT_REALM"] }
+    private val issuer by lazy { dotenv["JWT_ISSUER"] }
+    private val expiresIn by lazy { dotenv["JWT_EXPIRATION"].toLong() }
+    private val secret by lazy { dotenv["JWT_SECRET"] }
 
     init {
         logger.debug { "Servicio de token iniciado por: $audience" }
