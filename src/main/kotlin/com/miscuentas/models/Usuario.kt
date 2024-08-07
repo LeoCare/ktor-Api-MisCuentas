@@ -5,7 +5,7 @@ package com.miscuentas.models
  * @property nombre nombre del registro y usado para logearse.
  * @property correo unico para cada usuario.
  * @property contrasenna se almacenará cifrada.
- * @param perfil restringe el acceso y las acciones..
+ * @property perfil restringe el acceso y las acciones..
  * @constructor Instancia un usuario unico.
  */
 data class Usuario(

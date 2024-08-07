@@ -1,7 +1,7 @@
 package com.miscuentas.services.tipoperfiles
 
+import com.miscuentas.dto.UsuarioPerfil
 import com.miscuentas.models.TipoPerfil
-import com.miscuentas.models.relaciones.UsuarioPerfil
 
 interface TipoPerfilService {
     suspend fun addTipoPerfil(perfil: TipoPerfil): TipoPerfil?

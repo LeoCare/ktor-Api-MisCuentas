@@ -9,13 +9,13 @@ RUN gradle buildFatJar --no-daemon
 # Crearemos una nueva imagen ligera para usar la app.
 FROM openjdk:17-jdk-slim-buster
 EXPOSE 8080:8080
-EXPOSE 8083:8083
+EXPOSE 8443:8443
 # Directorio de almacenamiento
 RUN mkdir /app
 # Copiamos los certificados en el contenedor (solo si es necesario)
-RUN mkdir /cert
-COPY --from=build /home/gradle/src/cert/* /cert/
+#  RUN mkdir /cert
+#  COPY --from=build /home/gradle/src/cert/* /cert/
 # Copiamos el archivo jar en el contenedor
-COPY --from=build /home/gradle/src/build/libs/*-all.jar /app/ktor-Api-MisCuentas.jar
+COPY --from=build /home/gradle/src/build/libs/*-all.jar /app/ktor-api-miscuentas.jar
 # Inicamos la app
-ENTRYPOINT ["java","-jar","/app/ktor-Api-MisCuentas.jar"]
+ENTRYPOINT ["java","-jar","/app/ktor-api-miscuentas.jar"]

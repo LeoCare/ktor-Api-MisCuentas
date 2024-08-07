@@ -35,3 +35,9 @@ data class UsuarioWithTokenDto(
     val user: UsuarioDto,
     val token: String
 )
+
+@Serializable
+data class UsuarioPerfil(
+    val nombre: String,
+    val descripcion: String,
+)

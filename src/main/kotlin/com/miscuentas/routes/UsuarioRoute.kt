@@ -6,19 +6,19 @@ import com.miscuentas.dto.UsuarioCrearDto
 import com.miscuentas.dto.UsuarioDto
 import com.miscuentas.dto.UsuarioLoginDto
 import com.miscuentas.dto.UsuarioWithTokenDto
-import com.miscuentas.entities.UsuariosTable.id_usuario
 import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
 import com.miscuentas.services.auth.TokensService
 import com.miscuentas.services.usuarios.UsuarioService
-import io.github.smiley4.ktorswaggerui.dsl.*
+import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
-
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -30,6 +30,7 @@ import org.koin.ktor.ext.inject
 private val logger = KotlinLogging.logger {}
 private const val ENDPOINT = "/usuario"
 
+//para ver la documentacion de la Api-rest -> http://192.168.7.3:8080/swagger
 fun Routing.usuarioRoute() {
 
     val usuarioService by inject<UsuarioService>()

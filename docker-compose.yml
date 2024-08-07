@@ -1,31 +1,18 @@
-version: "3.7"
 services:
-  # Database instance we need to store data
-  db:
-    image: mysql:latest
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=111nonamaEM
-      - MYSQL_DATABASE=DBMisCuentas
-      - MYSQL_USER=leo
-      - MYSQL_PASSWORD=111nonamaEM
-    ports:
-      - "3306:3306"
-
   ktor:
     image: leocare/ktor-api-miscuentas:0.1.0
     build: .
     platform: linux/amd64
-    container_name: ktor-api-rest
+    container_name: ktor_api_rest
     restart: always
     ports:
       - "8080:8080"
-      - "8083:8083"
+      - "8443:8443"
     env_file:
       - .env
-    depends_on:
-      - db
-    environment:
-      - ENVIRONMENT=dev
+    networks:
+      - red-interna
 
-    
+networks:
+  red-interna:
+    driver: bridge

@@ -1,11 +1,11 @@
 package com.miscuentas.services.tipoperfiles
 
+import com.miscuentas.dto.UsuarioPerfil
 import com.miscuentas.models.TipoPerfil
 import com.miscuentas.models.TipoPerfiles
 import com.miscuentas.models.TipoPerfiles.descripcion
 import com.miscuentas.models.TipoPerfiles.tipo
 import com.miscuentas.entities.UsuariosTable
-import com.miscuentas.models.relaciones.UsuarioPerfil
 import com.miscuentas.plugins.dbQuery
 import org.jetbrains.exposed.sql.*
 

@@ -17,7 +17,7 @@ fun main() {
     val keyStore = buildKeyStore {
         certificate(dotenv["SSL_KEY_ALIAS"]) {
             password = dotenv["SSL_KEYSTORE_PASSWORD"]
-            domains = listOf("127.0.0.1", "0.0.0.0", "localhost")
+            domains = listOf("0.0.0.0", "192.168.7.3", "localhost")
         }
     }
     keyStore.saveToFile(keyStoreFile, dotenv["SSL_KEYSTORE_PASSWORD"])
