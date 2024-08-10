@@ -10,13 +10,16 @@ Rest Api para proyecto MisCuentas del ciclo DAM en MonteCastelo.
 
 - [Ktor REST API para proyecto MisCuentas](#ktor-rest-api-proyecto-ciclo-dam)
   - [Acerca de..](#acerca-de)
-    - [APP Movil](#app-movil-miscuentas)
-    - [APP Escritorio](#app-escritorio-todocuentas)
+    - [Aplicaciones que forman parte de este proyecto](#aplicaciones-que-forman-parte-de-este-proyecto)
   - [Autor](#autor)
     - [Contacto](#contacto)
   - [Instalacion](#instalacion)
-  - [Documentacion](docs/gfm/index.md)
+    - [Desplegar servicio en Docker](#desplegar-servicio-en-docker)
+    - [Desplear servicio en IDE](#desplegar-servicio-en-ide)
   - [Uso](#uso)
+  - [Documentaciones](#documentaciones)
+    - [Documentacion del codigo](#documentacion-del-codigo)
+    - [Documentacion del API REST](#documentacion-del-api-rest)
   - [Contribucion](#contribucion)
   - [Licencia](#licencia)
 
@@ -51,12 +54,12 @@ Estos desarrollos incluyen lenguajes como Html, C#, Xamarin, Oracle, Java y Kotl
 [![Kotlin](https://img.shields.io/badge/Code-Kotlin-blueviolet)](https://kotlinlang.org/)
 
  ### Contacto
-Para cualquier consulta o aporte puedes comunicarte conmingo en el siguiente correo [leon1982care@gmail.com](https://mail.google.com/mail/u/0/?pli=1#inbox)
-
+Para cualquier consulta o aporte puedes comunicarte conmigo por correo<br>
+[leon1982care@gmail.com](https://mail.google.com/mail/u/0/?pli=1#inbox)     
 <p><a href="https://mail.google.com/mail/u/0/?pli=1#inbox" target="_blank">
         <img src="https://ams3.digitaloceanspaces.com/graffica/2021/06/logogmailgrafica-1-1024x576.png" 
     height="30" alt="correo_electronico">
-</a></p>
+</a></p> 
 
 ## Instalacion
 El proyecto esta desarrollado para ser subido a un contenedor Docker, al igual que la imagen de la BBDD en Mysql. Puedes ver los archivos docker-compose.yml y Dockerfile en la raiz del proyecto, para este proposito.<br>
@@ -106,25 +109,47 @@ Esta manera de deplegar el servicio dependerá de tener un contenedor, con la BB
    ![Imagen del Proyecto](docs/imagenes/insta_ide_3.png)
 >https://127.0.0.1:8443/usuario/registro.
 
+<br><br>
 *Si algo falla, recuerda abrir los puertos asignados, revisa tu acceso a la bbdd o ten en cuenta que puedes acceder por Http(8080) o Https(8443).<br>
 Tambien puedes modificar lo que sea necesario para que se ajuste a tus necesidades.
 
-## Documentacion
-La documentacion se realizó comentando todo el codigo, cada clase, ruta, repositorio y demas, con una sintaxis en concreto para ser reconocida por [Dokka](https://kotlinlang.org/docs/dokka-introduction.html).<br>
-Esta libreria genera la documentacion en varios formatos, en mi caso se uso Markdown para acceder desde el mismo repositorio en el que estas.
-Puedes ver y seguir toda la estructura de la aplicacion desde el siguiente enlace... [Ver](docs/gfm/index.md)
 
 ## Uso
+Obviando la instacion descripta en el aparatado anterior, esta son la instrucciones para su correcto uso:
 
+
+## Documentaciones
+La documentacion se divide en dos partes, la documentacion del codigo y la documentacion de la interfaz de API REST.
+
+### Documentacion del codigo
+La documentacion del codigo se realizó comentando cada clase, ruta, repositorio y demas, con una sintaxis en concreto para ser reconocida por [Dokka](https://kotlinlang.org/docs/dokka-introduction.html).<br>
+Esta libreria genera la documentacion en varios formatos, en mi caso se uso Markdown para acceder desde el mismo repositorio en el que estas.<br>
+Puedes ver y seguir toda la estructura de la aplicacion desde el siguiente enlace:</br>
+[Ver documentacion](docs/gfm/index.md)
+
+
+Imagen de ejemplo</br>
+![Imagen generada por Dokka](docs/imagenes/docu_dokka.png)
+
+### Documentacion del API REST
+Para el codigo del servicio se uso la libreria Swagger. Esta permite diseñar, documentos, **y puede que lo mas interesante, consumir APIs.**
+Genera documentacion interactiva en HTML que permite probar los EndPoits directamente desde el navegador.
+Para generarlo he comentado todas las rutas con la sintaxis requeridas por la libreria, de manera que la reconozca y genere dicha documentacion.<br>
+Pueder ver y consumir las APIs arrancando el servicio y pinchando en el enlace o escribiendo el código en tu navegador:<br>
+[Ver codigo](http://127.0.0.1:8080/swagger/index.html)
+>http://127.0.0.1:8080/swagger
+
+Imagen de ejemplo
+![Imagen de swagger](docs/imagenes/docu_api.png)
 ## Contribucion
+Gracias a todos los que aporten nuevas ideas de como mejorar mi proyecto. Sientance libres de participar, cambiar u opinar sobre el mismo.</br>
+Solo pido que al crear la rama, esta comience por 'contribucion/lo_que_aporteis'. Y, el commit sea claro y descriptivo.</br>
+En caso de necesitar documentar los nuevos cambios, seguir con el uso de las libreria mensionada en el apartado [Documentaciones](#documentaciones).</br>
+Muchisimas gracias a todos!
 
 ## Licencia
- This repository and all its contents are licensed under the **Creative Commons** license. If you want to know more, see the [LICENSE](https://joseluisgs.dev/docs/license/). Please cite the author if you share, use or modify this project, and use the same conditions for its educational, formative, or non-commercial use.
+Este repositorio y todo su contenido estan bajo la licencia de **Creative Commons**. Solo pido que si haces uso de ella, me cites como el autor.</br>
+ <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
 
- <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">
-JoseLuisGS</span>
-by <a xmlns:cc="http://creativecommons.org/ns#" href="https://joseluisgs.dev/" property="cc:attributionName" rel="cc:attributionURL">
-José Luis González Sánchez</a> is licensed under
-a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
-Attribution-NonCommercial-ShareAlike 4.0 International License</a>.<br />Based on a work at
-<a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/joseluisgs" rel="dct:source">https://github.com/joseluisgs</a>
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
