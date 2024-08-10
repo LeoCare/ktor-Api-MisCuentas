@@ -77,7 +77,6 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-host-common-jvm:$ktor_version")
     ksp("io.insert-koin:koin-ksp-compiler:$koin_ksp_version") // Koin KSP Compiler for KSP
-
     // BCrypt
     implementation("com.ToxicBakery.library.bcrypt:bcrypt:$bcrypt_version")
     // Logging
@@ -85,9 +84,9 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging-jvm:$micrologging_version")
     // SSL/TLS
     implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
-    // CORS (para generar documentacion)
+    // CORS (comunicacion cruzada)
     implementation("io.ktor:ktor-server-cors:$ktor_version")
-    // To generate Swagger UI (para generar documentacion)
+    // To generate Swagger UI (para generar la documentacion)
     implementation("io.github.smiley4:ktor-swagger-ui:$ktor_swagger_ui_version")
     // Resultados en consultas segun POC (programacion orientada sobre carriles)
     implementation("com.michael-bull.kotlin-result:kotlin-result:$result_version")
