@@ -9,7 +9,7 @@ import java.time.LocalDate
  * @property titulo título de la hoja.
  * @property fechaCreacion fecha en que la hoja fue creada.
  * @property fechaCierre fecha en que la hoja fue cerrada, puede ser nula.
- * @property limiteGastos límite de gastos permitido en la hoja.
+ * @property limiteGastos límite de gastos permitido en la hoja, puede ser nulo.
  * @property status estado de la hoja.
  * @property idUsuario referencia al id del usuario propietario de la hoja.
  * @constructor Instancia una hoja única.

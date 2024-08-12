@@ -2,41 +2,31 @@ package com.miscuentas.mappers
 
 import com.miscuentas.dto.UsuarioCrearDto
 import com.miscuentas.dto.UsuarioDto
-import com.miscuentas.entities.UsuarioEntity
-import com.miscuentas.models.TipoPerfil
+import com.miscuentas.entities.TipoPerfil
+import com.miscuentas.entities.TipoPerfilesTable
 import com.miscuentas.models.Usuario
 
 fun Usuario.toDto() = UsuarioDto(
-    id_usuario = this.id_usuario,
+    idUsuario = this.idUsuario,
     nombre = this.nombre,
     correo = this.correo,
-    contrasenna = this.contrasenna,
-    perfil = this.perfil
+    perfil = this.perfil.codigo
 )
 fun List<Usuario>.toDto() = this.map { it.toDto() }
 
-fun UsuarioDto.toModel() = Usuario(
-    id_usuario = this.id_usuario,
+fun UsuarioDto.toModel(contrasennaExistente: String) = Usuario(
+    idUsuario = this.idUsuario,
     nombre = this.nombre,
     correo = this.correo,
-    contrasenna = this.contrasenna,
-    perfil = this.perfil
+    contrasenna = this.nuevaContrasenna ?: contrasennaExistente, // Debes proporcionar la contraseña cifrada
+    perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USUARIO
 )
-
-fun UsuarioEntity.toModel() = Usuario(
-    id_usuario = this.id_usuario,
-    nombre = this.nombre,
-    correo = this.correo,
-    contrasenna = this.contrasenna,
-    perfil = this.perfil
-)
-//fun List<UsuarioEntity>.toModel() = this.map { it.toModel() }
 
 fun UsuarioCrearDto.toModel() = Usuario(
-    id_usuario = 0,
+    idUsuario = 0,
     nombre = this.nombre,
     correo = this.correo,
     contrasenna = this.contrasenna,
-    perfil = this.perfil
+    perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USUARIO
 )
-//fun List<UsuarioCrearDto>.toModel() = this.map { it.toModel() }
+fun List<UsuarioCrearDto>.toModel() = this.map { it.toModel() }

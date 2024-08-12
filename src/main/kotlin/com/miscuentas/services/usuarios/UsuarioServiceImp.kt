@@ -1,8 +1,8 @@
 package com.miscuentas.services.usuarios
 
 import com.github.michaelbull.result.*
+import com.miscuentas.entities.TipoPerfil
 import com.miscuentas.errors.UsuarioErrores
-import com.miscuentas.models.TipoPerfil.Tipo
 import com.miscuentas.models.Usuario
 import com.miscuentas.repositories.usuarios.UsuarioRepository
 import mu.KotlinLogging
@@ -90,8 +90,8 @@ class UsuarioServiceImp(
         logger.debug { "Servicio: isAdmin()" }
         return getUsuarioById(id).mapBoth(
             success = {
-                logger.debug { "Servicio: Usuario encotrado." }
-                if (it.perfil == Tipo.ADMIN.name) Ok(true)
+                logger.debug { "Servicio: Usuario encontrado." }
+                if (it.perfil == TipoPerfil.ADMIN) Ok(true)
                 else Ok(false)
             },
             failure = { Err(UsuarioErrores.Forbidden("No se ha encontrado ese usuario.")) }

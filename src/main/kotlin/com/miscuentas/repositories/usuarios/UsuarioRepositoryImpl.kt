@@ -1,5 +1,6 @@
 package com.miscuentas.repositories.usuarios
 
+import com.miscuentas.entities.TipoPerfil
 import com.miscuentas.entities.UsuariosTable
 import com.miscuentas.entities.UsuariosTable.contrasenna
 import com.miscuentas.entities.UsuariosTable.correo
@@ -27,11 +28,11 @@ class UsuarioRepositoryImpl: UsuarioRepository {
      */
     private fun resultRowToUsuario(resultRow: ResultRow): Usuario {
         return Usuario(
-            id_usuario = resultRow[id_usuario],
+            idUsuario = resultRow[id_usuario],
             nombre = resultRow[nombre],
             correo = resultRow[correo],
             contrasenna = resultRow[contrasenna],
-            perfil = resultRow[perfil]
+            perfil = TipoPerfil.fromCodigo(resultRow[perfil]) ?: TipoPerfil.USUARIO
         )
     }
 
@@ -58,12 +59,12 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     }
 
     override suspend fun update(entity: Usuario): Usuario? = dbQuery {
-        UsuariosTable.update({ id_usuario eq entity.id_usuario }) {
+        UsuariosTable.update({ id_usuario eq entity.idUsuario }) {
             it[nombre] = entity.nombre
             it[correo] = entity.correo
             it[contrasenna] = entity.contrasenna
         }
-        UsuariosTable.select { (id_usuario eq entity.id_usuario) }.map { resultRowToUsuario(it) }.singleOrNull()
+        UsuariosTable.select { (id_usuario eq entity.idUsuario) }.map { resultRowToUsuario(it) }.singleOrNull()
     }
 
     override suspend fun save(entity: Usuario): Usuario?  = dbQuery{
@@ -82,7 +83,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     }
 
     override suspend fun delete(entity: Usuario): Boolean = dbQuery{
-        UsuariosTable.deleteWhere { id_usuario eq entity.id_usuario } > 0
+        UsuariosTable.deleteWhere { id_usuario eq entity.idUsuario } > 0
     }
 
     override suspend fun deleteAll(): Boolean = dbQuery{
@@ -92,8 +93,8 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario? = dbQuery{
         val usuarios = getAllBy("nombre", nombre) // Lista de Usuarios con el mismo nombre.
         for (usuario in usuarios) {
-            //if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
-            if (contrasenna == usuario.contrasenna){
+            if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
+            //if (contrasenna == usuario.contrasenna){
                 return@dbQuery usuario
             }
         }

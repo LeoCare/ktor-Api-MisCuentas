@@ -1,6 +1,8 @@
 package com.miscuentas.routes
 
+import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.mapBoth
+import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import com.miscuentas.dto.UsuarioCrearDto
 import com.miscuentas.dto.UsuarioDto
@@ -284,15 +286,23 @@ fun Routing.usuarioRoute() {
                 }
                 response {
                     HttpStatusCode.OK to {
-                        description = "Retorna usuario ya actualizado."
+                        description = "Retorna el usuario actualizado."
                         body<UsuarioDto> { }
                     }
                     HttpStatusCode.NotImplemented to {
-                        description = "Retorna mensaje de aviso, si no ha actualizado los datos."
-                        body<String> {  }
+                        description = "Retorna mensaje de error si la actualización falló."
+                        body<String> { }
                     }
                     HttpStatusCode.BadRequest to {
-                        description = "Retorna mensaje de error de SQL."
+                        description = "Retorna mensaje de error SQL."
+                        body<String> { }
+                    }
+                    HttpStatusCode.Unauthorized to {
+                        description = "Usuario no autenticado."
+                        body<String> { }
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
                         body<String> { }
                     }
                 }
@@ -300,19 +310,52 @@ fun Routing.usuarioRoute() {
                 try {
                     val userId = call.principal<JWTPrincipal>()
                         ?.payload?.getClaim("userId")
-                        .toString().replace("\"", "").toLong()
+                        ?.asString()
+                        ?.toLongOrNull()
 
-                    usuarioService.isAdmin(userId).onSuccess {
-                        val usuario = call.receive<UsuarioDto>().toModel()
-                        usuarioService.updateUsuario(usuario).mapBoth(
-                            success = { call.respond(HttpStatusCode.OK, it.toDto()) },
-                            failure = { call.respond(HttpStatusCode.NotImplemented, handleUserError(it)) }
-                        )
+                    if (userId == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "Usuario no autenticado")
+                        return@put
+                    }
+
+                    val usuarioExistente = usuarioService.getUsuarioById(userId).getOrElse {
+                        // Manejar el caso de usuario no encontrado
+                        return@put call.respond(HttpStatusCode.NotFound, "Usuario no encontrado")
+                    }
+
+                    usuarioService.isAdmin(userId).onSuccess {isAdmin ->
+                        if (isAdmin) {
+                            val usuarioDto = call.receive<UsuarioDto>()
+
+                            // Valida el UsuarioDto antes de convertirlo
+                            if (usuarioDto.nombre.isBlank() || usuarioDto.correo.isBlank()) {
+                                call.respond(HttpStatusCode.BadRequest, "Nombre o correo no pueden estar vacíos")
+                                return@put
+                            }
+
+                            val usuario = usuarioDto.toModel(contrasennaExistente = usuarioExistente.contrasenna)
+
+                            usuarioService.updateUsuario(usuario).mapBoth(
+                                success = { updatedUser ->
+                                    call.respond(HttpStatusCode.OK, updatedUser.toDto())
+                                },
+                                failure = { error ->
+                                    call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                                }
+                            )
+                        } else {
+                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
+                        }
+                    }.onFailure {
+                        call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
                     }
                 } catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepcion de SQL al actualizar usuario!!")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar usuario")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar usuario")
                 }
             }
+
 
             //ELIMINACION USUARIO:
             delete ({
@@ -345,7 +388,7 @@ fun Routing.usuarioRoute() {
                         .toString().replace("\"", "").toLong()
 
                     usuarioService.isAdmin(userId).onSuccess {
-                        val usuario = call.receive<UsuarioDto>().toModel()
+                        val usuario = call.receive<UsuarioDto>().toModel("")
                         usuarioService.deleteUsuario(usuario).mapBoth(
                             success = { call.respond(HttpStatusCode.OK, "Se ha eliminado el usuario correctamente.") },
                             failure = { call.respond(HttpStatusCode.NotImplemented, handleUserError(it)) }
@@ -359,7 +402,9 @@ fun Routing.usuarioRoute() {
     }
 }
 
-// Manejador de errores
+/** Manejador de errores
+ * Recibe diferentes tipo de errores y lo devuelve en la respuesta Http.
+ */
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleUserError(
     error: Any
 ) {
@@ -371,5 +416,6 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleUserError(
         is UsuarioErrores.Forbidden -> call.respond(HttpStatusCode.Forbidden, error.message)
         is UsuarioErrores.BadCredentials -> call.respond(HttpStatusCode.BadRequest, error.message)
         is UsuarioErrores.BadRole -> call.respond(HttpStatusCode.Forbidden, error.message)
+        else -> call.respond(HttpStatusCode.InternalServerError, "Error desconocido")
     }
 }

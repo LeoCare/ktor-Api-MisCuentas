@@ -1,16 +1,15 @@
 package com.miscuentas.dto
 
-import com.miscuentas.models.TipoPerfil
 import kotlinx.serialization.Serializable
 
 /** Usuario a devolver en las respuestas **/
 @Serializable
 data class UsuarioDto (
-    val id_usuario: Long,
+    val idUsuario: Long,
     val nombre: String,
+    val nuevaContrasenna: String? = null, // Campo opcional para cambiar la contraseña
     val correo: String,
-    val contrasenna: String,
-    val perfil: String?
+    val perfil: String
 )
 
 /** Usuario nuevo a crear **/
@@ -19,7 +18,7 @@ data class UsuarioCrearDto (
     val nombre: String,
     val correo: String,
     val contrasenna: String,
-    val perfil: String? = TipoPerfil.Tipo.USER_M.name
+    val perfil: String
 )
 
 /** Usuario para el logeo **/

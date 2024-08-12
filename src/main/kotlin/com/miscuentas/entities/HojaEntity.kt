@@ -10,7 +10,7 @@ object HojasTable : Table("HOJAS") {
     val fechaCreacion = date("fecha_creacion")
     val fechaCierre = date("fecha_cierre").nullable()
     val limiteGastos = decimal("limite_gastos", 10, 2)
-    val status = varchar("status", 2) references TipoStatus.tipo
+    val status = varchar("status", 2) references TipoStatusTable.tipo
     val idUsuario = long("id_usuario") references UsuariosTable.id_usuario
 
     override val primaryKey = PrimaryKey(idHoja, name = "PK_Hoja_ID")

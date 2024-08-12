@@ -38,7 +38,7 @@ class TokensService {
             // user claims and other data to store
             .withClaim("username", usuario.nombre)
             .withClaim("usermail", usuario.correo)
-            .withClaim("userId", usuario.id_usuario.toString())
+            .withClaim("userId", usuario.idUsuario.toString())
             // expiration time from currentTimeMillis + (tiempo times in seconds) * 1000 (to millis)
             .withExpiresAt(Date(System.currentTimeMillis() + expiresIn * 1000L))
             // sign with secret

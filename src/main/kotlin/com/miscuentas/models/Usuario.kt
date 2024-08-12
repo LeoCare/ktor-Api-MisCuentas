@@ -1,7 +1,9 @@
 package com.miscuentas.models
 
+import com.miscuentas.entities.TipoPerfil
+
 /** MODELO DE CLASE USUARIO:
- * @property id_usuario id unico para cada usuario.
+ * @property idUsuario id unico para cada usuario.
  * @property nombre nombre del registro y usado para logearse.
  * @property correo unico para cada usuario.
  * @property contrasenna se almacenará cifrada.
@@ -9,11 +11,11 @@ package com.miscuentas.models
  * @constructor Instancia un usuario unico.
  */
 data class Usuario(
-    val id_usuario: Long,
+    val idUsuario: Long,
     val nombre: String,
     val correo: String,
     val contrasenna: String,
-    val perfil: String?
+    val perfil: TipoPerfil = TipoPerfil.USUARIO
 )
 
 
