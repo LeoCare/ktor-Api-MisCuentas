@@ -1,15 +1,25 @@
 package com.miscuentas.models
 
-import com.miscuentas.entities.UsuariosTable
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.javatime.date
+import java.math.BigDecimal
+import java.time.LocalDate
 
-object Hojas : Table("HOJAS") {
-    val id = long("id_hoja").autoIncrement()
-    val titulo = varchar("titulo", 255)
-    val fechaCreacion = date("fecha_creacion")
-    val fechaCierre = date("fecha_cierre").nullable()
-    val limiteGastos = decimal("limite_gastos", 10, 2)
-    val status = varchar("status", 2) references TipoStatus.tipo
-    val idUsuario = long("id_usuario") references UsuariosTable.id_usuario
-}
+/**
+ * MODELO DE CLASE HOJA:
+ * @property idHoja id único para cada hoja.
+ * @property titulo título de la hoja.
+ * @property fechaCreacion fecha en que la hoja fue creada.
+ * @property fechaCierre fecha en que la hoja fue cerrada, puede ser nula.
+ * @property limiteGastos límite de gastos permitido en la hoja.
+ * @property status estado de la hoja.
+ * @property idUsuario referencia al id del usuario propietario de la hoja.
+ * @constructor Instancia una hoja única.
+ */
+data class Hoja(
+    val idHoja: Long,
+    val titulo: String,
+    val fechaCreacion: LocalDate,
+    val fechaCierre: LocalDate?,
+    val limiteGastos: BigDecimal,
+    val status: String,
+    val idUsuario: Long
+)

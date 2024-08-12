@@ -1,8 +1,12 @@
 package com.miscuentas.models
 
-import org.jetbrains.exposed.sql.Table
-
-object TipoBalance : Table("TIPO_BALANCE") {
-    val tipo = varchar("tipo", 2)
-    val descripcion = varchar("descripcion", 255)
-}
+/**
+ * MODELO DE CLASE TIPO BALANCE:
+ * @property tipo tipo de balance (por ejemplo, 'D' para deudor, 'A' para acreedor).
+ * @property descripcion descripción del tipo de balance.
+ * @constructor Instancia un tipo de balance único.
+ */
+data class TipoBalance(
+    val tipo: String,
+    val descripcion: String
+)

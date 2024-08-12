@@ -10,6 +10,8 @@ Rest Api para proyecto MisCuentas del ciclo DAM en MonteCastelo.
 
 - [Ktor REST API para proyecto MisCuentas](#ktor-rest-api-proyecto-ciclo-dam)
   - [Acerca de..](#acerca-de)
+    - [Caracteristicas](#caracteristicas)
+    - [Librerias](#librerias)
     - [Aplicaciones que forman parte de este proyecto](#aplicaciones-que-forman-parte-de-este-proyecto)
   - [Autor](#autor)
     - [Contacto](#contacto)
@@ -24,9 +26,30 @@ Rest Api para proyecto MisCuentas del ciclo DAM en MonteCastelo.
   - [Licencia](#licencia)
 
 ## Acerca de..
-<p>Este REST APi esta desarrollado para el proyecto de fin de ciclo 'MisCuentas'. Ciclo DAM cursado en el instituto <a rel="monteCastelo" href="https://www.fomento.edu/montecastelo/">MonteCastelo</a> de Vigo.<br>
+Este REST APi esta desarrollado para el proyecto de fin de ciclo 'MisCuentas'. Ciclo DAM cursado en el instituto [MonteCastelo](https://www.fomento.edu/montecastelo/) de Vigo.<br>
 El servicio WEB nos permite comunicarnos con nuestra BBDD MySql a traves del protocolo HTTP, recibiendo una respuesta en formato JSON.<br>
-El objetivo de este servicio es dar soporte tanto a la aplicacion movil como de escritorio, ambas creadas como parte del mismo proyecto</p>
+El objetivo de este servicio es dar soporte tanto a la aplicacion movil como de escritorio, ambas creadas como parte del mismo proyecto.
+
+### Caracteristicas
+Para el desarrollo de este servicio usé la Programacion Orientada a Ferrocarriles o ROP por sus siglas en ingles (Railway oriented programming). Esta se basa en manejar el flujo de datos y errores lo mas eficientemente posible.</br>
+La idea principal es pensar en el flujo de datos como un tren que viaja a lo largo de las vías. Si todo va bien, el tren sigue su camino sin interrupciones. Si ocurre un error, el tren cambia de vía hacia un flujo de error.</br>
+El programa se estructura en dos vías: una para el flujo de éxito y otra para el flujo de error, por lo que, las funciones reciben un valor y devuelven un resultado que indica si el proceso fue exitoso o fallido.</br>
+[Saber mas](#https://altenwald.org/2018/07/17/programacion-orientada-a-ferrocarril/)
+
+### Librerias
+En este proyecto se utilizan los siguientes plugins, librerias y servicios:
+
+- Exposed (ORM para Ktor)
+- Serialization (Serializacion para Ktor)
+- Cors (Permite y/o deniega origenes cruzados)
+- Dotenv (Accede a las variables de entorno ocultas en archivo .env)
+- BCrypt (Encriptacion de contraseñas)
+- Koin (Injeccion de dependencias)
+- JWT (Generacion y verificacion del token de acceso)
+- ShadowJar (Genracio de .jar)
+- HikariCP (Agrupacion de conexiones)
+- Swagger (Documenta la API)
+- Dokka (Documenta el codigo)
 
 ### Aplicaciones que forman parte de este proyecto:
 - #### [APP Movil MisCuentas](https://github.com/LeoCare/MisCuentas)
@@ -115,7 +138,42 @@ Tambien puedes modificar lo que sea necesario para que se ajuste a tus necesidad
 
 
 ## Uso
-Obviando la instacion descripta en el aparatado anterior, esta son la instrucciones para su correcto uso:
+Obviando la instacion descripta en el apartado anterior, debes tener en cuenta los siguiente antes de probar la API:
+
+### Seguridad
+El servicio utiliza certificados autogenerados para la conexion Https, lo recomendado es que haya un servidor proxy inverso por delante, pero para el caso de uso, esto es mas que suficiente.</br>
+Ademas, en ciertas solicitudes GET, PUT o DEL se requiere de un token en la comunicacion para garantizar los permisos de dicha solicitud. **Como adjuntar el token, obtenido en el logeo, desde Postman:**</br>
+![Imagen del Proyecto](docs/imagenes/uso_token.png)
+
+### Archivo faltante
+Como se menciona al inicio de este documento, las claves de generacion SSL y Token estan en un archivo '.env' el cual se ignora al subir el repositorio a travez del .gitignore.</br>
+Este archivo es necesario para el funcionamiento del servicio, no olvides [solicitarlo](#contacto).
+
+### Probarlo en local
+Antes de cualquier prueba, debes realizar los cambios necesarios segun tu BBDD, rango de IP, puertos y demas configuraciones. 
+
+Ahora si....
+### Como probarlo
+Para este ejemplo se usa el protocolo Http en localhost.
+
+1. [Despegar el servicio](#desplegar-servicio-en-ide)
+2. Arrancar Postman
+3. Registrar usuario (POST):
+   ![Imagen del Proyecto](docs/imagenes/uso_1.png)
+4. Login del usuario registrado (POST):
+   ![Imagen del Proyecto](docs/imagenes/uso_2.png)
+5. Obtener mis datos de usuario (GET with Token):
+   ![Imagen del Proyecto](docs/imagenes/uso_3.png)
+6. Buscar usuarios donde c(columna) tenga q(consulta) (GET with Token):</br>
+Usuarios que tengan 'leo' en el 'nombre'... 
+   ![Imagen del Proyecto](docs/imagenes/uso_4.png) 
+7. Actualizar mis datos (PUT whit Token):</br>
+Actualizar mi correo por ejemplo...
+   ![Imagen del Proyecto](docs/imagenes/uso_5.png)
+8. Eliminar un usuario (DEL whit Token):
+   ![Imagen del Proyecto](docs/imagenes/uso_6.png)
+
+*Estos son solo unos ejemplos, puedes realizar mas pruebas desde la documentacion de la API, tal como lo explico en el apartado [Documentacion del API REST](#documentacion-del-api-rest)
 
 
 ## Documentaciones

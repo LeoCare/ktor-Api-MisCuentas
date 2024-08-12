@@ -86,9 +86,9 @@ dependencies {
     implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
     // CORS (comunicacion cruzada)
     implementation("io.ktor:ktor-server-cors:$ktor_version")
-    // To generate Swagger UI (para generar la documentacion)
+    // Swagger (para generar la documentacion)
     implementation("io.github.smiley4:ktor-swagger-ui:$ktor_swagger_ui_version")
-    // Resultados en consultas segun POC (programacion orientada sobre carriles)
+    // Resultados en consultas segun ROP (programacion orientada a ferrocarril)
     implementation("com.michael-bull.kotlin-result:kotlin-result:$result_version")
     // Dotenv
     implementation("io.github.cdimascio:dotenv-kotlin:6.2.2")

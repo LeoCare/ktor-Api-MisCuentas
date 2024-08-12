@@ -1,8 +1,12 @@
 package com.miscuentas.models
 
-import org.jetbrains.exposed.sql.Table
-
-object TipoStatus : Table("TIPO_STATUS") {
-    val tipo = varchar("tipo", 2)
-    val descripcion = varchar("descripcion", 255)
-}
+/**
+ * MODELO DE CLASE TIPO STATUS:
+ * @property tipo tipo de estado (por ejemplo, 'AB' para abierto, 'CL' para cerrado).
+ * @property descripcion descripción del tipo de estado.
+ * @constructor Instancia un tipo de estado único.
+ */
+data class TipoStatus(
+    val tipo: String,
+    val descripcion: String
+)

@@ -1,12 +1,18 @@
 package com.miscuentas.models
 
-import com.miscuentas.entities.UsuariosTable
-import org.jetbrains.exposed.sql.Table
-
-object Participantes : Table("PARTICIPANTES") {
-    val id = long("id_participante").autoIncrement()
-    val nombre = varchar("nombre", 255)
-    val correo = varchar("correo", 255).uniqueIndex()
-    val idUsuario = long("id_usuario") references UsuariosTable.id_usuario
-    val idHoja = long("id_hoja") references Hojas.id
-}
+/**
+ * MODELO DE CLASE PARTICIPANTE:
+ * @property idParticipante id único para cada participante.
+ * @property nombre nombre del participante.
+ * @property correo correo electrónico único para cada participante.
+ * @property idUsuario referencia al id del usuario asociado.
+ * @property idHoja referencia al id de la hoja asociada.
+ * @constructor Instancia un participante único.
+ */
+data class Participante(
+    val idParticipante: Long,
+    val nombre: String,
+    val correo: String,
+    val idUsuario: Long,
+    val idHoja: Long
+)

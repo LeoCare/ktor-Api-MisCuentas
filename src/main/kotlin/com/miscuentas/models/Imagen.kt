@@ -1,8 +1,12 @@
 package com.miscuentas.models
 
-import org.jetbrains.exposed.sql.Table
-
-object Imagenes : Table("IMAGENES") {
-    val id = long("id_imagen").autoIncrement()
-    val imagen = blob("imagen")
-}
+/**
+ * MODELO DE CLASE IMAGEN:
+ * @property idImagen id único para cada imagen.
+ * @property imagen datos de la imagen en formato de bytes.
+ * @constructor Instancia una imagen única.
+ */
+data class Imagen(
+    val idImagen: Long,
+    val imagen: ByteArray
+)

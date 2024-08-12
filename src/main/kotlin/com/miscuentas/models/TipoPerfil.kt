@@ -1,24 +1,13 @@
 package com.miscuentas.models
 
 
-import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.Table
-
-@Serializable
+/**
+ * MODELO DE CLASE TIPO PERFIL:
+ * @property tipo tipo de perfil (por ejemplo, 'ADMIN', 'USER').
+ * @property descripcion descripción del tipo de perfil.
+ * @constructor Instancia un tipo de perfil único.
+ */
 data class TipoPerfil(
-    val tipo: String = Tipo.USER_M.name,
+    val tipo: String,
     val descripcion: String
-){
-    enum class Tipo {
-        ADMIN,
-        USER_M,
-        USER_D
-    }
-}
-
-object TipoPerfiles : Table("TIPO_PERFIL") {
-    val tipo = varchar("tipo", 20)
-    val descripcion = varchar("descripcion", 255)
-
-    override val primaryKey = PrimaryKey(tipo, name = "PK_tipo")
-}
+)

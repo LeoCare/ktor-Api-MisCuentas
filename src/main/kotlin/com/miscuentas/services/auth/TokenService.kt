@@ -16,9 +16,7 @@ sealed class TokenException(message: String) : RuntimeException(message) {
 }
 
 
-class TokensService(
-    //private val myConfig: AppConfig
-) {
+class TokensService {
     val dotenv = Dotenv.configure().ignoreIfMissing().load()
 
     val audience by lazy { dotenv["JWT_AUDIENCE"] }

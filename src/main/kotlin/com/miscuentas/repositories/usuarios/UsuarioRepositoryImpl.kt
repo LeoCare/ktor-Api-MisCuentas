@@ -60,6 +60,8 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     override suspend fun update(entity: Usuario): Usuario? = dbQuery {
         UsuariosTable.update({ id_usuario eq entity.id_usuario }) {
             it[nombre] = entity.nombre
+            it[correo] = entity.correo
+            it[contrasenna] = entity.contrasenna
         }
         UsuariosTable.select { (id_usuario eq entity.id_usuario) }.map { resultRowToUsuario(it) }.singleOrNull()
     }
