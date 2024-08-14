@@ -8,3 +8,17 @@ object TipoStatusTable : Table("TIPO_STATUS") {
 
     override val primaryKey = PrimaryKey(tipo, name = "PK_TipoStatus")
 }
+
+//TIPOS DE ESTADOS
+enum class TipoStatus(val codigo: String) {
+    ABIERTO("C"),
+    FINALIZADO("F"),
+    BALANCEADO("B"),
+    ANULADO("A");
+
+    companion object {
+        fun fromCodigo(codigo: String): TipoStatus? {
+            return entries.find { it.codigo == codigo }
+        }
+    }
+}

@@ -15,7 +15,7 @@ data class Usuario(
     val nombre: String,
     val correo: String,
     val contrasenna: String,
-    val perfil: TipoPerfil = TipoPerfil.USUARIO
+    val perfil: TipoPerfil = TipoPerfil.USER
 )
 
 

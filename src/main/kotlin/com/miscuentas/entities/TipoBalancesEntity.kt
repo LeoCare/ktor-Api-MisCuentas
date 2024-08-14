@@ -8,3 +8,15 @@ object TipoBalancesTable : Table("TIPO_BALANCE") {
 
     override val primaryKey = PrimaryKey(tipo, name = "PK_TipoBalance")
 }
+
+//TIPOS DE ESTADOS
+enum class TipoBalance(val codigo: String) {
+    DEUDOR("D"),
+    ACREEDOR("A");
+
+    companion object {
+        fun fromCodigo(codigo: String): TipoBalance? {
+            return entries.find { it.codigo == codigo }
+        }
+    }
+}

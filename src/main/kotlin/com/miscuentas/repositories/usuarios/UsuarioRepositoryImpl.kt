@@ -32,7 +32,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
             nombre = resultRow[nombre],
             correo = resultRow[correo],
             contrasenna = resultRow[contrasenna],
-            perfil = TipoPerfil.fromCodigo(resultRow[perfil]) ?: TipoPerfil.USUARIO
+            perfil = TipoPerfil.fromCodigo(resultRow[perfil]) ?: TipoPerfil.USER
         )
     }
 
@@ -90,8 +90,8 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         UsuariosTable.deleteAll() > 0
     }
 
-    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Usuario? = dbQuery{
-        val usuarios = getAllBy("nombre", nombre) // Lista de Usuarios con el mismo nombre.
+    override suspend fun checkUserEmailAndPassword(correo: String, contrasenna: String): Usuario? = dbQuery{
+        val usuarios = getAllBy("correo", correo) // Lista de Usuarios con el mismo correo.
         for (usuario in usuarios) {
             if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
             //if (contrasenna == usuario.contrasenna){

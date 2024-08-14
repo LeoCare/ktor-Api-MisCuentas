@@ -62,7 +62,7 @@ class UsuarioServiceImp(
     override suspend fun addUsuario(usuario: Usuario): Result<Usuario, UsuarioErrores> {
         logger.debug { "Servicio: addUser()" }
 
-        return checkCorreoExist("correo").mapBoth(
+        return checkCorreoExist(usuario.correo).mapBoth(
             success = {
                 logger.debug { "Servicio: checkCorreoExist() -> correo ya existente" }
                 Err(UsuarioErrores.BadRequest("El correo: ${usuario.correo} ya existe."))
@@ -99,11 +99,21 @@ class UsuarioServiceImp(
     }
 
     /** COMPROBAR LOGEO **/
-    override suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Result<Usuario, UsuarioErrores> {
+    override suspend fun checkUserEmailAndPassword(correo: String, contrasenna: String): Result<Usuario, UsuarioErrores> {
         logger.debug { "Servicio: CheckUserAndPassword" }
-        return usuarioRepository.checkUserNameAndPassword(nombre, contrasenna)?.let {
-            Ok(it)
-        } ?: Err(UsuarioErrores.NotFound("Usuario no registrado para logeo."))
+
+        return checkCorreoExist(correo).mapBoth(
+            success = {
+                logger.debug { "Servicio: checkCorreoExist() -> correo existe." }
+                usuarioRepository.checkUserEmailAndPassword(correo, contrasenna)?.let {
+                    Ok(it)
+                } ?: Err(UsuarioErrores.NotFound("Usuario no registrado para logeo."))
+            },
+            failure = {
+                logger.debug { "Servicio: checkCorreoExist() -> ese correo no existente" }
+                Err(UsuarioErrores.BadRequest("El correo: $correo no existe."))
+            }
+        )
     }
 
     override suspend fun checkCorreoExist(correo: String): Result<Boolean, UsuarioErrores> {

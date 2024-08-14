@@ -13,6 +13,6 @@ interface UsuarioService {
     suspend fun deleteUsuario(usuario: Usuario): Result<Boolean, UsuarioErrores>
     suspend fun saveAllUsuarios(usuarios: Iterable<Usuario>): Result<List<Usuario>, UsuarioErrores>
     suspend fun isAdmin(id: Long): Result<Boolean, UsuarioErrores>
-    suspend fun checkUserNameAndPassword(nombre: String, contrasenna: String): Result<Usuario, UsuarioErrores>
+    suspend fun checkUserEmailAndPassword(correo: String, contrasenna: String): Result<Usuario, UsuarioErrores>
     suspend fun checkCorreoExist(correo: String): Result<Boolean, UsuarioErrores>
 }

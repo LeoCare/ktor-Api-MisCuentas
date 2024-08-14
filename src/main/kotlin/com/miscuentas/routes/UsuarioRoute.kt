@@ -77,8 +77,8 @@ fun Routing.usuarioRoute() {
         post("/login", {
             description = "LOGEO DE LOS USUARIOS YA REGISTRADOS."
             request {
-                queryParameter<UsuarioLoginDto>("Usuario y contraseña para el logeo") {
-                    description = "Instancia de un usuario con nombre y contraseña."
+                queryParameter<UsuarioLoginDto>("Correo y contraseña para el logeo") {
+                    description = "Instancia de un usuario con correo y contraseña."
                     required = true // Optional
                 }
             }
@@ -96,7 +96,7 @@ fun Routing.usuarioRoute() {
             logger.debug { "POST login" }
 
             val usuario = call.receive<UsuarioLoginDto>()
-            usuarioService.checkUserNameAndPassword(usuario.username, usuario.password).mapBoth(
+            usuarioService.checkUserEmailAndPassword(usuario.correo, usuario.contrasenna).mapBoth(
                 success = {
                     val token = tokenService.generateJWT(it)
                     call.respond(HttpStatusCode.OK, UsuarioWithTokenDto(it.toDto(), token))

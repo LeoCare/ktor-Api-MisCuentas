@@ -11,8 +11,8 @@ object TipoPerfilesTable : Table("TIPO_PERFIL") {
 
 //TIPOS DE PERFILES
 enum class TipoPerfil(val codigo: String) {
-    ADMIN("A"),
-    USUARIO("U");
+    ADMIN("ADMIN"),
+    USER("USER");
 
     companion object {
         fun fromCodigo(codigo: String): TipoPerfil? {

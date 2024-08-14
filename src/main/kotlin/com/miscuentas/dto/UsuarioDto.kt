@@ -24,14 +24,14 @@ data class UsuarioCrearDto (
 /** Usuario para el logeo **/
 @Serializable
 data class UsuarioLoginDto(
-    val username: String,
-    val password: String
+    val correo: String,
+    val contrasenna: String
 )
 
 /** Usuario con token **/
 @Serializable
 data class UsuarioWithTokenDto(
-    val user: UsuarioDto,
+    val usuario: UsuarioDto,
     val token: String
 )
 

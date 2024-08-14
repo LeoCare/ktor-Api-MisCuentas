@@ -19,7 +19,7 @@ fun UsuarioDto.toModel(contrasennaExistente: String) = Usuario(
     nombre = this.nombre,
     correo = this.correo,
     contrasenna = this.nuevaContrasenna ?: contrasennaExistente, // Debes proporcionar la contraseña cifrada
-    perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USUARIO
+    perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USER
 )
 
 fun UsuarioCrearDto.toModel() = Usuario(
@@ -27,6 +27,6 @@ fun UsuarioCrearDto.toModel() = Usuario(
     nombre = this.nombre,
     correo = this.correo,
     contrasenna = this.contrasenna,
-    perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USUARIO
+    perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USER
 )
 fun List<UsuarioCrearDto>.toModel() = this.map { it.toModel() }
