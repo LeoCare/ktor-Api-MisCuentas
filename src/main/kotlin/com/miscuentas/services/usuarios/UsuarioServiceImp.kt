@@ -6,7 +6,7 @@ import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.models.Usuario
 import com.miscuentas.repositories.usuarios.UsuarioRepository
 import mu.KotlinLogging
-import kotlin.math.log
+
 
 class UsuarioServiceImp(
     private val usuarioRepository: UsuarioRepository

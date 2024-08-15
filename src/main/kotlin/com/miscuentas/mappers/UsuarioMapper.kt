@@ -10,6 +10,7 @@ fun Usuario.toDto() = UsuarioDto(
     idUsuario = this.idUsuario,
     nombre = this.nombre,
     correo = this.correo,
+    contrasenna = null,
     perfil = this.perfil.codigo
 )
 fun List<Usuario>.toDto() = this.map { it.toDto() }
@@ -18,7 +19,7 @@ fun UsuarioDto.toModel(contrasennaExistente: String) = Usuario(
     idUsuario = this.idUsuario,
     nombre = this.nombre,
     correo = this.correo,
-    contrasenna = this.nuevaContrasenna ?: contrasennaExistente, // Debes proporcionar la contraseña cifrada
+    contrasenna = this.contrasenna ?: contrasennaExistente, // Debes proporcionar la contraseña cifrada
     perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USER
 )
 

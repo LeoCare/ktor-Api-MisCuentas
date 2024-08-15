@@ -4,10 +4,7 @@ import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import com.miscuentas.dto.UsuarioCrearDto
-import com.miscuentas.dto.UsuarioDto
-import com.miscuentas.dto.UsuarioLoginDto
-import com.miscuentas.dto.UsuarioWithTokenDto
+import com.miscuentas.dto.*
 import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
@@ -30,7 +27,7 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger {}
-private const val ENDPOINT = "/usuario"
+private const val ENDPOINT = "/usuarios"
 
 //para ver la documentacion de la Api-rest -> http://192.168.7.3:8080/swagger
 fun Routing.usuarioRoute() {
@@ -40,7 +37,7 @@ fun Routing.usuarioRoute() {
 
     route("/$ENDPOINT") {
 
-        // Register a new user --> POST /api/users/register
+        // Registro de un usuario --> POST /api/usuarios/registro
         post("/registro", {
             description = "REGISTRO DE LOS NUEVOS USUARIOS"
             request {
@@ -55,25 +52,49 @@ fun Routing.usuarioRoute() {
                     body<UsuarioDto> {}
                 }
                 HttpStatusCode.BadRequest to {
-                    description = "Retorna mensaje de error SQL."
+                    description = "Retorna mensaje de error si falta algun dato importante o excepcion de SQL."
                     body<String> {}
                 }
                 HttpStatusCode.NotImplemented to {
                     description = "Retorna mensaje de error en el servicio."
                     body<String> {}
                 }
+                HttpStatusCode.InternalServerError to {
+                    description = "Retorna mensaje de error desconocido."
+                    body<String> {}
+                }
             }
         }) {
             logger.debug { "POST registro" }
 
-            val usuario = call.receive<UsuarioCrearDto>().toModel()
-            usuarioService.addUsuario(usuario).mapBoth(
-                success = { call.respond(HttpStatusCode.Created, it.toDto()) },
-                failure = { call.respond(HttpStatusCode.BadRequest, handleUserError(it)) }
-            )
+            try {
+                // Recoge el usuario y lo valida antes de convertirlo al modelo:
+                val usuarioDto = call.receive<UsuarioCrearDto>()
+                if (usuarioDto.nombre.isBlank() || usuarioDto.correo.isBlank() || usuarioDto.contrasenna.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, "Nombre, correo y contraseña son obligatorios.")
+                    return@post
+                }
+                // Convierte:
+                val usuario = usuarioDto.toModel()
+
+                // Agrego usuario:
+                usuarioService.addUsuario(usuario).mapBoth(
+                    success = { usuarioCreado ->
+                        call.respond(HttpStatusCode.Created, usuarioCreado.toDto())
+                              },
+                    failure = { error ->
+                        call.respond(HttpStatusCode.BadRequest, handleUserError(error))
+                    }
+                )
+            }catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
+            }
         }
 
-        // Login a user --> POST /api/users/login
+
+        // Login de un usuario --> POST /api/usuarios/login
         post("/login", {
             description = "LOGEO DE LOS USUARIOS YA REGISTRADOS."
             request {
@@ -87,27 +108,55 @@ fun Routing.usuarioRoute() {
                     description = "Retorna el usuario junto con el Token para futuras peticiones."
                     body<UsuarioWithTokenDto> {}
                 }
+                HttpStatusCode.NotFound to {
+                    description = "Retorna mensaje de aviso, si no encuentra los datos."
+                    body<String> { }
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Retorna mensaje de error de SQL."
+                    body<String> {}
+                }
                 HttpStatusCode.Unauthorized to {
                     description = "Retorna mensaje de aviso, si el logeo no es aceptado."
+                    body<String> {}
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Retorna mensaje de error desconocido."
                     body<String> {}
                 }
             }
         }) {
             logger.debug { "POST login" }
 
-            val usuario = call.receive<UsuarioLoginDto>()
-            usuarioService.checkUserEmailAndPassword(usuario.correo, usuario.contrasenna).mapBoth(
-                success = {
-                    val token = tokenService.generateJWT(it)
-                    call.respond(HttpStatusCode.OK, UsuarioWithTokenDto(it.toDto(), token))
-                },
-                failure = { call.respond(HttpStatusCode.Unauthorized, it.message) }
-            )
+            try {
+                // Recoge el usuario y lo valida:
+                val usuario = call.receive<UsuarioLoginDto>()
+                if (usuario.correo.isBlank() || usuario.contrasenna.isBlank()) {
+                    call.respond(HttpStatusCode.NotFound, "Correo y contraseña son obligatorios.")
+                    return@post
+                }
+
+                // Comprueba si el logeo es correcto:
+                usuarioService.checkUserEmailAndPassword(usuario.correo, usuario.contrasenna).mapBoth(
+                    success = { usuarioLogeado ->
+                        val token = tokenService.generateJWT(usuarioLogeado)
+                        call.respond(HttpStatusCode.OK, UsuarioWithTokenDto(usuarioLogeado.toDto(), token))
+                    },
+                    failure = { error ->
+                        call.respond(HttpStatusCode.Unauthorized, error.message)
+                    }
+                )
+            }catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
+            }
         }
 
         // Rutas con autenticacion JWT necesaria:
         authenticate {
-            // OBTENCION DE USUARIO:
+
+            // Obtencio de datos personales --> GET /api/usuarios/personal
             get("/personal", {
                 description = "SOLICITAR LOS DATOS DE USUARIOS PERSONALES. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
@@ -120,31 +169,48 @@ fun Routing.usuarioRoute() {
                         description = "Retorna mensaje de aviso, si no encuentra los datos."
                         body<String> { }
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
                     HttpStatusCode.BadRequest to {
                         description = "Retorna mensaje de error de SQL."
                         body<String> {}
                     }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                try {
-                    // El token viene con el usuario principal en el reclamo.
-                    // Viene con comillas, por ello hay que reemplazarlas.
-                    val userId = call.principal<JWTPrincipal>()
-                        ?.payload?.getClaim("userId")
-                        .toString().replace("\"", "").toLong()
+                logger.debug { "Get personal" }
 
-                    usuarioService.isAdmin(userId).onSuccess {//...si soy admin y existe realizo la operacion:
-                        usuarioService.getUsuarioById(userId).mapBoth(
-                            success = { call.respond(HttpStatusCode.OK,it.toDto()) },
-                            failure = { call.respond(HttpStatusCode.NotFound, it.message) }
-                        )
+                try {
+                    // Recoge Id del token y lo valida:
+                    val userId = getAuthenticatedUserId() ?: return@get
+                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
+                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
+                        return@get
                     }
+
+                    // Obtencion de datos personales:
+                    usuarioService.getUsuarioById(userId).mapBoth(
+                        success = { usuario ->
+                            call.respond(HttpStatusCode.OK,usuario.toDto())
+                        },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotImplemented, error.message)
+                        }
+                    )
                 }catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepcion de SQL al obtener usuario!!")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
                 }
             }
 
-            get("/lista", {
+            // Obtencion de lista de usuarios --> GET /api/usuarios
+            get({
                 description = "SOLICITAR LISTA DE LOS USUARIOS REGISTRADOS. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
                 response {
@@ -156,29 +222,61 @@ fun Routing.usuarioRoute() {
                         description = "Retorna mensaje de aviso, si no encuentra los datos."
                         body<String> { }
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
                     HttpStatusCode.BadRequest to {
                         description = "Retorna mensaje de error de SQL."
                         body<String> {}
                     }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
+                        body<String> { }
+                    }
                 }
             }) {
-                try {
-                    val userId = call.principal<JWTPrincipal>()
-                        ?.payload?.getClaim("userId")
-                        .toString().replace("\"", "").toLong()
+                logger.debug { "Get usuarios" }
 
-                    usuarioService.isAdmin(userId).onSuccess {
-                        usuarioService.getAllUsuarios().mapBoth(
-                            success = { call.respond(HttpStatusCode.OK, it.toDto()) },
-                            failure = { call.respond(HttpStatusCode.NotFound, handleUserError(it)) }
-                        )
+                try {
+                    // Recoge Id del token y lo valida:
+                    val userId = getAuthenticatedUserId() ?: return@get
+                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
+                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
+                        return@get
                     }
 
+                    // Comprobar si la peticion la realiza un Admin:
+                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                        if (isAdmin) {
+
+                            // Recoge todos los usuarios:
+                            usuarioService.getAllUsuarios().mapBoth(
+                                success = { listUsuarios ->
+                                    call.respond(HttpStatusCode.OK, listUsuarios.toDto())
+                                          },
+                                failure = { error ->
+                                    call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                                }
+                            )
+                        } else {
+                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
+                        }
+                    }.onFailure { // No es admin:
+                        call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
+                    }
                 }catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepcion de SQL al obtener usuarios!!")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
                 }
             }
 
+            // Obtencion de un datos concretos de usuarios --> GET /api/usuarios/WhenData
             get("/WhenData", {
                 description = "SOLICITAR UNOS DATOS EN CONCRETO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
@@ -201,34 +299,69 @@ fun Routing.usuarioRoute() {
                         description = "Retorna mensaje de aviso, si no encuentra los datos."
                         body<String> {}
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
                     HttpStatusCode.BadRequest to {
-                        description = "Retorna mensaje de error de SQL o si no se ha proporcionado los datos."
+                        description = "Retorna mensaje de error de SQL."
                         body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
+                        body<String> { }
                     }
                 }
             }) {
+                logger.debug { "Get WhenData" }
+
                 try {
-                    val userId = call.principal<JWTPrincipal>()
-                        ?.payload?.getClaim("userId")
-                        .toString().replace("\"", "").toLong()
+                    // Recoge Id del token y lo valida:
+                    val userId = getAuthenticatedUserId() ?: return@get
+                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
+                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
+                        return@get
+                    }
 
-                    usuarioService.isAdmin(userId).onSuccess {
-                        //Obtener datos que coincidan con..
-                        val column = call.request.queryParameters["c"] //Con parametros pasado en la query
-                        val query = call.request.queryParameters["q"]
-                        if (!column.isNullOrEmpty() && !query.isNullOrEmpty()) { //si especifica columna y dato..
-                            usuarioService.getUsuariosBy(column, query).mapBoth(
-                                success = { call.respond(HttpStatusCode.OK, it.toDto()) },
-                                failure = { call.respond(HttpStatusCode.NotFound, it.message) }
-                            )
+                    // Comprobar si la peticion la realiza un Admin:
+                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                        if (isAdmin) {
 
-                        } else call.respond(HttpStatusCode.BadRequest, "No has especificado el dato requerido!!")
+                            //Obtener datos que coincidan con..
+                            val column = call.request.queryParameters["c"] //Con parametros pasado en la query
+                            val query = call.request.queryParameters["q"]
+
+                            //si especifica columna y dato:
+                            if (!column.isNullOrEmpty() && !query.isNullOrEmpty()) {
+                                usuarioService.getUsuariosBy(column, query).mapBoth(
+                                    success = { usuariosCoincidentes ->
+                                        call.respond(HttpStatusCode.OK, usuariosCoincidentes.toDto())
+                                              },
+                                    failure = { error ->
+                                        call.respond(HttpStatusCode.NotImplemented, error.message)
+                                    }
+                                )
+                            } else {
+                                call.respond(HttpStatusCode.BadRequest, "No has especificado el dato requerido!!")
+                            }
+                        }else {
+                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
+                        }
+                    }.onFailure { // No es admin:
+                        call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
                     }
                 }catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepcion de SQL al obtener usuario!!")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
                 }
             }
 
+            // Obtencion de un usuario segun id --> GET /api/usuarios/{id}
             get ("{id}", {
                 description = "SOLICITAR DATOS SEGUN ID PASADO POR PARAMETRO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
@@ -248,33 +381,66 @@ fun Routing.usuarioRoute() {
                         body<String> { }
                     }
                     HttpStatusCode.BadRequest to {
-                        description = "Retorna mensaje de error de SQL o si no se ha proporcionado los datos."
+                        description = "Retorna mensaje de error de SQL."
                         body<String> {}
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
+                        body<String> { }
                     }
                 }
             }) { //Con parametro pasado en la url
-                try {
-                    val userId = call.principal<JWTPrincipal>()
-                        ?.payload?.getClaim("userId")
-                        .toString().replace("\"", "").toLong()
+                logger.debug { "Get {id}" }
 
-                    val id = call.parameters["id"]?.toLongOrNull()
-                    id?.let {
-                        usuarioService.isAdmin(userId).onSuccess {
-                            usuarioService.getUsuarioById(id).mapBoth(
-                                success = { call.respond(HttpStatusCode.OK, it.toDto()) },
-                                failure = { call.respond(HttpStatusCode.NotFound, it.message) }
-                            )
-                        }
+                try {
+                    // Recoge Id del token y lo valida:
+                    val userId = getAuthenticatedUserId() ?: return@get
+                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
+                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
+                        return@get
                     }
 
+                    // Comprobar si la peticion la realiza un Admin:
+                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                        if(isAdmin){
+
+                            // Recoge id y obtiene usuario:
+                            val id = call.parameters["id"]?.toLongOrNull()
+                            if (id != null) {
+                                usuarioService.getUsuarioById(id).mapBoth(
+                                    success = { usuario ->
+                                        call.respond(HttpStatusCode.OK, usuario.toDto())
+                                              },
+                                    failure = { error ->
+                                        call.respond(HttpStatusCode.NotImplemented, error.message)
+                                    }
+                                )
+                            }else{
+                                call.respond(HttpStatusCode.BadRequest, "No has especificado el dato requerido!!")
+                            }
+                        }else {
+                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
+                        }
+                    }.onFailure { // No es admin:
+                        call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
+                    }
                 }catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepcion de SQL al obtener el usuario!!")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
                 }
             }
 
 
-            // ACTUALIZACION USUARIO: --> PUT /usuario
+            // Actualiza los datos de un usuario --> PUT  /api/usuarios
             put ({
                 description = "SOLICITAR ACTUALIZACION DE UN USUARIO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
@@ -289,8 +455,12 @@ fun Routing.usuarioRoute() {
                         description = "Retorna el usuario actualizado."
                         body<UsuarioDto> { }
                     }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> { }
+                    }
                     HttpStatusCode.NotImplemented to {
-                        description = "Retorna mensaje de error si la actualización falló."
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
                         body<String> { }
                     }
                     HttpStatusCode.BadRequest to {
@@ -307,37 +477,34 @@ fun Routing.usuarioRoute() {
                     }
                 }
             }) {
-                try {
-                    val userId = call.principal<JWTPrincipal>()
-                        ?.payload?.getClaim("userId")
-                        ?.asString()
-                        ?.toLongOrNull()
+                logger.debug { "Put usuario" }
 
-                    if (userId == null) {
-                        call.respond(HttpStatusCode.Unauthorized, "Usuario no autenticado")
+                try {
+                    val userId = getAuthenticatedUserId() ?: return@put
+
+                    // Manejar el caso de usuario no encontrado:
+                    val usuarioExistente = usuarioService.getUsuarioById(userId).getOrElse {
+                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
                         return@put
                     }
 
-                    val usuarioExistente = usuarioService.getUsuarioById(userId).getOrElse {
-                        // Manejar el caso de usuario no encontrado
-                        return@put call.respond(HttpStatusCode.NotFound, "Usuario no encontrado")
-                    }
-
+                    // Comprobar si la peticion la realiza un Admin:
                     usuarioService.isAdmin(userId).onSuccess {isAdmin ->
                         if (isAdmin) {
-                            val usuarioDto = call.receive<UsuarioDto>()
 
-                            // Valida el UsuarioDto antes de convertirlo
+                            // Recoge y valida el usuario antes de convertirlo:
+                            val usuarioDto = call.receive<UsuarioDto>()
                             if (usuarioDto.nombre.isBlank() || usuarioDto.correo.isBlank()) {
                                 call.respond(HttpStatusCode.BadRequest, "Nombre o correo no pueden estar vacíos")
                                 return@put
                             }
-
+                            // Convierte:
                             val usuario = usuarioDto.toModel(contrasennaExistente = usuarioExistente.contrasenna)
 
+                            // Actualizar usuario:
                             usuarioService.updateUsuario(usuario).mapBoth(
-                                success = { updatedUser ->
-                                    call.respond(HttpStatusCode.OK, updatedUser.toDto())
+                                success = { usuarioActualizado ->
+                                    call.respond(HttpStatusCode.OK, usuarioActualizado.toDto())
                                 },
                                 failure = { error ->
                                     call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
@@ -346,7 +513,7 @@ fun Routing.usuarioRoute() {
                         } else {
                             call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
                         }
-                    }.onFailure {
+                    }.onFailure { // No es admin:
                         call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
                     }
                 } catch (e: ExposedSQLException) {
@@ -357,7 +524,7 @@ fun Routing.usuarioRoute() {
             }
 
 
-            //ELIMINACION USUARIO:
+            //Eliminacion de un usuario --> PUT  /api/usuarios
             delete ({
                 description = "SOLICITAR ELIMINACION DE UN USUARIO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
@@ -372,37 +539,86 @@ fun Routing.usuarioRoute() {
                         description = "Retorna aviso de eliminacion correcta."
                         body<String> { }
                     }
-                    HttpStatusCode.NotImplemented to {
-                        description = "Retorna mensaje de aviso, si no se ha eliminado el usuario."
-                        body<String> {}
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> { }
                     }
                     HttpStatusCode.BadRequest to {
                         description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
                         body<String> { }
                     }
                 }
             }) {
-                try {
-                    val userId = call.principal<JWTPrincipal>()
-                        ?.payload?.getClaim("userId")
-                        .toString().replace("\"", "").toLong()
+                logger.debug { "Delete usuario" }
 
-                    usuarioService.isAdmin(userId).onSuccess {
-                        val usuario = call.receive<UsuarioDto>().toModel("")
-                        usuarioService.deleteUsuario(usuario).mapBoth(
-                            success = { call.respond(HttpStatusCode.OK, "Se ha eliminado el usuario correctamente.") },
-                            failure = { call.respond(HttpStatusCode.NotImplemented, handleUserError(it)) }
-                        )
+                try {
+                    // Recoge Id del token y lo valida:
+                    val userId = getAuthenticatedUserId() ?: return@delete
+                    val usuarioExistente = usuarioService.getUsuarioById(userId).getOrElse {
+                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
+                        return@delete
+                    }
+
+                    // Comprobar si la peticion la realiza un Admin:
+                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                        if (isAdmin){
+
+                            // Recoge el usuario:
+                            val usuarioDto = call.receive<UsuarioDeleteDto>()
+                            if (usuarioDto.nombre.isBlank() || usuarioDto.correo.isBlank()) {
+                                call.respond(HttpStatusCode.BadRequest, "Nombre o correo no pueden estar vacíos")
+                                return@delete
+                            }
+
+                            // Obtencion del modelo de usuario:
+                            usuarioService.getUsuariosBy("correo", usuarioDto.correo).mapBoth(
+                                success = { usuarioCoincidente ->
+                                    val usuario = usuarioCoincidente.first()
+
+                                    // Eliminacion del usuario:
+                                    usuarioService.deleteUsuario(usuario).mapBoth(
+                                        success = {
+                                            call.respond(HttpStatusCode.OK, "Se ha eliminado el usuario correctamente.")
+                                        },
+                                        failure = { error ->
+                                            call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                                        }
+                                    )
+                                },
+                                failure = { error ->
+                                    call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                                }
+                            )
+                        }
+                        else {
+                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
+                        }
+                    }.onFailure { // No es admin:
+                        call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
                     }
                 } catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepcion de SQL al eliminar el usuario!!")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar usuario")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar usuario")
                 }
             }
         }
     }
 }
 
-/** Manejador de errores
+/** MANEJADOR DE ERRORES
  * Recibe diferentes tipo de errores y lo devuelve en la respuesta Http.
  */
 private suspend fun PipelineContext<Unit, ApplicationCall>.handleUserError(
@@ -418,4 +634,19 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleUserError(
         is UsuarioErrores.BadRole -> call.respond(HttpStatusCode.Forbidden, error.message)
         else -> call.respond(HttpStatusCode.InternalServerError, "Error desconocido")
     }
+}
+
+/** COMPROBACION DEL TOKEN
+ * Se comprueba el id segun el token recibido.
+ */
+suspend fun PipelineContext<Unit, ApplicationCall>.getAuthenticatedUserId(): Long? {
+    val userId = call.principal<JWTPrincipal>()
+        ?.payload?.getClaim("userId")
+        ?.asString()
+        ?.toLongOrNull()
+
+    if (userId == null) {
+        call.respond(HttpStatusCode.Unauthorized, "Usuario no autenticado")
+    }
+    return userId
 }

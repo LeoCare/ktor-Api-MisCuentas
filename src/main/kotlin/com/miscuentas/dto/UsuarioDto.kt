@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class UsuarioDto (
     val idUsuario: Long,
     val nombre: String,
-    val nuevaContrasenna: String? = null, // Campo opcional para cambiar la contraseña
     val correo: String,
+    val contrasenna: String?, // Campo opcional para cambiar la contraseña
     val perfil: String
 )
 
@@ -19,6 +19,13 @@ data class UsuarioCrearDto (
     val correo: String,
     val contrasenna: String,
     val perfil: String
+)
+
+/** Usuario a eliminar **/
+@Serializable
+data class UsuarioDeleteDto (
+    val nombre: String,
+    val correo: String
 )
 
 /** Usuario para el logeo **/

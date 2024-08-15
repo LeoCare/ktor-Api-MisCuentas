@@ -63,6 +63,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
             it[nombre] = entity.nombre
             it[correo] = entity.correo
             it[contrasenna] = entity.contrasenna
+            it[perfil] = entity.perfil.codigo
         }
         UsuariosTable.select { (id_usuario eq entity.idUsuario) }.map { resultRowToUsuario(it) }.singleOrNull()
     }
