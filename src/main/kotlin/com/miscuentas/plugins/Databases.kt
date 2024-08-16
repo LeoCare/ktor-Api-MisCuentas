@@ -1,7 +1,6 @@
 package com.miscuentas.plugins
 
-import com.miscuentas.entities.TipoPerfilesTable
-import com.miscuentas.entities.UsuariosTable
+import com.miscuentas.entities.*
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.cdimascio.dotenv.Dotenv
@@ -41,8 +40,21 @@ fun Application.configureDatabases() {
     val driverClass = dotenv["DB_DRIVER"]
     val jdbcUrl = dotenv["DB_URL"]
     val db = Database.connect(provideDataSource(jdbcUrl,driverClass))
-    transaction(db){
-        SchemaUtils.create(UsuariosTable, TipoPerfilesTable)
+
+    transaction(db) {
+        SchemaUtils.create(
+            UsuariosTable,
+            TipoPerfilesTable,
+            BalancesTable,
+            EmailLogTable,
+            GastosTable,
+            HojasTable,
+            ImagenesTable,
+            PagosTable,
+            ParticipantesTable,
+            TipoBalancesTable,
+            TipoStatusTable
+        )
     }
 }
 

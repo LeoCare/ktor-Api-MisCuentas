@@ -1,5 +1,6 @@
 package com.miscuentas.models
 
+import com.miscuentas.entities.TipoBalance
 import org.jetbrains.exposed.sql.Table
 import java.math.BigDecimal
 
@@ -16,6 +17,6 @@ data class Balance(
     val idBalance: Long,
     val idHoja: Long,
     val idParticipante: Long,
-    val tipo: String,
+    val tipo: TipoBalance,
     val monto: BigDecimal
 )

@@ -1,5 +1,6 @@
 package com.miscuentas.models
 
+import com.miscuentas.entities.TipoStatus
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -20,6 +21,6 @@ data class Hoja(
     val fechaCreacion: LocalDate,
     val fechaCierre: LocalDate?,
     val limiteGastos: BigDecimal,
-    val status: String,
+    val status: TipoStatus = TipoStatus.ABIERTO,
     val idUsuario: Long
 )
