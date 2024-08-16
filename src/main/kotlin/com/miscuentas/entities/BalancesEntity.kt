@@ -1,7 +1,5 @@
 package com.miscuentas.entities
 
-
-import com.miscuentas.models.TipoBalance
 import org.jetbrains.exposed.sql.Table
 
 /**

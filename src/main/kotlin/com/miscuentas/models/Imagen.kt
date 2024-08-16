@@ -1,5 +1,7 @@
 package com.miscuentas.models
 
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
+
 /**
  * MODELO DE CLASE IMAGEN:
  * @property idImagen id único para cada imagen.
@@ -8,5 +10,5 @@ package com.miscuentas.models
  */
 data class Imagen(
     val idImagen: Long,
-    val imagen: ByteArray
+    val imagen: ExposedBlob
 )

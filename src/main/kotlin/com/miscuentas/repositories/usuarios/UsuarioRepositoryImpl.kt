@@ -52,9 +52,16 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     }
 
     override suspend fun getAllBy(c: String, q: String?): List<Usuario>  = dbQuery{
-        val column = UsuariosTable.getColumnByName(c)
+        //OPCION VALIDA
+        //val column = UsuariosTable.getColumnByName(c)
+            //?: throw IllegalArgumentException("La columna $c no existe.")
+        //UsuariosTable.select { (column.lowerCase() like "%${q?.lowercase()}%")}
+            //.map { resultRowToUsuario(it) }
+
+        //OPCION DE PRUEBA (si funciona, eliminar la funcion getColumnByName de UsuarioEntity)
+        val column = UsuariosTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        UsuariosTable.select { (column.lowerCase() like "%${q?.lowercase()}%")}
+        UsuariosTable.select { (column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%")}
             .map { resultRowToUsuario(it) }
     }
 

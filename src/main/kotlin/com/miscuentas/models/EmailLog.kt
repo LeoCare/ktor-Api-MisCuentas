@@ -23,6 +23,6 @@ data class EmailLog(
     val destinatario: String,
     val asunto: String,
     val contenido: String,
-    val fechaEnvio: LocalDateTime?,
+    val fechaEnvio: String?,
     val estado: String
 )
