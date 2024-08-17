@@ -1,5 +1,6 @@
 package com.miscuentas.entities
 
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.CurrentTimestamp
 import org.jetbrains.exposed.sql.javatime.timestamp
@@ -20,8 +21,8 @@ import org.jetbrains.exposed.sql.javatime.timestamp
  */
 object EmailLogTable : Table("EMAILS") {
     val idEmail = long("id_email").autoIncrement()
-    val idParticipante = long("id_participante") references ParticipantesTable.idParticipante
-    val idPago = long("id_pago") references PagosTable.idPago
+    val idParticipante = long("id_participante").references(ParticipantesTable.idParticipante, ReferenceOption.CASCADE)
+    val idPago = long("id_pago").references(PagosTable.idPago, ReferenceOption.CASCADE)
     val tipo = varchar("tipo", 50)
     val destinatario = varchar("destinatario", 255)
     val asunto = varchar("asunto", 255)

@@ -9,4 +9,6 @@ sealed class TipoStatusErrores(val message: String) {
     class NotFound(message: String) : TipoStatusErrores(message)
     class BadRequest(message: String) : TipoStatusErrores(message)
     class AlreadyExists(message: String) : TipoStatusErrores(message)
+    class Unauthorized(message: String) : TipoPerfilErrores(message)
+    class Forbidden(message: String) : TipoStatusErrores(message)
 }

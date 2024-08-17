@@ -1,4 +1,4 @@
-//[ktor-Api-MisCuentas](../../../index.md)/[com.miscuentas.services.tipoperfiles](../index.md)/[TipoPerfilServiceImp](index.md)/[getAllTipoPerfil](get-all-tipo-perfil.md)
+//[ktor-Api-MisCuentas](../../../index.md)/[com.miscuentas.services.tipoPerfiles](../index.md)/[TipoPerfilServiceImp](index.md)/[getAllTipoPerfil](get-all-tipo-perfil.md)
 
 # getAllTipoPerfil
 

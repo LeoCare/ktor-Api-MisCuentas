@@ -537,11 +537,11 @@ fun Routing.usuarioRoute() {
                 response {
                     HttpStatusCode.OK to {
                         description = "Retorna aviso de eliminacion correcta."
-                        body<String> { }
+                        body<String> {}
                     }
                     HttpStatusCode.NotFound to {
                         description = "Retorna mensaje de aviso, si no encuentra los datos."
-                        body<String> { }
+                        body<String> {}
                     }
                     HttpStatusCode.BadRequest to {
                         description = "Retorna mensaje de error de SQL."
@@ -549,7 +549,7 @@ fun Routing.usuarioRoute() {
                     }
                     HttpStatusCode.NotImplemented to {
                         description = "Retorna mensaje de error si la peticion a la BBDD falló."
-                        body<String> { }
+                        body<String> {}
                     }
                     HttpStatusCode.InternalServerError to {
                         description = "Retorna mensaje de error desconocido."
@@ -557,7 +557,7 @@ fun Routing.usuarioRoute() {
                     }
                     HttpStatusCode.Forbidden to {
                         description = "Acceso denegado por falta de permisos."
-                        body<String> { }
+                        body<String> {}
                     }
                 }
             }) {

@@ -193,24 +193,24 @@ $dokka.location:com.miscuentas.services.auth/TokensService/dotenv/#/PointingToDe
 $dokka.location:com.miscuentas.services.auth/TokensService/generateJWT/#com.miscuentas.models.Usuario/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.auth/-tokens-service/generate-j-w-t.md
 $dokka.location:com.miscuentas.services.auth/TokensService/realm/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.auth/-tokens-service/realm.md
 $dokka.location:com.miscuentas.services.auth/TokensService/verifyJWT/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.auth/-tokens-service/verify-j-w-t.md
-$dokka.location:com.miscuentas.services.tipoperfiles////PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/index.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService///PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/index.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/addTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/add-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/deleteTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/delete-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/getAllTipoPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/get-all-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/getAllUsuarioPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/get-all-usuario-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/getTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/get-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/searchTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/search-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilService/updateTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service/update-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp///PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/index.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/TipoPerfilServiceImp/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/-tipo-perfil-service-imp.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/addTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/add-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/deleteTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/delete-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/getAllTipoPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/get-all-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/getAllUsuarioPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/get-all-usuario-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/getTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/get-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/searchTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/search-tipo-perfil.md
-$dokka.location:com.miscuentas.services.tipoperfiles/TipoPerfilServiceImp/updateTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/-tipo-perfil-service-imp/update-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles////PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/index.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService///PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/index.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/addTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/add-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/deleteTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/delete-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/getAllTipoPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/get-all-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/getAllUsuarioPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/get-all-usuario-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/getTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/get-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/searchTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/search-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilService/updateTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service/update-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp///PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/index.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/TipoPerfilServiceImp/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/-tipo-perfil-service-imp.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/addTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/add-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/deleteTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/delete-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/getAllTipoPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/get-all-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/getAllUsuarioPerfil/#/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/get-all-usuario-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/getTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/get-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/searchTipoPerfil/#kotlin.String/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/search-tipo-perfil.md
+$dokka.location:com.miscuentas.services.tipoPerfiles/TipoPerfilServiceImp/updateTipoPerfil/#com.miscuentas.models.TipoPerfil/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.tipoPerfiles/-tipo-perfil-service-imp/update-tipo-perfil.md
 $dokka.location:com.miscuentas.services.usuarios////PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.usuarios/index.md
 $dokka.location:com.miscuentas.services.usuarios/UsuarioService///PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.usuarios/-usuario-service/index.md
 $dokka.location:com.miscuentas.services.usuarios/UsuarioService/addUsuario/#com.miscuentas.models.Usuario/PointingToDeclaration/ktor--api--mis-cuentas/com.miscuentas.services.usuarios/-usuario-service/add-usuario.md
@@ -250,6 +250,6 @@ com.miscuentas.repositories.base
 com.miscuentas.repositories.usuarios
 com.miscuentas.routes
 com.miscuentas.services.auth
-com.miscuentas.services.tipoperfiles
+com.miscuentas.services.tipoPerfiles
 com.miscuentas.services.usuarios
 

@@ -1,7 +1,7 @@
 package com.miscuentas.mappers
 
 import com.miscuentas.dto.TipoStatusDto
-import com.miscuentas.entities.TipoStatus
+import com.miscuentas.models.TipoStatus
 
 /**
  * Extensión para convertir una instancia de `TipoStatus` a `TipoStatusDto`.
@@ -9,8 +9,8 @@ import com.miscuentas.entities.TipoStatus
  * @return Una instancia de `TipoStatusDto` con los datos de `TipoStatus`.
  */
 fun TipoStatus.toDto() = TipoStatusDto(
-    tipo = this.codigo,
-    descripcion = this.name
+    tipo = this.tipo,
+    descripcion = this.descripcion
 )
 
 /**
@@ -25,4 +25,7 @@ fun List<TipoStatus>.toDto() = this.map { it.toDto() }
  *
  * @return Una instancia de `TipoStatus` con los datos de `TipoStatusDto`.
  */
-fun TipoStatusDto.toModel() = TipoStatus.fromCodigo(this.tipo) ?: TipoStatus.ABIERTO
+fun TipoStatusDto.toModel() = TipoStatus(
+    tipo = this.tipo,
+    descripcion = this.descripcion
+)

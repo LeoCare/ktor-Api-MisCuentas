@@ -1,7 +1,10 @@
 package com.miscuentas.mappers
 
+import com.miscuentas.dto.ImagenCrearDto
 import com.miscuentas.dto.ImagenDto
 import com.miscuentas.models.Imagen
+import java.util.Base64
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 
 /**
  * Extensión para convertir una instancia de `Imagen` a `ImagenDto`.
@@ -10,7 +13,7 @@ import com.miscuentas.models.Imagen
  */
 fun Imagen.toDto() = ImagenDto(
     idImagen = this.idImagen,
-    imagen = this.imagen.toString(Charsets.UTF_8) // Convertimos el BLOB a String
+    imagen = Base64.getEncoder().encodeToString(this.imagen.bytes) // Convertimos el BLOB a String usando Base64
 )
 
 /**
@@ -27,5 +30,15 @@ fun List<Imagen>.toDto() = this.map { it.toDto() }
  */
 fun ImagenDto.toModel() = Imagen(
     idImagen = this.idImagen,
-    imagen = this.imagen.toByteArray(Charsets.UTF_8) // Convertimos el String a BLOB
+    imagen = ExposedBlob(Base64.getDecoder().decode(this.imagen)) // Convertimos el String a BLOB usando Base64
+)
+
+/**
+ * Extensión para convertir una instancia de `ImagenCrearDto` a `Imagen`.
+ *
+ * @return Una instancia de `Imagen` con los datos del `ImagenCrearDto`.
+ */
+fun ImagenCrearDto.toModel() = Imagen(
+    idImagen = 0,
+    imagen = ExposedBlob(Base64.getDecoder().decode(this.imagen)) // Convertimos el String a BLOB usando Base64
 )

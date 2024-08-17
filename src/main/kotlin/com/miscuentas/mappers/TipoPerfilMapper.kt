@@ -1,7 +1,7 @@
 package com.miscuentas.mappers
 
 import com.miscuentas.dto.TipoPerfilDto
-import com.miscuentas.entities.TipoPerfil
+import com.miscuentas.models.TipoPerfil
 
 /**
  * Extensión para convertir una instancia de `TipoPerfil` a `TipoPerfilDto`.
@@ -9,8 +9,8 @@ import com.miscuentas.entities.TipoPerfil
  * @return Una instancia de `TipoPerfilDto` con los datos de `TipoPerfil`.
  */
 fun TipoPerfil.toDto() = TipoPerfilDto(
-    tipo = this.codigo,
-    descripcion = this.name
+    tipo = this.tipo,
+    descripcion = this.descripcion
 )
 
 /**
@@ -25,4 +25,9 @@ fun List<TipoPerfil>.toDto() = this.map { it.toDto() }
  *
  * @return Una instancia de `TipoPerfil` con los datos de `TipoPerfilDto`.
  */
-fun TipoPerfilDto.toModel() = TipoPerfil.fromCodigo(this.tipo) ?: TipoPerfil.USER
+fun TipoPerfilDto.toModel() = TipoPerfil(
+    tipo = this.tipo,
+    descripcion = this.descripcion
+)
+
+

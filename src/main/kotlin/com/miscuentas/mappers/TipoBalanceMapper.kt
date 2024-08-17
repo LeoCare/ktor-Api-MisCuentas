@@ -1,7 +1,7 @@
 package com.miscuentas.mappers
 
 import com.miscuentas.dto.TipoBalanceDto
-import com.miscuentas.entities.TipoBalance
+import com.miscuentas.models.TipoBalance
 
 /**
  * Extensión para convertir una instancia de `TipoBalance` a `TipoBalanceDto`.
@@ -9,8 +9,8 @@ import com.miscuentas.entities.TipoBalance
  * @return Una instancia de `TipoBalanceDto` con los datos de `TipoBalance`.
  */
 fun TipoBalance.toDto() = TipoBalanceDto(
-    tipo = this.codigo,
-    descripcion = this.name
+    tipo = this.tipo,
+    descripcion = this.tipo
 )
 
 /**
@@ -25,4 +25,7 @@ fun List<TipoBalance>.toDto() = this.map { it.toDto() }
  *
  * @return Una instancia de `TipoBalance` con los datos de `TipoBalanceDto`.
  */
-fun TipoBalanceDto.toModel() = TipoBalance.fromCodigo(this.tipo) ?: TipoBalance.DEUDOR
+fun TipoBalanceDto.toModel() = TipoBalance(
+    tipo = this.tipo,
+    descripcion = this.descripcion
+)
