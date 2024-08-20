@@ -14,6 +14,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import mu.KotlinLogging
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger {}
@@ -39,12 +40,32 @@ fun Routing.tipoStatusRoute() {
                         description = "No se encontraron tipos de estado."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                tipoStatusService.getAllTipoStatus().mapBoth(
-                    success = { tipos -> call.respond(HttpStatusCode.OK, tipos.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleTipoStatusError(error)) }
-                )
+                logger.debug { "Get tipoStatus" }
+
+                try {
+                    tipoStatusService.getAllTipoStatus().mapBoth(
+                        success = { tipos ->
+                            call.respond(HttpStatusCode.OK, tipos.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleTipoStatusError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener los tipoStatus.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener los tipoStatus.")
+                }
             }
 
             // Obtener tipo de estado por código
@@ -65,20 +86,36 @@ fun Routing.tipoStatusRoute() {
                         description = "No se encontró el tipo de estado."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val codigo = call.parameters["codigo"]
-                if (codigo != null) {
-                    tipoStatusService.getTipoStatusById(codigo).mapBoth(
-                        success = { tipo ->
-                            call.respond(HttpStatusCode.OK, tipo.toDto())
-                                  },
-                        failure = { error ->
-                            call.respond(HttpStatusCode.NotFound, handleTipoStatusError(error))
-                        }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "Código inválido.")
+                logger.debug { "Get tipoStatus {id}" }
+
+                try {
+                    val codigo = call.parameters["codigo"]
+                    if (codigo != null) {
+                        tipoStatusService.getTipoStatusById(codigo).mapBoth(
+                            success = { tipo ->
+                                call.respond(HttpStatusCode.OK, tipo.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleTipoStatusError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "Código inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el tipoStatus.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el tipoStatus.")
                 }
             }
         }

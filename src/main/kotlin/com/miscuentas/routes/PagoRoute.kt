@@ -47,12 +47,32 @@ fun Routing.pagoRoute() {
                         description = "No se encontraron pagos."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                pagoService.getAllPagos().mapBoth(
-                    success = { pagos -> call.respond(HttpStatusCode.OK, pagos.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handlePagoError(error)) }
-                )
+                logger.debug { "Get pago" }
+
+                    try {
+                    pagoService.getAllPagos().mapBoth(
+                        success = { pagos ->
+                            call.respond(HttpStatusCode.OK, pagos.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handlePagoError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el pago.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el pago.")
+                }
             }
 
             // Obtener pago por ID
@@ -73,16 +93,36 @@ fun Routing.pagoRoute() {
                         description = "No se encontró el pago."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val id = call.parameters["id"]?.toLongOrNull()
-                if (id != null) {
-                    pagoService.getPagoById(id).mapBoth(
-                        success = { pago -> call.respond(HttpStatusCode.OK, pago.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handlePagoError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                logger.debug { "Get pago {id}" }
+
+                try {
+                    val id = call.parameters["id"]?.toLongOrNull()
+                    if (id != null) {
+                        pagoService.getPagoById(id).mapBoth(
+                            success = { pago ->
+                                call.respond(HttpStatusCode.OK, pago.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handlePagoError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el pago.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el.")
                 }
             }
 
@@ -101,13 +141,33 @@ fun Routing.pagoRoute() {
                         description = "Error al crear el pago."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val pagoCrearDto = call.receive<PagoCrearDto>()
-                pagoService.addPago(pagoCrearDto.toModel()).mapBoth(
-                    success = { pago -> call.respond(HttpStatusCode.Created, pago.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handlePagoError(error)) }
-                )
+                logger.debug { "Post pago" }
+
+                try {
+                    val pagoCrearDto = call.receive<PagoCrearDto>()
+                    pagoService.addPago(pagoCrearDto.toModel()).mapBoth(
+                        success = { pago ->
+                            call.respond(HttpStatusCode.Created, pago.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handlePagoError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al crear el pago.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el pago.")
+                }
             }
 
             // Actualizar un pago
@@ -125,13 +185,33 @@ fun Routing.pagoRoute() {
                         description = "Error al actualizar el pago."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val pagoDto = call.receive<PagoDto>()
-                pagoService.updatePago(pagoDto.toModel()).mapBoth(
-                    success = { pago -> call.respond(HttpStatusCode.OK, pago.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handlePagoError(error)) }
-                )
+                logger.debug { "Put pago" }
+
+                try {
+                    val pagoDto = call.receive<PagoDto>()
+                    pagoService.updatePago(pagoDto.toModel()).mapBoth(
+                        success = { pago ->
+                            call.respond(HttpStatusCode.OK, pago.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handlePagoError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar el pago.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar el pago.")
+                }
             }
 
             // Eliminar un pago

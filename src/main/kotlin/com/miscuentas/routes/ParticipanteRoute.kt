@@ -1,5 +1,6 @@
 package com.miscuentas.routes
 
+import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
@@ -16,6 +17,7 @@ import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -34,7 +36,6 @@ fun Routing.participanteRoute() {
     route("/$ENDPOINT") {
 
         authenticate {
-
             // Obtener todos los participantes
             get({
                 description = "Obtener todos los participantes (Necesario Token)"
@@ -47,12 +48,33 @@ fun Routing.participanteRoute() {
                         description = "No se encontraron participantes."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                participanteService.getAllParticipantes().mapBoth(
-                    success = { participantes -> call.respond(HttpStatusCode.OK, participantes.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleParticipanteError(error)) }
-                )
+                logger.debug { "Get participantes" }
+
+                try {
+
+                    participanteService.getAllParticipantes().mapBoth(
+                        success = { participantes ->
+                            call.respond(HttpStatusCode.OK, participantes.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleParticipanteError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener los participantes.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener los participantes.")
+                }
             }
 
             // Obtener participante por ID
@@ -73,16 +95,36 @@ fun Routing.participanteRoute() {
                         description = "No se encontró el participante."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val id = call.parameters["id"]?.toLongOrNull()
-                if (id != null) {
-                    participanteService.getParticipanteById(id).mapBoth(
-                        success = { participante -> call.respond(HttpStatusCode.OK, participante.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handleParticipanteError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                logger.debug { "Get participante {id}" }
+
+                try {
+                    val id = call.parameters["id"]?.toLongOrNull()
+                    if (id != null) {
+                        participanteService.getParticipanteById(id).mapBoth(
+                            success = { participante ->
+                                call.respond(HttpStatusCode.OK, participante.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleParticipanteError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener los participantes.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener los participantes.")
                 }
             }
 
@@ -101,13 +143,37 @@ fun Routing.participanteRoute() {
                         description = "Error al crear el participante."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val participanteCrearDto = call.receive<ParticipanteCrearDto>()
-                participanteService.addParticipante(participanteCrearDto.toModel()).mapBoth(
-                    success = { participante -> call.respond(HttpStatusCode.Created, participante.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleParticipanteError(error)) }
-                )
+                logger.debug { "Post participante" }
+
+                try {
+                    val participanteCrearDto = call.receive<ParticipanteCrearDto>()
+                    if(participanteCrearDto.nombre.isBlank()){
+                        call.respond(HttpStatusCode.BadRequest, "El nombre es obligatorio.")
+                        return@post
+                    }
+                    participanteService.addParticipante(participanteCrearDto.toModel()).mapBoth(
+                        success = { participante ->
+                            call.respond(HttpStatusCode.Created, participante.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleParticipanteError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al crear el participante.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el participante.")
+                }
             }
 
             // Actualizar un participante
@@ -125,13 +191,33 @@ fun Routing.participanteRoute() {
                         description = "Error al actualizar el participante."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val participanteDto = call.receive<ParticipanteDto>()
-                participanteService.updateParticipante(participanteDto.toModel()).mapBoth(
-                    success = { participante -> call.respond(HttpStatusCode.OK, participante.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleParticipanteError(error)) }
-                )
+                logger.debug { "Put participante" }
+
+                try {
+                    val participanteDto = call.receive<ParticipanteDto>()
+                    participanteService.updateParticipante(participanteDto.toModel()).mapBoth(
+                        success = { participante ->
+                            call.respond(HttpStatusCode.OK, participante.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleParticipanteError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar el participante.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar el participante.")
+                }
             }
 
             // Eliminar un participante
@@ -207,3 +293,4 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleParticipanteErr
         else -> call.respond(HttpStatusCode.InternalServerError, "Error desconocido")
     }
 }
+

@@ -47,12 +47,32 @@ fun Routing.balanceRoute() {
                         description = "No se encontraron balances."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                balanceService.getAllBalances().mapBoth(
-                    success = { balances -> call.respond(HttpStatusCode.OK, balances.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleBalanceError(error)) }
-                )
+                logger.debug { "Get balance" }
+
+                try {
+                    balanceService.getAllBalances().mapBoth(
+                        success = { balances ->
+                            call.respond(HttpStatusCode.OK, balances.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleBalanceError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener los balances.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener los balances.")
+                }
             }
 
             // Obtener balance por ID
@@ -73,16 +93,36 @@ fun Routing.balanceRoute() {
                         description = "No se encontró el balance."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val id = call.parameters["id"]?.toLongOrNull()
-                if (id != null) {
-                    balanceService.getBalanceById(id).mapBoth(
-                        success = { balance -> call.respond(HttpStatusCode.OK, balance.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handleBalanceError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                logger.debug { "Get balance {id}" }
+
+                try {
+                    val id = call.parameters["id"]?.toLongOrNull()
+                    if (id != null) {
+                        balanceService.getBalanceById(id).mapBoth(
+                            success = { balance ->
+                                call.respond(HttpStatusCode.OK, balance.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleBalanceError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el balance.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el balance.")
                 }
             }
 
@@ -101,13 +141,37 @@ fun Routing.balanceRoute() {
                         description = "Error al crear el balance."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val balanceCrearDto = call.receive<BalanceCrearDto>()
-                balanceService.addBalance(balanceCrearDto.toModel()).mapBoth(
-                    success = { balance -> call.respond(HttpStatusCode.Created, balance.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleBalanceError(error)) }
-                )
+                logger.debug { "Post balance" }
+
+                try {
+                    val balanceCrearDto = call.receive<BalanceCrearDto>()
+                    if(balanceCrearDto.monto.isBlank()){
+                        call.respond(HttpStatusCode.BadRequest, "El monto es obligatorio.")
+                        return@post
+                    }
+                    balanceService.addBalance(balanceCrearDto.toModel()).mapBoth(
+                        success = { balance ->
+                            call.respond(HttpStatusCode.Created, balance.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleBalanceError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al crear el balance.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el balance.")
+                }
             }
 
             // Actualizar un balance
@@ -125,13 +189,33 @@ fun Routing.balanceRoute() {
                         description = "Error al actualizar el balance."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val balanceDto = call.receive<BalanceDto>()
-                balanceService.updateBalance(balanceDto.toModel()).mapBoth(
-                    success = { balance -> call.respond(HttpStatusCode.OK, balance.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleBalanceError(error)) }
-                )
+                logger.debug { "Put participante" }
+
+                try {
+                    val balanceDto = call.receive<BalanceDto>()
+                    balanceService.updateBalance(balanceDto.toModel()).mapBoth(
+                        success = { balance ->
+                            call.respond(HttpStatusCode.OK, balance.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleBalanceError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar el balance.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar el balance.")
+                }
             }
 
             // Eliminar un balance

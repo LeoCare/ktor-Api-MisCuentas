@@ -47,12 +47,32 @@ fun Routing.hojaRoute() {
                         description = "No se encontraron hojas."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                hojaService.getAllHojas().mapBoth(
-                    success = { hojas -> call.respond(HttpStatusCode.OK, hojas.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleHojaError(error)) }
-                )
+                logger.debug { "Get hoja" }
+
+                try {
+                    hojaService.getAllHojas().mapBoth(
+                        success = { hojas ->
+                            call.respond(HttpStatusCode.OK, hojas.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleHojaError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener las hojas.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener las hojas.")
+                }
             }
 
             // Obtener hoja por ID
@@ -73,16 +93,36 @@ fun Routing.hojaRoute() {
                         description = "No se encontró la hoja."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val id = call.parameters["id"]?.toLongOrNull()
-                if (id != null) {
-                    hojaService.getHojaById(id).mapBoth(
-                        success = { hoja -> call.respond(HttpStatusCode.OK, hoja.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handleHojaError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                logger.debug { "Get hoja {id}" }
+
+                try {
+                    val id = call.parameters["id"]?.toLongOrNull()
+                    if (id != null) {
+                        hojaService.getHojaById(id).mapBoth(
+                            success = { hoja ->
+                                call.respond(HttpStatusCode.OK, hoja.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleHojaError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener la hoja.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener la hoja.")
                 }
             }
 
@@ -101,13 +141,33 @@ fun Routing.hojaRoute() {
                         description = "Error al crear la hoja."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val hojaCrearDto = call.receive<HojaCrearDto>()
-                hojaService.addHoja(hojaCrearDto.toModel()).mapBoth(
-                    success = { hoja -> call.respond(HttpStatusCode.Created, hoja.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleHojaError(error)) }
-                )
+                logger.debug { "Post hoja" }
+
+                try {
+                    val hojaCrearDto = call.receive<HojaCrearDto>()
+                    hojaService.addHoja(hojaCrearDto.toModel()).mapBoth(
+                        success = { hoja ->
+                            call.respond(HttpStatusCode.Created, hoja.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleHojaError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al crear la hoja.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear la hoja.")
+                }
             }
 
             // Actualizar una hoja
@@ -125,13 +185,33 @@ fun Routing.hojaRoute() {
                         description = "Error al actualizar la hoja."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val hojaDto = call.receive<HojaDto>()
-                hojaService.updateHoja(hojaDto.toModel()).mapBoth(
-                    success = { hoja -> call.respond(HttpStatusCode.OK, hoja.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleHojaError(error)) }
-                )
+                logger.debug { "Put hoja" }
+
+                try {
+                    val hojaDto = call.receive<HojaDto>()
+                    hojaService.updateHoja(hojaDto.toModel()).mapBoth(
+                        success = { hoja ->
+                            call.respond(HttpStatusCode.OK, hoja.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleHojaError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar la hoja.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar la hoja.")
+                }
             }
 
             // Eliminar una hoja
@@ -150,6 +230,18 @@ fun Routing.hojaRoute() {
                     }
                     HttpStatusCode.BadRequest to {
                         description = "Error al eliminar la hoja."
+                        body<String> {}
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
                         body<String> {}
                     }
                 }

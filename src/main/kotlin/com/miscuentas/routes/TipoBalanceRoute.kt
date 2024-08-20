@@ -13,6 +13,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 import mu.KotlinLogging
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.koin.ktor.ext.inject
 
 private val logger = KotlinLogging.logger {}
@@ -38,12 +39,32 @@ fun Routing.tipoBalanceRoute() {
                         description = "No se encontraron tipos de balance."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                tipoBalanceService.getAllTipoBalances().mapBoth(
-                    success = { tipos -> call.respond(HttpStatusCode.OK, tipos.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleTipoBalanceError(error)) }
-                )
+                logger.debug { "Get tipoBalance" }
+
+                try {
+                    tipoBalanceService.getAllTipoBalances().mapBoth(
+                        success = { tipos ->
+                            call.respond(HttpStatusCode.OK, tipos.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleTipoBalanceError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener los tipoBalance.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener los tipoBalance.")
+                }
             }
 
             // Obtener tipo de balance por código
@@ -64,16 +85,36 @@ fun Routing.tipoBalanceRoute() {
                         description = "No se encontró el tipo de balance."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val codigo = call.parameters["codigo"]
-                if (codigo != null) {
-                    tipoBalanceService.getTipoBalanceById(codigo).mapBoth(
-                        success = { tipo -> call.respond(HttpStatusCode.OK, tipo.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handleTipoBalanceError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "Código inválido.")
+                logger.debug { "Get tipoBalance {id}" }
+
+                try {
+                    val codigo = call.parameters["codigo"]
+                    if (codigo != null) {
+                        tipoBalanceService.getTipoBalanceById(codigo).mapBoth(
+                            success = { tipo ->
+                                call.respond(HttpStatusCode.OK, tipo.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleTipoBalanceError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "Código inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el tipoBalance.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el tipoBalance.")
                 }
             }
         }

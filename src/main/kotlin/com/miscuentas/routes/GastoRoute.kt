@@ -47,12 +47,32 @@ fun Routing.gastoRoute() {
                         description = "No se encontraron gastos."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                gastoService.getAllGastos().mapBoth(
-                    success = { gastos -> call.respond(HttpStatusCode.OK, gastos.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleGastoError(error)) }
-                )
+                logger.debug { "Get gastos" }
+
+                try {
+                    gastoService.getAllGastos().mapBoth(
+                        success = { gastos ->
+                            call.respond(HttpStatusCode.OK, gastos.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleGastoError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener los gastos.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener los gastos.")
+                }
             }
 
             // Obtener gasto por ID
@@ -73,16 +93,36 @@ fun Routing.gastoRoute() {
                         description = "No se encontró el gasto."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val id = call.parameters["id"]?.toLongOrNull()
-                if (id != null) {
-                    gastoService.getGastoById(id).mapBoth(
-                        success = { gasto -> call.respond(HttpStatusCode.OK, gasto.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handleGastoError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                logger.debug { "Get gasto {id}" }
+
+                try {
+                    val id = call.parameters["id"]?.toLongOrNull()
+                    if (id != null) {
+                        gastoService.getGastoById(id).mapBoth(
+                            success = { gasto ->
+                                call.respond(HttpStatusCode.OK, gasto.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleGastoError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el gasto.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el gasto.")
                 }
             }
 
@@ -101,13 +141,29 @@ fun Routing.gastoRoute() {
                         description = "Error al crear el gasto."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val gastoCrearDto = call.receive<GastoCrearDto>()
-                gastoService.addGasto(gastoCrearDto.toModel()).mapBoth(
-                    success = { gasto -> call.respond(HttpStatusCode.Created, gasto.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleGastoError(error)) }
-                )
+                logger.debug { "Post gasto" }
+
+                try {
+                    val gastoCrearDto = call.receive<GastoCrearDto>()
+                    gastoService.addGasto(gastoCrearDto.toModel()).mapBoth(
+                        success = { gasto -> call.respond(HttpStatusCode.Created, gasto.toDto()) },
+                        failure = { error -> call.respond(HttpStatusCode.BadRequest, handleGastoError(error)) }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al crear el gasto.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el gasto.")
+                }
             }
 
             // Actualizar un gasto
@@ -125,13 +181,33 @@ fun Routing.gastoRoute() {
                         description = "Error al actualizar el gasto."
                         body<String> {}
                     }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val gastoDto = call.receive<GastoDto>()
-                gastoService.updateGasto(gastoDto.toModel()).mapBoth(
-                    success = { gasto -> call.respond(HttpStatusCode.OK, gasto.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleGastoError(error)) }
-                )
+                logger.debug { "Put gasto" }
+
+                try {
+                    val gastoDto = call.receive<GastoDto>()
+                    gastoService.updateGasto(gastoDto.toModel()).mapBoth(
+                        success = { gasto ->
+                            call.respond(HttpStatusCode.OK, gasto.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleGastoError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar el gasto.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar el gasto.")
+                }
             }
 
             // Eliminar un gasto

@@ -3,15 +3,11 @@ package com.miscuentas.routes
 import com.github.michaelbull.result.mapBoth
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import com.miscuentas.dto.GastoCrearDto
-import com.miscuentas.dto.GastoDto
 import com.miscuentas.dto.ImagenCrearDto
 import com.miscuentas.dto.ImagenDto
-import com.miscuentas.errors.GastoErrores
 import com.miscuentas.errors.ImagenErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
-import com.miscuentas.services.gastos.GastoService
 import com.miscuentas.services.imagenes.ImagenService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
@@ -51,12 +47,32 @@ fun Routing.imagenRoute() {
                         description = "No se encontraron imágenes."
                         body<String> {}
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error en el servicio."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                imagenService.getAllImagenes().mapBoth(
-                    success = { imagenes -> call.respond(HttpStatusCode.OK, imagenes.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.NotFound, handleImagenError(error)) }
-                )
+                logger.debug { "Get imagen" }
+
+                try {
+                    imagenService.getAllImagenes().mapBoth(
+                        success = { imagenes ->
+                            call.respond(HttpStatusCode.OK, imagenes.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleImagenError(error))
+                        }
+                    )
+                }catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener la imagen.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener la imagen.")
+                }
             }
 
             // Obtener imagen por ID
@@ -77,16 +93,36 @@ fun Routing.imagenRoute() {
                         description = "No se encontró la imagen."
                         body<String> {}
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error en el servicio."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val id = call.parameters["id"]?.toLongOrNull()
-                if (id != null) {
-                    imagenService.getImagenById(id).mapBoth(
-                        success = { imagen -> call.respond(HttpStatusCode.OK, imagen.toDto()) },
-                        failure = { error -> call.respond(HttpStatusCode.NotFound, handleImagenError(error)) }
-                    )
-                } else {
-                    call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                logger.debug { "Get imagen {id}" }
+
+                try {
+                    val id = call.parameters["id"]?.toLongOrNull()
+                    if (id != null) {
+                        imagenService.getImagenById(id).mapBoth(
+                            success = { imagen ->
+                                call.respond(HttpStatusCode.OK, imagen.toDto())
+                                      },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotFound, handleImagenError(error))
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "ID inválido.")
+                    }
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener la imagen.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener la imagen.")
                 }
             }
 
@@ -105,13 +141,33 @@ fun Routing.imagenRoute() {
                         description = "Error al crear la imagen."
                         body<String> {}
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error en el servicio."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val imagenCrearDto = call.receive<ImagenCrearDto>()
-                imagenService.addImagen(imagenCrearDto.toModel()).mapBoth(
-                    success = { imagen -> call.respond(HttpStatusCode.Created, imagen.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleImagenError(error)) }
-                )
+                logger.debug { "Post imagen" }
+
+                try {
+                    val imagenCrearDto = call.receive<ImagenCrearDto>()
+                    imagenService.addImagen(imagenCrearDto.toModel()).mapBoth(
+                        success = { imagen ->
+                            call.respond(HttpStatusCode.Created, imagen.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleImagenError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al crear la imagen.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear la imagen.")
+                }
             }
 
             // Actualizar una imagen
@@ -129,13 +185,33 @@ fun Routing.imagenRoute() {
                         description = "Error al actualizar la imagen."
                         body<String> {}
                     }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error en el servicio."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
                 }
             }) {
-                val imagenDto = call.receive<ImagenDto>()
-                imagenService.updateImagen(imagenDto.toModel()).mapBoth(
-                    success = { imagen -> call.respond(HttpStatusCode.OK, imagen.toDto()) },
-                    failure = { error -> call.respond(HttpStatusCode.BadRequest, handleImagenError(error)) }
-                )
+                logger.debug { "Put imagen" }
+
+                try {
+                    val imagenDto = call.receive<ImagenDto>()
+                    imagenService.updateImagen(imagenDto.toModel()).mapBoth(
+                        success = { imagen ->
+                            call.respond(HttpStatusCode.OK, imagen.toDto())
+                                  },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.BadRequest, handleImagenError(error))
+                        }
+                    )
+                } catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar la imagen.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar la imagen.")
+                }
             }
 
             // Eliminar una imagen
