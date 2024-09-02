@@ -41,7 +41,7 @@ fun Routing.usuarioRoute() {
         post("/registro", {
             description = "REGISTRO DE LOS NUEVOS USUARIOS"
             request {
-                queryParameter<UsuarioCrearDto>("Usuario") {
+                body<UsuarioCrearDto> {
                     description = "Instancia del usuario a crear."
                     required = true // Optional
                 }
@@ -98,7 +98,7 @@ fun Routing.usuarioRoute() {
         post("/login", {
             description = "LOGEO DE LOS USUARIOS YA REGISTRADOS."
             request {
-                queryParameter<UsuarioLoginDto>("Correo y contraseña para el logeo") {
+                body<UsuarioLoginDto> {
                     description = "Instancia de un usuario con correo y contraseña."
                     required = true // Optional
                 }
@@ -160,6 +160,7 @@ fun Routing.usuarioRoute() {
             get("/personal", {
                 description = "SOLICITAR LOS DATOS DE USUARIOS PERSONALES. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Retorna mi usuario para poder verificar los datos personales."
@@ -213,6 +214,7 @@ fun Routing.usuarioRoute() {
             get({
                 description = "SOLICITAR LISTA DE LOS USUARIOS REGISTRADOS. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Retorna lista de los usuarios registrados."
@@ -280,6 +282,7 @@ fun Routing.usuarioRoute() {
             get("/WhenData", {
                 description = "SOLICITAR UNOS DATOS EN CONCRETO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     queryParameter<String>("c") {
                         description = "nombre de la columna a filtrar"
@@ -365,8 +368,9 @@ fun Routing.usuarioRoute() {
             get ("{id}", {
                 description = "SOLICITAR DATOS SEGUN ID PASADO POR PARAMETRO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
-                    pathParameter<Int>("id_usuario") {
+                    pathParameter<Long>("id") {
                         description = "id de un usuario en concreto."
                         required = true // Optional
                     }
@@ -444,8 +448,9 @@ fun Routing.usuarioRoute() {
             put ({
                 description = "SOLICITAR ACTUALIZACION DE UN USUARIO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
-                    queryParameter<UsuarioDto>("Intancia de un usuario") {
+                    body<UsuarioDto> {
                         description = "Intancia de un usuario."
                         required = true // Optional
                     }
@@ -528,8 +533,9 @@ fun Routing.usuarioRoute() {
             delete ({
                 description = "SOLICITAR ELIMINACION DE UN USUARIO. (Necesario Token)"
                 operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
-                    queryParameter<UsuarioDto>("Intancia de un usuario") {
+                    body<UsuarioDeleteDto> {
                         description = "Intancia de un usuario."
                         required = true // Optional
                     }

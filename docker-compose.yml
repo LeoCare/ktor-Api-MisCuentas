@@ -1,18 +1,25 @@
 services:
-  ktor:
+  api_rest_miscuentas:
     image: leocare/ktor-api-miscuentas:0.1.0
     build: .
     platform: linux/amd64
-    container_name: ktor_api_rest
+    container_name: api_rest_miscuentas
     restart: always
     ports:
       - "8080:8080"
-      - "8443:8443"
+      - "8443:8443" #para pruebas en local
     env_file:
       - .env
+      #labels:
+      #- "traefik.enable=true"
+      #- "traefik.http.routers.api_rest_miscuentas.rule=Host(`api.leondev.es`)"
+      #- "traefik.http.routers.api_rest_miscuentas.entrypoints=https"
+      #- "traefik.http.routers.api_rest_miscuentas.tls=true"
+      #- "traefik.http.services.api_rest_miscuentas.loadbalancer.server.port=8080"
+      #- "traefik.docker.network=proxy"
     networks:
-      - red-interna
-
+      - proxy
 networks:
-  red-interna:
-    driver: bridge
+  bridge:
+  proxy:
+    external: true

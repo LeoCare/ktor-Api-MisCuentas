@@ -1,10 +1,7 @@
 package com.miscuentas.plugins
 
-import com.auth0.jwt.JWT
-import com.auth0.jwt.algorithms.Algorithm
 import com.miscuentas.services.auth.TokenException
 import com.miscuentas.services.auth.TokensService
-import io.github.cdimascio.dotenv.Dotenv
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
