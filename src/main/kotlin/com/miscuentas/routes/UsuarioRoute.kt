@@ -37,6 +37,67 @@ fun Routing.usuarioRoute() {
 
     route("/$ENDPOINT") {
 
+        // Obtencio de datos personales --> GET /api/usuarios/personal
+        get("/verify", {
+            description = "COMPRUEBA SI EL CORREO YA EXISTE."
+            request {
+                queryParameter<String>("correo") {
+                    description = "correo a buscar"
+                    required = true // Optional
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Retorna el usuario, si encuetra el correo"
+                    body<UsuarioDto> { }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Retorna mensaje de aviso, si no encuentra el correo."
+                    body<String> { }
+                }
+                HttpStatusCode.NotImplemented to {
+                    description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                    body<String> { }
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Retorna mensaje de error de SQL."
+                    body<String> {}
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Retorna mensaje de error desconocido."
+                    body<String> {}
+                }
+            }
+        }) {
+            logger.debug { "Get verify" }
+
+            try {
+                val correo = call.request.queryParameters["correo"]
+
+                //si se pasa el correo:
+                if (!correo.isNullOrEmpty()) {
+                    // Lo busco en la bbdd:
+                    usuarioService.checkCorreoExist(correo).mapBoth(
+                        success = { usuario ->
+                            call.respond(HttpStatusCode.OK,  usuario.toDto())
+                        },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotImplemented, error.message)
+                        }
+                    )
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "No has especificado el correo!!")
+                }
+            } catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al buscar el correo.")
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    e.message ?: "Error desconocido al buscar el correo."
+                )
+            }
+        }
+
         // Registro de un usuario --> POST /api/usuarios/registro
         post("/registro", {
             description = "REGISTRO DE LOS NUEVOS USUARIOS"
@@ -81,12 +142,12 @@ fun Routing.usuarioRoute() {
                 usuarioService.addUsuario(usuario).mapBoth(
                     success = { usuarioCreado ->
                         call.respond(HttpStatusCode.Created, usuarioCreado.toDto())
-                              },
+                    },
                     failure = { error ->
                         call.respond(HttpStatusCode.BadRequest, handleUserError(error))
                     }
                 )
-            }catch (e: ExposedSQLException) {
+            } catch (e: ExposedSQLException) {
                 call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
@@ -146,7 +207,7 @@ fun Routing.usuarioRoute() {
                         call.respond(HttpStatusCode.Unauthorized, error.message)
                     }
                 )
-            }catch (e: ExposedSQLException) {
+            } catch (e: ExposedSQLException) {
                 call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
@@ -197,16 +258,19 @@ fun Routing.usuarioRoute() {
                     // Obtencion de datos personales:
                     usuarioService.getUsuarioById(userId).mapBoth(
                         success = { usuario ->
-                            call.respond(HttpStatusCode.OK,usuario.toDto())
+                            call.respond(HttpStatusCode.OK, usuario.toDto())
                         },
                         failure = { error ->
                             call.respond(HttpStatusCode.NotImplemented, error.message)
                         }
                     )
-                }catch (e: ExposedSQLException) {
+                } catch (e: ExposedSQLException) {
                     call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        e.message ?: "Error desconocido al crear el usuario."
+                    )
                 }
             }
 
@@ -260,21 +324,27 @@ fun Routing.usuarioRoute() {
                             usuarioService.getAllUsuarios().mapBoth(
                                 success = { listUsuarios ->
                                     call.respond(HttpStatusCode.OK, listUsuarios.toDto())
-                                          },
+                                },
                                 failure = { error ->
                                     call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
                                 }
                             )
                         } else {
-                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
+                            call.respond(
+                                HttpStatusCode.Forbidden,
+                                "Acceso denegado: solo los administradores pueden actualizar usuarios"
+                            )
                         }
                     }.onFailure { // No es admin:
                         call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
                     }
-                }catch (e: ExposedSQLException) {
+                } catch (e: ExposedSQLException) {
                     call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        e.message ?: "Error desconocido al crear el usuario."
+                    )
                 }
             }
 

@@ -116,10 +116,11 @@ class UsuarioServiceImp(
         )
     }
 
-    override suspend fun checkCorreoExist(correo: String): Result<Boolean, UsuarioErrores> {
+    override suspend fun checkCorreoExist(correo: String): Result<Usuario, UsuarioErrores> {
         logger.debug { "Servicio: checkCorreoExist()" }
-        return if (usuarioRepository.checkCorreoExist(correo)) Ok(true)
-            else Err(UsuarioErrores.BadRequest( "Ese correo ya existe"))
-
+        return usuarioRepository.checkCorreoExist(correo)?.let {
+            logger.debug { "Servicio: correo encontrado en repositorio." }
+            Ok(it)
+        } ?: Err(UsuarioErrores.NotFound("Correo no encontrado"))
     }
 }

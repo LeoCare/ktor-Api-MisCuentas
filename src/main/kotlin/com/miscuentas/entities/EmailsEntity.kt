@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.javatime.timestamp
  * @property estado Columna que almacena el estado del email (por ejemplo, "pendiente", "enviado", "fallido").
  * @property primaryKey Define la clave primaria de la tabla `EMAILS` usando la columna `idEmail`.
  */
-object EmailLogTable : Table("EMAILS") {
+object EmailLogTable : Table("EMAIL_LOG") {
     val idEmail = long("id_email").autoIncrement()
     val idParticipante = long("id_participante").references(ParticipantesTable.idParticipante, ReferenceOption.CASCADE)
     val idPago = long("id_pago").references(PagosTable.idPago, ReferenceOption.CASCADE)

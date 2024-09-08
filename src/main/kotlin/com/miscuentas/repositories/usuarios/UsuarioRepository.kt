@@ -32,5 +32,5 @@ interface UsuarioRepository: CrudRepository<Usuario, Long> {
      * @param correo El correo electrónico a verificar.
      * @return `true` si el correo ya existe, `false` si no existe.
      */
-    suspend fun checkCorreoExist(correo: String): Boolean
+    suspend fun checkCorreoExist(correo: String): Usuario?
 }

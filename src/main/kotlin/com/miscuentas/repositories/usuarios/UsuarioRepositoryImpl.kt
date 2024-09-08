@@ -109,7 +109,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         return@dbQuery null
     }
 
-    override suspend fun checkCorreoExist(correo: String): Boolean = dbQuery {
-        UsuariosTable.select(UsuariosTable.correo eq correo).map { resultRowToUsuario(it) }.any()
+    override suspend fun checkCorreoExist(correo: String): Usuario? = dbQuery {
+        UsuariosTable.select(UsuariosTable.correo eq correo).map { resultRowToUsuario(it) }.firstOrNull()
     }
 }

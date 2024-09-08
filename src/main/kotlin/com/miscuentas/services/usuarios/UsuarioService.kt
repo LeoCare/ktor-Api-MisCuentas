@@ -91,5 +91,5 @@ interface UsuarioService {
      * @param correo El correo a comprobar.
      * @return Un `Result` que indica si el correo ya existe o un error de tipo `UsuarioErrores`.
      */
-    suspend fun checkCorreoExist(correo: String): Result<Boolean, UsuarioErrores>
+    suspend fun checkCorreoExist(correo: String): Result<Usuario, UsuarioErrores>
 }
