@@ -109,8 +109,8 @@ fun Routing.usuarioRoute() {
             }
             response {
                 HttpStatusCode.OK to {
-                    description = "Retorna el usuario que se acaba de crear."
-                    body<UsuarioDto> {}
+                    description = "Retorna el usuario que se acaba de crear y el token."
+                    body<UsuarioWithTokenDto> {}
                 }
                 HttpStatusCode.BadRequest to {
                     description = "Retorna mensaje de error si falta algun dato importante o excepcion de SQL."
@@ -141,7 +141,8 @@ fun Routing.usuarioRoute() {
                 // Agrego usuario:
                 usuarioService.addUsuario(usuario).mapBoth(
                     success = { usuarioCreado ->
-                        call.respond(HttpStatusCode.Created, usuarioCreado.toDto())
+                        val token = tokenService.generateJWT(usuarioCreado)
+                        call.respond(HttpStatusCode.Created, UsuarioWithTokenDto(usuarioCreado.toDto(), token))
                     },
                     failure = { error ->
                         call.respond(HttpStatusCode.BadRequest, handleUserError(error))
