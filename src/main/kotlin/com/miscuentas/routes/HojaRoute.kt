@@ -8,7 +8,9 @@ import com.miscuentas.dto.HojaDto
 import com.miscuentas.errors.HojaErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.hojas.HojaService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -30,6 +32,7 @@ private const val ENDPOINT = "/hojas"
 fun Routing.hojaRoute() {
 
     val hojaService by inject<HojaService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -38,7 +41,8 @@ fun Routing.hojaRoute() {
             // Obtener todas las hojas
             get({
                 description = "Obtener todas las hojas (Necesario Token)"
-
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de hojas."
@@ -61,6 +65,9 @@ fun Routing.hojaRoute() {
                 logger.debug { "Get hoja" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     hojaService.getAllHojas().mapBoth(
                         success = { hojas ->
                             call.respond(HttpStatusCode.OK, hojas.toDto())
@@ -79,6 +86,8 @@ fun Routing.hojaRoute() {
             // Obtener hoja por ID
             get("/{id}", {
                 description = "Obtener hoja por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID de la hoja."
@@ -107,6 +116,9 @@ fun Routing.hojaRoute() {
                 logger.debug { "Get hoja {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {
                         hojaService.getHojaById(id).mapBoth(
@@ -130,6 +142,8 @@ fun Routing.hojaRoute() {
             // Crear nueva hoja
             post({
                 description = "Crear nueva hoja (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<HojaCrearDto> {}
                 }
@@ -155,6 +169,9 @@ fun Routing.hojaRoute() {
                 logger.debug { "Post hoja" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@post
+
                     val hojaCrearDto = call.receive<HojaCrearDto>()
                     hojaService.addHoja(hojaCrearDto.toModel()).mapBoth(
                         success = { hoja ->
@@ -174,6 +191,8 @@ fun Routing.hojaRoute() {
             // Actualizar una hoja
             put({
                 description = "Actualizar una hoja (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<HojaDto> {}
                 }
@@ -199,6 +218,9 @@ fun Routing.hojaRoute() {
                 logger.debug { "Put hoja" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@put
+
                     val hojaDto = call.receive<HojaDto>()
                     hojaService.updateHoja(hojaDto.toModel()).mapBoth(
                         success = { hoja ->
@@ -218,6 +240,8 @@ fun Routing.hojaRoute() {
             // Eliminar una hoja
             delete("/{id}", {
                 description = "Eliminar una hoja por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID de la hoja."
@@ -250,6 +274,9 @@ fun Routing.hojaRoute() {
                 logger.debug { "Delete hoja" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@delete
+
                     // Recoge el id:
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {

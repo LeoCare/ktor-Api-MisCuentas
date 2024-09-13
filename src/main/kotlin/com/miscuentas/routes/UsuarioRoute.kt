@@ -9,6 +9,7 @@ import com.miscuentas.errors.UsuarioErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
 import com.miscuentas.services.auth.TokensService
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
@@ -250,14 +251,10 @@ fun Routing.usuarioRoute() {
 
                 try {
                     // Recoge Id del token y lo valida:
-                    val userId = getAuthenticatedUserId() ?: return@get
-                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
-                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
-                        return@get
-                    }
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
 
                     // Obtencion de datos personales:
-                    usuarioService.getUsuarioById(userId).mapBoth(
+                    usuarioService.getUsuarioById(usuarioSolicitud.idUsuario).mapBoth(
                         success = { usuario ->
                             call.respond(HttpStatusCode.OK, usuario.toDto())
                         },
@@ -311,14 +308,10 @@ fun Routing.usuarioRoute() {
 
                 try {
                     // Recoge Id del token y lo valida:
-                    val userId = getAuthenticatedUserId() ?: return@get
-                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
-                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
-                        return@get
-                    }
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
 
                     // Comprobar si la peticion la realiza un Admin:
-                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                    usuarioService.isAdmin(usuarioSolicitud.idUsuario).onSuccess { isAdmin ->
                         if (isAdmin) {
 
                             // Recoge todos los usuarios:
@@ -395,14 +388,10 @@ fun Routing.usuarioRoute() {
 
                 try {
                     // Recoge Id del token y lo valida:
-                    val userId = getAuthenticatedUserId() ?: return@get
-                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
-                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
-                        return@get
-                    }
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
 
                     // Comprobar si la peticion la realiza un Admin:
-                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                    usuarioService.isAdmin(usuarioSolicitud.idUsuario).onSuccess { isAdmin ->
                         if (isAdmin) {
 
                             //Obtener datos que coincidan con..
@@ -477,14 +466,10 @@ fun Routing.usuarioRoute() {
 
                 try {
                     // Recoge Id del token y lo valida:
-                    val userId = getAuthenticatedUserId() ?: return@get
-                    val usuarioWithTokenOk = usuarioService.getUsuarioById(userId).getOrElse {
-                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
-                        return@get
-                    }
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
 
                     // Comprobar si la peticion la realiza un Admin:
-                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                    usuarioService.isAdmin(usuarioSolicitud.idUsuario).onSuccess { isAdmin ->
                         if(isAdmin){
 
                             // Recoge id y obtiene usuario:
@@ -556,16 +541,11 @@ fun Routing.usuarioRoute() {
                 logger.debug { "Put usuario" }
 
                 try {
-                    val userId = getAuthenticatedUserId() ?: return@put
-
-                    // Manejar el caso de usuario no encontrado:
-                    val usuarioExistente = usuarioService.getUsuarioById(userId).getOrElse {
-                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
-                        return@put
-                    }
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@put
 
                     // Comprobar si la peticion la realiza un Admin:
-                    usuarioService.isAdmin(userId).onSuccess {isAdmin ->
+                    usuarioService.isAdmin(usuarioSolicitud.idUsuario).onSuccess {isAdmin ->
                         if (isAdmin) {
 
                             // Recoge y valida el usuario antes de convertirlo:
@@ -575,17 +555,19 @@ fun Routing.usuarioRoute() {
                                 return@put
                             }
                             // Convierte:
-                            val usuario = usuarioDto.toModel(contrasennaExistente = usuarioExistente.contrasenna)
+                            val usuario = usuarioDto.contrasenna?.let { it1 -> usuarioDto.toModel(contrasennaExistente = it1) }
 
                             // Actualizar usuario:
-                            usuarioService.updateUsuario(usuario).mapBoth(
-                                success = { usuarioActualizado ->
-                                    call.respond(HttpStatusCode.OK, usuarioActualizado.toDto())
-                                },
-                                failure = { error ->
-                                    call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
-                                }
-                            )
+                            if (usuario != null) {
+                                usuarioService.updateUsuario(usuario).mapBoth(
+                                    success = { usuarioActualizado ->
+                                        call.respond(HttpStatusCode.OK, usuarioActualizado.toDto())
+                                    },
+                                    failure = { error ->
+                                        call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                                    }
+                                )
+                            }
                         } else {
                             call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
                         }
@@ -642,14 +624,10 @@ fun Routing.usuarioRoute() {
 
                 try {
                     // Recoge Id del token y lo valida:
-                    val userId = getAuthenticatedUserId() ?: return@delete
-                    val usuarioExistente = usuarioService.getUsuarioById(userId).getOrElse {
-                        call.respond(HttpStatusCode.NotFound, "Usuario de la peticion no encontrado en el sistema.")
-                        return@delete
-                    }
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@delete
 
                     // Comprobar si la peticion la realiza un Admin:
-                    usuarioService.isAdmin(userId).onSuccess { isAdmin ->
+                    usuarioService.isAdmin(usuarioSolicitud.idUsuario).onSuccess { isAdmin ->
                         if (isAdmin){
 
                             // Recoge el usuario:
@@ -711,19 +689,4 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleUserError(
         is UsuarioErrores.BadRole -> call.respond(HttpStatusCode.Forbidden, error.message)
         else -> call.respond(HttpStatusCode.InternalServerError, "Error desconocido")
     }
-}
-
-/** COMPROBACION DEL TOKEN
- * Se comprueba el id segun el token recibido.
- */
-suspend fun PipelineContext<Unit, ApplicationCall>.getAuthenticatedUserId(): Long? {
-    val userId = call.principal<JWTPrincipal>()
-        ?.payload?.getClaim("userId")
-        ?.asString()
-        ?.toLongOrNull()
-
-    if (userId == null) {
-        call.respond(HttpStatusCode.Unauthorized, "Usuario no autenticado")
-    }
-    return userId
 }

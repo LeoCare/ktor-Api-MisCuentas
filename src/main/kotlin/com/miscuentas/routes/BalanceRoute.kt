@@ -38,6 +38,8 @@ fun Routing.balanceRoute() {
             // Obtener todos los balances
             get({
                 description = "Obtener todos los balances (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de balances."
@@ -78,6 +80,8 @@ fun Routing.balanceRoute() {
             // Obtener balance por ID
             get("/{id}", {
                 description = "Obtener balance por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del balance."
@@ -129,6 +133,8 @@ fun Routing.balanceRoute() {
             // Crear nuevo balance
             post({
                 description = "Crear nuevo balance (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<BalanceCrearDto> {}
                 }
@@ -177,6 +183,8 @@ fun Routing.balanceRoute() {
             // Actualizar un balance
             put({
                 description = "Actualizar un balance (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<BalanceDto> {}
                 }
@@ -221,6 +229,8 @@ fun Routing.balanceRoute() {
             // Eliminar un balance
             delete("/{id}", {
                 description = "Eliminar un balance por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del balance."

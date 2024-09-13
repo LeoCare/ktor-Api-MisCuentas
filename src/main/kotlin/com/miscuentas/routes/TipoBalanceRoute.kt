@@ -4,7 +4,9 @@ import com.github.michaelbull.result.mapBoth
 import com.miscuentas.dto.TipoBalanceDto
 import com.miscuentas.errors.TipoBalanceErrores
 import com.miscuentas.mappers.toDto
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.tipoBalances.TipoBalanceService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,6 +24,7 @@ private const val ENDPOINT = "/tipoBalances"
 fun Routing.tipoBalanceRoute() {
 
     val tipoBalanceService by inject<TipoBalanceService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -30,6 +33,8 @@ fun Routing.tipoBalanceRoute() {
             // Obtener todos los tipos de balance
             get({
                 description = "Obtener todos los tipos de balance (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de tipos de balance."
@@ -52,6 +57,9 @@ fun Routing.tipoBalanceRoute() {
                 logger.debug { "Get tipoBalance" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     tipoBalanceService.getAllTipoBalances().mapBoth(
                         success = { tipos ->
                             call.respond(HttpStatusCode.OK, tipos.toDto())
@@ -70,6 +78,8 @@ fun Routing.tipoBalanceRoute() {
             // Obtener tipo de balance por código
             get("/{codigo}", {
                 description = "Obtener tipo de balance por código (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<String>("codigo") {
                         description = "Código del tipo de balance."
@@ -98,6 +108,9 @@ fun Routing.tipoBalanceRoute() {
                 logger.debug { "Get tipoBalance {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val codigo = call.parameters["codigo"]
                     if (codigo != null) {
                         tipoBalanceService.getTipoBalanceById(codigo).mapBoth(

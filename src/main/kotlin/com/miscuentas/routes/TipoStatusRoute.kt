@@ -5,7 +5,9 @@ import com.github.michaelbull.result.mapBoth
 import com.miscuentas.dto.TipoStatusDto
 import com.miscuentas.errors.TipoStatusErrores
 import com.miscuentas.mappers.toDto
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.tipoStatus.TipoStatusService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -23,6 +25,7 @@ private const val ENDPOINT = "/tipoStatus"
 fun Routing.tipoStatusRoute() {
 
     val tipoStatusService by inject<TipoStatusService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -31,6 +34,8 @@ fun Routing.tipoStatusRoute() {
             // Obtener todos los tipos de estado
             get({
                 description = "Obtener todos los tipos de estado (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de tipos de estado."
@@ -53,6 +58,9 @@ fun Routing.tipoStatusRoute() {
                 logger.debug { "Get tipoStatus" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     tipoStatusService.getAllTipoStatus().mapBoth(
                         success = { tipos ->
                             call.respond(HttpStatusCode.OK, tipos.toDto())
@@ -71,6 +79,8 @@ fun Routing.tipoStatusRoute() {
             // Obtener tipo de estado por código
             get("/{codigo}", {
                 description = "Obtener tipo de estado por código (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<String>("codigo") {
                         description = "Código del tipo de estado."
@@ -99,6 +109,9 @@ fun Routing.tipoStatusRoute() {
                 logger.debug { "Get tipoStatus {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val codigo = call.parameters["codigo"]
                     if (codigo != null) {
                         tipoStatusService.getTipoStatusById(codigo).mapBoth(

@@ -4,7 +4,9 @@ import com.github.michaelbull.result.mapBoth
 import com.miscuentas.dto.TipoPerfilDto
 import com.miscuentas.errors.TipoPerfilErrores
 import com.miscuentas.mappers.toDto
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.tipoPerfiles.TipoPerfilService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -22,6 +24,7 @@ private const val ENDPOINT = "/tipoPerfiles"
 fun Routing.tipoPerfilRoute() {
 
     val tipoPerfilService by inject<TipoPerfilService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -30,6 +33,8 @@ fun Routing.tipoPerfilRoute() {
             // Obtener todos los tipos de perfil
             get({
                 description = "Obtener todos los tipos de perfil (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de tipos de perfil."
@@ -52,6 +57,9 @@ fun Routing.tipoPerfilRoute() {
                 logger.debug { "Get tipoPerfil" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     tipoPerfilService.getAllTipoPerfiles().mapBoth(
                         success = { tipos ->
                             call.respond(HttpStatusCode.OK, tipos.toDto())
@@ -70,6 +78,8 @@ fun Routing.tipoPerfilRoute() {
             // Obtener tipo de perfil por código
             get("/{codigo}", {
                 description = "Obtener tipo de perfil por código (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<String>("codigo") {
                         description = "Código del tipo de perfil."
@@ -102,6 +112,9 @@ fun Routing.tipoPerfilRoute() {
                 logger.debug { "Get tipoPerfil {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val codigo = call.parameters["codigo"]
                     if (codigo != null) {
                         tipoPerfilService.getTipoPerfilById(codigo).mapBoth(

@@ -9,7 +9,9 @@ import com.miscuentas.dto.ParticipanteDto
 import com.miscuentas.errors.ParticipanteErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.participantes.ParticipanteService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -32,6 +34,7 @@ private const val ENDPOINT = "/participantes"
 fun Routing.participanteRoute() {
 
     val participanteService by inject<ParticipanteService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -39,6 +42,8 @@ fun Routing.participanteRoute() {
             // Obtener todos los participantes
             get({
                 description = "Obtener todos los participantes (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de participantes."
@@ -61,6 +66,8 @@ fun Routing.participanteRoute() {
                 logger.debug { "Get participantes" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
 
                     participanteService.getAllParticipantes().mapBoth(
                         success = { participantes ->
@@ -80,6 +87,8 @@ fun Routing.participanteRoute() {
             // Obtener participante por ID
             get("/{id}", {
                 description = "Obtener participante por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del participante."
@@ -108,6 +117,9 @@ fun Routing.participanteRoute() {
                 logger.debug { "Get participante {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {
                         participanteService.getParticipanteById(id).mapBoth(
@@ -131,6 +143,8 @@ fun Routing.participanteRoute() {
             // Crear nuevo participante
             post({
                 description = "Crear nuevo participante (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<ParticipanteCrearDto> {}
                 }
@@ -156,6 +170,9 @@ fun Routing.participanteRoute() {
                 logger.debug { "Post participante" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@post
+
                     val participanteCrearDto = call.receive<ParticipanteCrearDto>()
                     if(participanteCrearDto.nombre.isBlank()){
                         call.respond(HttpStatusCode.BadRequest, "El nombre es obligatorio.")
@@ -179,6 +196,8 @@ fun Routing.participanteRoute() {
             // Actualizar un participante
             put({
                 description = "Actualizar un participante (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<ParticipanteDto> {}
                 }
@@ -204,6 +223,9 @@ fun Routing.participanteRoute() {
                 logger.debug { "Put participante" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@put
+
                     val participanteDto = call.receive<ParticipanteDto>()
                     participanteService.updateParticipante(participanteDto.toModel()).mapBoth(
                         success = { participante ->
@@ -223,6 +245,8 @@ fun Routing.participanteRoute() {
             // Eliminar un participante
             delete("/{id}", {
                 description = "Eliminar un participante por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del participante."
@@ -251,6 +275,9 @@ fun Routing.participanteRoute() {
                 logger.debug { "Delete participante" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@delete
+
                     // Recoge el id:
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {

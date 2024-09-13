@@ -38,6 +38,8 @@ fun Routing.imagenRoute() {
             // Obtener todas las imágenes
             get({
                 description = "Obtener todas las imágenes (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de imágenes."
@@ -78,6 +80,8 @@ fun Routing.imagenRoute() {
             // Obtener imagen por ID
             get("/{id}", {
                 description = "Obtener imagen por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID de la imagen."
@@ -129,6 +133,8 @@ fun Routing.imagenRoute() {
             // Crear nueva imagen
             post({
                 description = "Crear nueva imagen (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<ImagenCrearDto> {}
                 }
@@ -173,6 +179,8 @@ fun Routing.imagenRoute() {
             // Actualizar una imagen
             put({
                 description = "Actualizar una imagen (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<ImagenDto> {}
                 }
@@ -217,6 +225,8 @@ fun Routing.imagenRoute() {
             // Eliminar una imagen
             delete("/{id}", {
                 description = "Eliminar una imagen por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token y perfil Admin."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID de la imagen."

@@ -8,7 +8,9 @@ import com.miscuentas.dto.PagoDto
 import com.miscuentas.errors.PagoErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.pagos.PagoService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -30,6 +32,7 @@ private const val ENDPOINT = "/pagos"
 fun Routing.pagoRoute() {
 
     val pagoService by inject<PagoService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -38,6 +41,8 @@ fun Routing.pagoRoute() {
             // Obtener todos los pagos
             get({
                 description = "Obtener todos los pagos (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de pagos."
@@ -60,7 +65,10 @@ fun Routing.pagoRoute() {
                 logger.debug { "Get pago" }
 
                     try {
-                    pagoService.getAllPagos().mapBoth(
+                        // Recoge Id del token y lo valida:
+                        val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
+                        pagoService.getAllPagos().mapBoth(
                         success = { pagos ->
                             call.respond(HttpStatusCode.OK, pagos.toDto())
                                   },
@@ -78,6 +86,8 @@ fun Routing.pagoRoute() {
             // Obtener pago por ID
             get("/{id}", {
                 description = "Obtener pago por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del pago."
@@ -106,6 +116,9 @@ fun Routing.pagoRoute() {
                 logger.debug { "Get pago {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {
                         pagoService.getPagoById(id).mapBoth(
@@ -129,6 +142,8 @@ fun Routing.pagoRoute() {
             // Crear nuevo pago
             post({
                 description = "Crear nuevo pago (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<PagoCrearDto> {}
                 }
@@ -154,6 +169,9 @@ fun Routing.pagoRoute() {
                 logger.debug { "Post pago" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@post
+
                     val pagoCrearDto = call.receive<PagoCrearDto>()
                     pagoService.addPago(pagoCrearDto.toModel()).mapBoth(
                         success = { pago ->
@@ -173,6 +191,8 @@ fun Routing.pagoRoute() {
             // Actualizar un pago
             put({
                 description = "Actualizar un pago (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<PagoDto> {}
                 }
@@ -198,6 +218,9 @@ fun Routing.pagoRoute() {
                 logger.debug { "Put pago" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@put
+
                     val pagoDto = call.receive<PagoDto>()
                     pagoService.updatePago(pagoDto.toModel()).mapBoth(
                         success = { pago ->
@@ -217,6 +240,8 @@ fun Routing.pagoRoute() {
             // Eliminar un pago
             delete("/{id}", {
                 description = "Eliminar un pago por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del pago."
@@ -245,8 +270,11 @@ fun Routing.pagoRoute() {
                 logger.debug { "Delete pago" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@delete
+
                     // Recoge el id:
-                val id = call.parameters["id"]?.toLongOrNull()
+                    val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {
                         // Obtengo Pago segun id:
                         pagoService.getPagoById(id).onSuccess { pago ->

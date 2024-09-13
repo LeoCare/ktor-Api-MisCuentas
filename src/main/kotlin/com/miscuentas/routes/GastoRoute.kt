@@ -8,7 +8,9 @@ import com.miscuentas.dto.GastoDto
 import com.miscuentas.errors.GastoErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.gastos.GastoService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -30,6 +32,7 @@ private const val ENDPOINT = "/gastos"
 fun Routing.gastoRoute() {
 
     val gastoService by inject<GastoService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -38,6 +41,8 @@ fun Routing.gastoRoute() {
             // Obtener todos los gastos
             get({
                 description = "Obtener todos los gastos (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 response {
                     HttpStatusCode.OK to {
                         description = "Lista de gastos."
@@ -60,6 +65,9 @@ fun Routing.gastoRoute() {
                 logger.debug { "Get gastos" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     gastoService.getAllGastos().mapBoth(
                         success = { gastos ->
                             call.respond(HttpStatusCode.OK, gastos.toDto())
@@ -78,6 +86,8 @@ fun Routing.gastoRoute() {
             // Obtener gasto por ID
             get("/{id}", {
                 description = "Obtener gasto por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del gasto."
@@ -106,6 +116,9 @@ fun Routing.gastoRoute() {
                 logger.debug { "Get gasto {id}" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {
                         gastoService.getGastoById(id).mapBoth(
@@ -129,6 +142,8 @@ fun Routing.gastoRoute() {
             // Crear nuevo gasto
             post({
                 description = "Crear nuevo gasto (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<GastoCrearDto> {}
                 }
@@ -154,6 +169,9 @@ fun Routing.gastoRoute() {
                 logger.debug { "Post gasto" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@post
+
                     val gastoCrearDto = call.receive<GastoCrearDto>()
                     gastoService.addGasto(gastoCrearDto.toModel()).mapBoth(
                         success = { gasto -> call.respond(HttpStatusCode.Created, gasto.toDto()) },
@@ -169,6 +187,8 @@ fun Routing.gastoRoute() {
             // Actualizar un gasto
             put({
                 description = "Actualizar un gasto (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     body<GastoDto> {}
                 }
@@ -194,6 +214,9 @@ fun Routing.gastoRoute() {
                 logger.debug { "Put gasto" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@put
+
                     val gastoDto = call.receive<GastoDto>()
                     gastoService.updateGasto(gastoDto.toModel()).mapBoth(
                         success = { gasto ->
@@ -213,6 +236,8 @@ fun Routing.gastoRoute() {
             // Eliminar un gasto
             delete("/{id}", {
                 description = "Eliminar un gasto por ID (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
                 request {
                     pathParameter<Long>("id") {
                         description = "ID del gasto."
@@ -241,6 +266,9 @@ fun Routing.gastoRoute() {
                 logger.debug { "Delete gasto" }
 
                 try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@delete
+
                     // Recoge el id:
                     val id = call.parameters["id"]?.toLongOrNull()
                     if (id != null) {

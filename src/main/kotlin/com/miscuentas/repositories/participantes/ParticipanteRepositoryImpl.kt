@@ -81,7 +81,7 @@ class ParticipanteRepositoryImpl : ParticipanteRepository {
             .singleOrNull()
     }
 
-    override suspend fun findByHoja(idHoja: Long): List<Participante>? = dbQuery {
+    override suspend fun findByHoja(idHoja: Long): List<Participante> = dbQuery {
         ParticipantesTable.select { ParticipantesTable.idHoja eq idHoja }.map { resultRowToParticipante(it) }
     }
 }

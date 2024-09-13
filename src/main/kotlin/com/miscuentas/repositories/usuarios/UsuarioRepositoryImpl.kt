@@ -37,13 +37,9 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         )
     }
 
-    /** hashedPassword() codifica la contraseña antes de guardarla en persistencia.
-     * @param contrasenna introducida por el usuario.
-     * @return contasenna hasheada.
-     */
     override fun hashedPassword(contrasenna: String): String {
         // Genera el hash con un cost de 12 (puedes ajustarlo según tu necesidad)
-        return BCrypt.withDefaults().hashToString(12, contrasenna.toCharArray())
+        return BCrypt.withDefaults().hashToString(BCRYPT_SALT, contrasenna.toCharArray())
     }
 
     override suspend fun getAll(): List<Usuario> = dbQuery{
@@ -82,7 +78,7 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         insertStmt.resultedValues?.singleOrNull()?.let { resultRowToUsuario(it) }
     }
 
-    override suspend fun saveAll(entities: Iterable<Usuario>): List<Usuario>?  = dbQuery{
+    override suspend fun saveAll(entities: Iterable<Usuario>): List<Usuario>  = dbQuery{
         entities.forEach { save(it) }
         this.getAll()
     }
