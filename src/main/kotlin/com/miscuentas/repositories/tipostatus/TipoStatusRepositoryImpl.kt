@@ -1,4 +1,4 @@
-package com.miscuentas.repositories.tipoStatus
+package com.miscuentas.repositories.tipostatus
 
 import com.miscuentas.entities.TipoStatusTable
 import com.miscuentas.entities.TipoStatusTable.tipo
@@ -6,7 +6,6 @@ import com.miscuentas.models.TipoStatus
 import com.miscuentas.plugins.dbQuery
 import mu.KotlinLogging
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 private val logger = KotlinLogging.logger {}
 

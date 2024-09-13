@@ -18,5 +18,5 @@
 | [com.miscuentas.repositories.usuarios](ktor--api--mis-cuentas/com.miscuentas.repositories.usuarios/index.md) |
 | [com.miscuentas.routes](ktor--api--mis-cuentas/com.miscuentas.routes/index.md) |
 | [com.miscuentas.services.auth](ktor--api--mis-cuentas/com.miscuentas.services.auth/index.md) |
-| [com.miscuentas.services.tipoPerfiles](ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/index.md) |
+| [com.miscuentas.services.tipoperfiles](ktor--api--mis-cuentas/com.miscuentas.services.tipoperfiles/index.md) |
 | [com.miscuentas.services.usuarios](ktor--api--mis-cuentas/com.miscuentas.services.usuarios/index.md) |

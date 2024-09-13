@@ -1,11 +1,10 @@
-package com.miscuentas.services.emailLogs
+package com.miscuentas.services.emaillogs
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.EmailLogErrores
 import com.miscuentas.models.EmailLog
-import com.miscuentas.repositories.emailLogs.EmailLogRepository
+import com.miscuentas.repositories.emaillogs.EmailLogRepository
 import mu.KotlinLogging
-import java.math.BigDecimal
 
 class EmailLogServiceImp(
     private val emailLogRepository: EmailLogRepository

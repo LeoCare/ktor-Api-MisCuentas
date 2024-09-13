@@ -6,7 +6,7 @@ import com.miscuentas.dto.TipoStatusDto
 import com.miscuentas.errors.TipoStatusErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.services.auth.getAuthenticatedUsuario
-import com.miscuentas.services.tipoStatus.TipoStatusService
+import com.miscuentas.services.tipostatus.TipoStatusService
 import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*

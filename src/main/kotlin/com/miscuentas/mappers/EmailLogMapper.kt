@@ -29,6 +29,24 @@ fun EmailLog.toDto() = EmailLogDto(
  */
 fun List<EmailLog>.toDto() = this.map { it.toDto() }
 
+
+/**
+ * Extensión para convertir una instancia de `EmailLog` a `EmailLogDto`.
+ *
+ * @return Una instancia de `EmailLogDto` con los datos del `EmailLog`.
+ */
+fun EmailLogDto.toModel() = EmailLog(
+    idEmail = this.idEmail,
+    idParticipante = this.idParticipante,
+    idPago = this.idPago,
+    tipo = this.tipo,
+    destinatario = this.destinatario,
+    asunto = this.asunto,
+    contenido = this.contenido,
+    fechaEnvio = this.fechaEnvio.toString(),
+    estado = this.estado
+)
+
 /**
  * Extensión para convertir una instancia de `EmailLogCrearDto` a `EmailLog`.
  *

@@ -1,4 +1,4 @@
-package com.miscuentas.services.tipoStatus
+package com.miscuentas.services.tipostatus
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.TipoStatusErrores

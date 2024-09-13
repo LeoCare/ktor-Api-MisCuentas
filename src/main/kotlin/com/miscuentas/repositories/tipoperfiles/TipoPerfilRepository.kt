@@ -1,4 +1,4 @@
-package com.miscuentas.repositories.tipoPerfiles
+package com.miscuentas.repositories.tipoperfiles
 
 import com.miscuentas.models.TipoPerfil
 import com.miscuentas.repositories.base.CrudRepository

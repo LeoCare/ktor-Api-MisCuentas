@@ -1,4 +1,4 @@
-package com.miscuentas.repositories.tipoStatus
+package com.miscuentas.repositories.tipostatus
 
 import com.miscuentas.models.TipoStatus
 import com.miscuentas.repositories.base.CrudRepository

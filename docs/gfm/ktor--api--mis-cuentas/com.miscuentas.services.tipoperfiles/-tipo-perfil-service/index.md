@@ -1,4 +1,4 @@
-//[ktor-Api-MisCuentas](../../../index.md)/[com.miscuentas.services.tipoPerfiles](../index.md)/[TipoPerfilService](index.md)
+//[ktor-Api-MisCuentas](../../../index.md)/[com.miscuentas.services.tipoperfiles](../index.md)/[TipoPerfilService](index.md)
 
 # TipoPerfilService
 

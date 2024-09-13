@@ -1,4 +1,4 @@
-package com.miscuentas.services.emailLogs
+package com.miscuentas.services.emaillogs
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.EmailLogErrores

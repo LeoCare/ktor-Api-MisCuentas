@@ -1,4 +1,4 @@
-package com.miscuentas.services.tipoBalances
+package com.miscuentas.services.tipobalances
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.TipoBalanceErrores

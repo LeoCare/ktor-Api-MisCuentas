@@ -1,4 +1,4 @@
-package com.miscuentas.repositories.emailLogs
+package com.miscuentas.repositories.emaillogs
 
 import com.miscuentas.entities.EmailLogTable
 import com.miscuentas.entities.EmailLogTable.asunto

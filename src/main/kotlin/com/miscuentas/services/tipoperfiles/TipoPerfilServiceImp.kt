@@ -1,9 +1,9 @@
-package com.miscuentas.services.tipoPerfiles
+package com.miscuentas.services.tipoperfiles
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.TipoPerfilErrores
 import com.miscuentas.models.TipoPerfil
-import com.miscuentas.repositories.tipoPerfiles.TipoPerfilRepository
+import com.miscuentas.repositories.tipoperfiles.TipoPerfilRepository
 import mu.KotlinLogging
 
 class TipoPerfilServiceImp(

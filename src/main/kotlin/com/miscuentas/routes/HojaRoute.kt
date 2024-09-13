@@ -66,7 +66,7 @@ fun Routing.hojaRoute() {
 
                 try {
                     // Recoge Id del token y lo valida:
-                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+                   // val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
 
                     hojaService.getAllHojas().mapBoth(
                         success = { hojas ->

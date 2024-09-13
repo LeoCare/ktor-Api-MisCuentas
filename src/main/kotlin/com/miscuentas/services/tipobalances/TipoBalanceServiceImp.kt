@@ -1,9 +1,9 @@
-package com.miscuentas.services.tipoBalances
+package com.miscuentas.services.tipobalances
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.TipoBalanceErrores
 import com.miscuentas.models.TipoBalance
-import com.miscuentas.repositories.tipoBalances.TipoBalanceRepository
+import com.miscuentas.repositories.tipobalances.TipoBalanceRepository
 import mu.KotlinLogging
 
 class TipoBalanceServiceImp(

@@ -1,4 +1,4 @@
-package com.miscuentas.repositories.emailLogs
+package com.miscuentas.repositories.emaillogs
 
 import com.miscuentas.models.EmailLog
 import com.miscuentas.repositories.base.CrudRepository

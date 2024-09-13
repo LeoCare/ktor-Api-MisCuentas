@@ -5,7 +5,7 @@ import com.miscuentas.dto.TipoBalanceDto
 import com.miscuentas.errors.TipoBalanceErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.services.auth.getAuthenticatedUsuario
-import com.miscuentas.services.tipoBalances.TipoBalanceService
+import com.miscuentas.services.tipobalances.TipoBalanceService
 import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.ktor.http.*

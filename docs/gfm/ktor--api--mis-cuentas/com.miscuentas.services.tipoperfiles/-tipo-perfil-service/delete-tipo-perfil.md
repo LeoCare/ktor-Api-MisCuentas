@@ -1,4 +1,4 @@
-//[ktor-Api-MisCuentas](../../../index.md)/[com.miscuentas.services.tipoPerfiles](../index.md)/[TipoPerfilService](index.md)/[deleteTipoPerfil](delete-tipo-perfil.md)
+//[ktor-Api-MisCuentas](../../../index.md)/[com.miscuentas.services.tipoperfiles](../index.md)/[TipoPerfilService](index.md)/[deleteTipoPerfil](delete-tipo-perfil.md)
 
 # deleteTipoPerfil
 

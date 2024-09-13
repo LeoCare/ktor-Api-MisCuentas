@@ -1,9 +1,9 @@
-package com.miscuentas.services.tipoStatus
+package com.miscuentas.services.tipostatus
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.TipoStatusErrores
 import com.miscuentas.models.TipoStatus
-import com.miscuentas.repositories.tipoStatus.TipoStatusRepository
+import com.miscuentas.repositories.tipostatus.TipoStatusRepository
 import mu.KotlinLogging
 
 class TipoStatusServiceImp(

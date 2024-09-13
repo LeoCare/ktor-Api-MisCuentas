@@ -44,7 +44,6 @@ val environment = applicationEngineEnvironment {
 embeddedServer(Netty, environment).start(wait = true)
 }
 
-@Suppress("unused")
 fun Application.module() {
 configureDI()
 configureSecurity()

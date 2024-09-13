@@ -1,4 +1,4 @@
-package com.miscuentas.repositories.tipoBalances
+package com.miscuentas.repositories.tipobalances
 
 import com.miscuentas.models.TipoBalance
 import com.miscuentas.repositories.base.CrudRepository

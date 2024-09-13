@@ -1,4 +1,4 @@
-package com.miscuentas.services.tipoPerfiles
+package com.miscuentas.services.tipoperfiles
 
 import com.github.michaelbull.result.*
 import com.miscuentas.errors.TipoPerfilErrores
