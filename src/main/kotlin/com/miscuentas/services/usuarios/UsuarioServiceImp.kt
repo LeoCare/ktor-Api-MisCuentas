@@ -110,7 +110,7 @@ class UsuarioServiceImp(
                 } ?: Err(UsuarioErrores.NotFound("Usuario no registrado para logeo."))
             },
             failure = {
-                logger.debug { "Servicio: checkCorreoExist() -> ese correo no existente" }
+                logger.debug { "Servicio: checkCorreoExist() -> ese correo no existe" }
                 Err(UsuarioErrores.BadRequest("El correo: $correo no existe."))
             }
         )

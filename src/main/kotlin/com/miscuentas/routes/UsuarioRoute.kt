@@ -167,7 +167,7 @@ fun Routing.usuarioRoute() {
             }
             response {
                 HttpStatusCode.OK to {
-                    description = "Retorna el usuario junto con el Token para futuras peticiones."
+                    description = "Retorna el usuario, con contraseña, junto con el Token para futuras peticiones."
                     body<UsuarioWithTokenDto> {}
                 }
                 HttpStatusCode.NotFound to {
@@ -333,18 +333,18 @@ fun Routing.usuarioRoute() {
                         } else {
                             call.respond(
                                 HttpStatusCode.Forbidden,
-                                "Acceso denegado: solo los administradores pueden actualizar usuarios"
+                                "Acceso denegado: solo los administradores pueden ver la lista de usuarios"
                             )
                         }
                     }.onFailure { // No es admin:
                         call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
                     }
                 } catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al botener la lista de usuarios.")
                 } catch (e: Exception) {
                     call.respond(
                         HttpStatusCode.InternalServerError,
-                        e.message ?: "Error desconocido al crear el usuario."
+                        e.message ?: "Error desconocido al botener la lista de usuarios."
                     )
                 }
             }

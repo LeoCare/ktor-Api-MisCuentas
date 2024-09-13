@@ -1,5 +1,6 @@
 package com.miscuentas.repositories.usuarios
 
+import at.favre.lib.crypto.bcrypt.BCrypt
 import com.miscuentas.entities.TipoPerfil
 import com.miscuentas.entities.UsuariosTable
 import com.miscuentas.entities.UsuariosTable.contrasenna
@@ -40,7 +41,10 @@ class UsuarioRepositoryImpl: UsuarioRepository {
      * @param contrasenna introducida por el usuario.
      * @return contasenna hasheada.
      */
-    override fun hashedPassword(contrasenna: String) = Bcrypt.hash(contrasenna, BCRYPT_SALT).decodeToString()
+    override fun hashedPassword(contrasenna: String): String {
+        // Genera el hash con un cost de 12 (puedes ajustarlo según tu necesidad)
+        return BCrypt.withDefaults().hashToString(12, contrasenna.toCharArray())
+    }
 
     override suspend fun getAll(): List<Usuario> = dbQuery{
         logger.debug { "Obtener todos" }
@@ -52,13 +56,6 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     }
 
     override suspend fun getAllBy(c: String, q: String?): List<Usuario>  = dbQuery{
-        //OPCION VALIDA
-        //val column = UsuariosTable.getColumnByName(c)
-            //?: throw IllegalArgumentException("La columna $c no existe.")
-        //UsuariosTable.select { (column.lowerCase() like "%${q?.lowercase()}%")}
-            //.map { resultRowToUsuario(it) }
-
-        //OPCION DE PRUEBA (si funciona, eliminar la funcion getColumnByName de UsuarioEntity)
         val column = UsuariosTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
         UsuariosTable.select { (column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%")}
@@ -102,7 +99,6 @@ class UsuarioRepositoryImpl: UsuarioRepository {
         val usuarios = getAllBy("correo", correo) // Lista de Usuarios con el mismo correo.
         for (usuario in usuarios) {
             if (Bcrypt.verify(contrasenna, usuario.contrasenna.encodeToByteArray())){
-            //if (contrasenna == usuario.contrasenna){
                 return@dbQuery usuario
             }
         }

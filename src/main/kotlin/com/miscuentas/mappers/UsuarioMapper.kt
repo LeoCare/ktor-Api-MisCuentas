@@ -14,7 +14,7 @@ fun Usuario.toDto() = UsuarioDto(
     idUsuario = this.idUsuario,
     nombre = this.nombre,
     correo = this.correo,
-    contrasenna = null,
+    contrasenna = this.contrasenna,
     perfil = this.perfil.codigo
 )
 /**
