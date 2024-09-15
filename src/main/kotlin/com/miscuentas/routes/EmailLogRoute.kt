@@ -5,10 +5,13 @@ import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import com.miscuentas.dto.EmailLogCrearDto
 import com.miscuentas.dto.EmailLogDto
+import com.miscuentas.dto.HojaDto
 import com.miscuentas.errors.EmailLogErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
+import com.miscuentas.services.auth.getAuthenticatedUsuario
 import com.miscuentas.services.emaillogs.EmailLogService
+import com.miscuentas.services.usuarios.UsuarioService
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
@@ -30,6 +33,7 @@ private const val ENDPOINT = "/emails"
 fun Routing.emailLogRoute() {
 
     val emailLogService by inject<EmailLogService>()
+    val usuarioService by inject<UsuarioService>()
 
     route("/$ENDPOINT") {
 
@@ -127,6 +131,80 @@ fun Routing.emailLogRoute() {
                     call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el log de email.")
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el log de email.")
+                }
+            }
+
+            // Obtencion de lista de emails que coincidan con lo solicitado  --> GET /api/emails/WhenData
+            get("/WhenData", {
+                description = "SOLICITAR UNOS DATOS EN CONCRETO. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
+                request {
+                    queryParameter<String>("c") {
+                        description = "nombre de la columna a filtrar"
+                        required = true // Optional
+                    }
+                    queryParameter<String>("q") {
+                        description = "dato de la columna a filtrar"
+                        required = true // Optional
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna lista de emails que coincidan con ese valor."
+                        body<List<EmailLogDto>> { }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> {}
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
+                        body<String> { }
+                    }
+                }
+            }) {
+                logger.debug { "Get WhenData" }
+
+                try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
+                    //Obtener datos que coincidan con..
+                    val column = call.request.queryParameters["c"] //Con parametros pasado en la query
+                    val query = call.request.queryParameters["q"]
+
+                    //si especifica columna y dato:
+                    if (!column.isNullOrEmpty() && !query.isNullOrEmpty()) {
+                        emailLogService.getEmailLogsBy(column, query).mapBoth(
+                            success = { emailsCoincidentes ->
+                                call.respond(HttpStatusCode.OK, emailsCoincidentes.toDto())
+                            },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotImplemented, error.message)
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "No has especificado el dato requerido!!")
+                    }
+
+
+                }catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al buscar los emails requeridas.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al buscar los emails requeridas.")
                 }
             }
 

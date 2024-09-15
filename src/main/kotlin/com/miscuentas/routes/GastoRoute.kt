@@ -5,6 +5,7 @@ import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import com.miscuentas.dto.GastoCrearDto
 import com.miscuentas.dto.GastoDto
+import com.miscuentas.dto.HojaDto
 import com.miscuentas.errors.GastoErrores
 import com.miscuentas.mappers.toDto
 import com.miscuentas.mappers.toModel
@@ -136,6 +137,80 @@ fun Routing.gastoRoute() {
                     call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al obtener el gasto.")
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al obtener el gasto.")
+                }
+            }
+
+            // Obtencion de lista de gastos que coincidan con lo solicitado  --> GET /api/gastos/WhenData
+            get("/WhenData", {
+                description = "SOLICITAR UNOS DATOS EN CONCRETO. (Necesario Token)"
+                operationId = "Se realiza comprobacion del Token."
+                securitySchemeName = "JWT-Auth"
+                request {
+                    queryParameter<String>("c") {
+                        description = "nombre de la columna a filtrar"
+                        required = true // Optional
+                    }
+                    queryParameter<String>("q") {
+                        description = "dato de la columna a filtrar"
+                        required = true // Optional
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Retorna lista de gastos que coincidan con ese valor."
+                        body<List<GastoDto>> { }
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Retorna mensaje de aviso, si no encuentra los datos."
+                        body<String> {}
+                    }
+                    HttpStatusCode.NotImplemented to {
+                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                        body<String> { }
+                    }
+                    HttpStatusCode.BadRequest to {
+                        description = "Retorna mensaje de error de SQL."
+                        body<String> {}
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Retorna mensaje de error desconocido."
+                        body<String> {}
+                    }
+                    HttpStatusCode.Forbidden to {
+                        description = "Acceso denegado por falta de permisos."
+                        body<String> { }
+                    }
+                }
+            }) {
+                logger.debug { "Get WhenData" }
+
+                try {
+                    // Recoge Id del token y lo valida:
+                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@get
+
+                    //Obtener datos que coincidan con..
+                    val column = call.request.queryParameters["c"] //Con parametros pasado en la query
+                    val query = call.request.queryParameters["q"]
+
+                    //si especifica columna y dato:
+                    if (!column.isNullOrEmpty() && !query.isNullOrEmpty()) {
+                        gastoService.getGastosBy(column, query).mapBoth(
+                            success = { gastosCoincidentes ->
+                                call.respond(HttpStatusCode.OK, gastosCoincidentes.toDto())
+                            },
+                            failure = { error ->
+                                call.respond(HttpStatusCode.NotImplemented, error.message)
+                            }
+                        )
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "No has especificado el dato requerido!!")
+                    }
+
+
+                }catch (e: ExposedSQLException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al buscar los gastos requeridas.")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al buscar los gastos requeridas.")
                 }
             }
 

@@ -11,7 +11,11 @@ fun Application.configureCors() {
         anyHost() // Permitir cualquier host
         allowHeader(HttpHeaders.ContentType) // Permitir contenido en la cabecera
         allowHeader(HttpHeaders.Authorization)
-        allowHost("client-host") // Permitir solicitudes del host-cliente
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Post)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Delete)
+        allowCredentials = true
 
         /* OTRAS POSIBLES OPCIONES: */
         // Permitir solicitudes del host-cliente en puerto 8081:
