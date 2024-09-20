@@ -12,7 +12,7 @@ package com.miscuentas.models
 data class Participante(
     val idParticipante: Long,
     val nombre: String,
-    val correo: String,
-    val idUsuario: Long,
+    val correo: String? = null,
+    val idUsuario: Long? = null,
     val idHoja: Long
 )

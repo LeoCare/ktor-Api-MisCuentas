@@ -17,8 +17,8 @@ data class HojaDto(
     val idHoja: Long,
     val titulo: String,
     val fechaCreacion: String, // Formato ISO para las fechas
-    val fechaCierre: String?, // Puede ser nulo
-    val limiteGastos: String, // Usa String para BigDecimal para serialización
+    val fechaCierre: String? = null, // Puede ser nulo
+    val limiteGastos: String? = null, // Usa String para BigDecimal para serialización
     val status: String,
     val idUsuario: Long
 )
@@ -36,8 +36,8 @@ data class HojaDto(
 data class HojaCrearDto(
     val titulo: String,
     val fechaCreacion: String,
-    val fechaCierre: String?,
-    val limiteGastos: String,
+    val fechaCierre: String? = null,
+    val limiteGastos: String? = null,
     val status: String,
     val idUsuario: Long
 )
@@ -57,8 +57,8 @@ data class HojaUpdateDto (
     val idHoja: Long,
     val titulo: String,
     val fechaCreacion: String,
-    val fechaCierre: String?,
-    val limiteGastos: String,
+    val fechaCierre: String? = null,
+    val limiteGastos: String? = null,
     val status: String,
     val idUsuario: Long
 )

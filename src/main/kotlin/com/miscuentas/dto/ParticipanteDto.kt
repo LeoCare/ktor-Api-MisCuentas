@@ -14,8 +14,8 @@ import kotlinx.serialization.Serializable
 data class ParticipanteDto(
     val idParticipante: Long,
     val nombre: String,
-    val correo: String,
-    val idUsuario: Long,
+    val correo: String? = null,
+    val idUsuario: Long? = null,
     val idHoja: Long
 )
 
@@ -29,8 +29,8 @@ data class ParticipanteDto(
 @Serializable
 data class ParticipanteCrearDto(
     val nombre: String,
-    val correo: String,
-    val idUsuario: Long,
+    val correo: String? = null,
+    val idUsuario: Long? = null,
     val idHoja: Long
 )
 

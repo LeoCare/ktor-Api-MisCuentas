@@ -14,22 +14,22 @@ fun main() {
     val dotenv = Dotenv.configure().ignoreIfMissing().load()
 
     /** SE COMENTA LO NECESARIO PARA PRUEBAS EN INTERNO **/
-/*
+/* */
     val keyStoreFile = File("build/keystore.jks")
     val keyStore = buildKeyStore {
         certificate(dotenv["SSL_KEY_ALIAS"]) {
             password = dotenv["SSL_KEYSTORE_PASSWORD"]
-            domains = listOf("0.0.0.0", "127.0.0.1", "localhost")
+            domains = listOf("0.0.0.0", "192.168.7.27", "localhost")
         }
     }
     keyStore.saveToFile(keyStoreFile, dotenv["SSL_KEYSTORE_PASSWORD"])
-    */
+
 val environment = applicationEngineEnvironment {
     log = LoggerFactory.getLogger("ktor.application")
     connector {
         port = dotenv["PORT"].toInt()
     }
-/*
+/**/
     sslConnector(
         keyStore = keyStore,
         keyAlias = dotenv["SSL_KEY_ALIAS"],
@@ -38,7 +38,7 @@ val environment = applicationEngineEnvironment {
         port = dotenv["SSL_PORT"].toInt()
         keyStorePath = keyStoreFile
     }
-        */
+
     module(Application::module)
 }
 embeddedServer(Netty, environment).start(wait = true)

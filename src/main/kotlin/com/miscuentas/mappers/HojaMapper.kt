@@ -5,6 +5,9 @@ import com.miscuentas.dto.HojaDto
 import com.miscuentas.entities.TipoStatus
 import com.miscuentas.models.Hoja
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 
 /**
  * Extensión para convertir una instancia de `Hoja` a `HojaDto`.
@@ -14,9 +17,9 @@ import java.time.LocalDate
 fun Hoja.toDto() = HojaDto(
     idHoja = this.idHoja,
     titulo = this.titulo,
-    fechaCreacion = this.fechaCreacion.toString(),
-    fechaCierre = this.fechaCierre?.toString(),
-    limiteGastos = this.limiteGastos.toString(),
+    fechaCreacion = this.fechaCreacion.format(dateFormatter),
+    fechaCierre = this.fechaCierre?.format(dateFormatter),
+    limiteGastos = this.limiteGastos?.toString(),
     status = this.status.codigo,
     idUsuario = this.idUsuario
 )
@@ -36,9 +39,9 @@ fun List<Hoja>.toDto() = this.map { it.toDto() }
 fun HojaDto.toModel() = Hoja(
     idHoja = this.idHoja,
     titulo = this.titulo,
-    fechaCreacion = LocalDate.parse(this.fechaCreacion),
-    fechaCierre = this.fechaCierre?.let { LocalDate.parse(it) },
-    limiteGastos = this.limiteGastos.toBigDecimal(),
+    fechaCreacion = LocalDate.parse(this.fechaCreacion, dateFormatter),
+    fechaCierre = this.fechaCierre?.let { LocalDate.parse(it, dateFormatter) },
+    limiteGastos = this.limiteGastos?.toBigDecimal(),
     status = TipoStatus.fromCodigo(this.status) ?: TipoStatus.ABIERTO,
     idUsuario = this.idUsuario
 )
@@ -51,9 +54,9 @@ fun HojaDto.toModel() = Hoja(
 fun HojaCrearDto.toModel() = Hoja(
     idHoja = 0,
     titulo = this.titulo,
-    fechaCreacion = LocalDate.parse(this.fechaCreacion),
-    fechaCierre = this.fechaCierre?.let { LocalDate.parse(it) },
-    limiteGastos = this.limiteGastos.toBigDecimal(),
+    fechaCreacion = LocalDate.parse(this.fechaCreacion, dateFormatter),
+    fechaCierre = this.fechaCierre?.let { LocalDate.parse(it, dateFormatter) },
+    limiteGastos = this.limiteGastos?.toBigDecimal(),
     status = TipoStatus.fromCodigo(this.status) ?: TipoStatus.ABIERTO,
     idUsuario = this.idUsuario
 )

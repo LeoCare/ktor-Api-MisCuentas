@@ -37,7 +37,7 @@ fun GastoDto.toModel() = Gasto(
     tipo = this.tipo,
     concepto = this.concepto,
     importe = this.importe.toBigDecimal(),
-    fechaGasto = LocalDate.parse(this.fechaGasto),
+    fechaGasto = LocalDate.parse(this.fechaGasto, dateFormatter),
     idParticipante = this.idParticipante,
     idImagen = this.idImagen
 )
@@ -52,7 +52,7 @@ fun GastoCrearDto.toModel() = Gasto(
     tipo = this.tipo,
     concepto = this.concepto,
     importe = this.importe.toBigDecimal(),
-    fechaGasto = LocalDate.parse(this.fechaGasto),
+    fechaGasto = LocalDate.parse(this.fechaGasto, dateFormatter),
     idParticipante = this.idParticipante,
     idImagen = this.idImagen
 )

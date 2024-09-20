@@ -21,7 +21,7 @@ object HojasTable : Table("HOJAS") {
     val titulo = varchar("titulo", 255)
     val fechaCreacion = date("fecha_creacion")
     val fechaCierre = date("fecha_cierre").nullable()
-    val limiteGastos = decimal("limite_gastos", 10, 2)
+    val limiteGastos = decimal("limite_gastos", 10, 2).nullable()
     val status = varchar("status", 2) references TipoStatusTable.tipo
     val idUsuario = long("id_usuario") references UsuariosTable.id_usuario
 

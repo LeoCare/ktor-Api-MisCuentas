@@ -19,8 +19,8 @@ data class Hoja(
     val idHoja: Long,
     val titulo: String,
     val fechaCreacion: LocalDate,
-    val fechaCierre: LocalDate?,
-    val limiteGastos: BigDecimal,
+    val fechaCierre: LocalDate? = null,
+    val limiteGastos: BigDecimal? = null,
     val status: TipoStatus = TipoStatus.ABIERTO,
     val idUsuario: Long
 )
