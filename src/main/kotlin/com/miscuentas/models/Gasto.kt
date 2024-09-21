@@ -23,5 +23,5 @@ data class Gasto(
     val importe: BigDecimal,
     val fechaGasto: LocalDate,
     val idParticipante: Long,
-    val idImagen: Long
+    val idImagen: Long?
 )

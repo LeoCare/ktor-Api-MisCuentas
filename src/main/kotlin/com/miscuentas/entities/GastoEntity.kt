@@ -23,7 +23,7 @@ object GastosTable : Table("GASTOS") {
     val importe = decimal("importe", 10, 2)
     val fechaGasto = date("fecha_gasto")
     val idParticipante = long("id_participante") references ParticipantesTable.idParticipante
-    val idImagen = long("id_imagen") references ImagenesTable.idImagen
+    val idImagen = long("id_imagen").nullable()
 
     /**
      * Define la clave primaria de la tabla `GASTOS` usando la columna `idGasto`.

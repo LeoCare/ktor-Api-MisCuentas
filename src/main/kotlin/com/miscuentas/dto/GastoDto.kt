@@ -20,7 +20,7 @@ data class GastoDto(
     val importe: String,
     val fechaGasto: String,
     val idParticipante: Long,
-    val idImagen: Long
+    val idImagen: Long?
 )
 
 /** Serialización de un gasto nuevo a crear:
@@ -39,7 +39,7 @@ data class GastoCrearDto(
     val importe: String,
     val fechaGasto: String,
     val idParticipante: Long,
-    val idImagen: Long
+    val idImagen: Long? = null
 )
 
 /** Serialización de un gasto a actualizar:
