@@ -18,9 +18,9 @@ data class PagoDto(
     val idBalance: Long,
     val idBalancePagado: Long,
     val monto: String,
-    val idImagen: Long,
+    val idImagen: Long? = null,
     val fechaPago: String,
-    val fechaConfirmacion: String?
+    val fechaConfirmacion: String? = null
 )
 
 /** Serialización de un pago nuevo a crear:
@@ -36,9 +36,9 @@ data class PagoCrearDto(
     val idBalance: Long,
     val idBalancePagado: Long,
     val monto: String,
-    val idImagen: Long,
+    val idImagen: Long? = null,
     val fechaPago: String,
-    val fechaConfirmacion: String?
+    val fechaConfirmacion: String? = null
 )
 
 /** Serialización de un pago a actualizar:

@@ -140,8 +140,9 @@ fun Routing.usuarioRoute() {
                 // Agrego usuario:
                 usuarioService.addUsuario(usuario).mapBoth(
                     success = { usuarioCreado ->
-                        val token = tokenService.generateJWT(usuarioCreado)
-                        call.respond(HttpStatusCode.Created, UsuarioWithTokenDto(usuarioCreado.toDto(), token))
+                        val accessToken  = tokenService.generateAccessToken(usuarioCreado)
+                        val refreshToken = tokenService.generateRefreshToken(usuarioCreado)
+                        call.respond(HttpStatusCode.Created, UsuarioWithTokenDto(usuarioCreado.toDto(), accessToken, refreshToken))
                     },
                     failure = { error ->
                         call.respond(HttpStatusCode.BadRequest, handleUserError(error))
@@ -200,8 +201,9 @@ fun Routing.usuarioRoute() {
                 // Comprueba si el logeo es correcto:
                 usuarioService.checkUserEmailAndPassword(usuario.correo, usuario.contrasenna).mapBoth(
                     success = { usuarioLogeado ->
-                        val token = tokenService.generateJWT(usuarioLogeado)
-                        call.respond(HttpStatusCode.OK, UsuarioWithTokenDto(usuarioLogeado.toDto(), token))
+                        val accessToken  = tokenService.generateAccessToken(usuarioLogeado)
+                        val refreshToken = tokenService.generateRefreshToken(usuarioLogeado)
+                        call.respond(HttpStatusCode.OK, UsuarioWithTokenDto(usuarioLogeado.toDto(), accessToken, refreshToken))
                     },
                     failure = { error ->
                         call.respond(HttpStatusCode.Unauthorized, error.message)
@@ -211,6 +213,68 @@ fun Routing.usuarioRoute() {
                 call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
+            }
+        }
+
+        // Login de un usuario --> POST /api/refreshToken/login
+        post("/refreshToken", {
+            description = "REFRESCO DEL TOKEN DE ACCESO."
+            request {
+                body<RefreshTokenRequest> {
+                    description = "Token de refresco a verificar."
+                    required = true // Optional
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Retorna un nuevo Token de Acceso y un nuevo Token de Refresco."
+                    body<TokenResponse> {}
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Retorna mensaje de aviso, si no encuentra los datos."
+                    body<String> { }
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Retorna mensaje de error de SQL."
+                    body<String> {}
+                }
+                HttpStatusCode.Unauthorized to {
+                    description = "Retorna mensaje de aviso, si el logeo no es aceptado."
+                    body<String> {}
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Retorna mensaje de error desconocido."
+                    body<String> {}
+                }
+            }
+        }) {
+            logger.debug { "POST refreshToken" }
+
+            try {
+                // Recoge el token de actualizacion:
+                val refreshTokenRequest = call.receive<RefreshTokenRequest>()
+                val refreshToken = refreshTokenRequest.refreshToken
+
+                // Verifica el token de actualizacion:
+                val verifier = tokenService.verifyRefreshToken()
+                val decodedJWT = verifier.verify(refreshToken)
+                val userId = decodedJWT.getClaim("userId").asString().toLong()
+
+                // Obtengo el usuario y genero unos nuevos token de acceso y refresco
+                usuarioService.getUsuarioById(userId).mapBoth(
+                    success = { usuarioLogeado ->
+                        val newAccessToken  = tokenService.generateAccessToken(usuarioLogeado)
+                        val newRefreshToken = tokenService.generateRefreshToken(usuarioLogeado)
+                        call.respond(HttpStatusCode.OK, TokenResponse(newAccessToken, newRefreshToken))
+                    },
+                    failure = { error ->
+                        call.respond(HttpStatusCode.Unauthorized, error.message)
+                    }
+                )
+            } catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al solicitar nuevo token.")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al solicitar nuevo token.")
             }
         }
 

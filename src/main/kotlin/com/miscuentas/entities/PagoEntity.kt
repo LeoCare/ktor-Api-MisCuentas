@@ -1,5 +1,6 @@
 package com.miscuentas.entities
 
+import com.miscuentas.entities.GastosTable.nullable
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.date
 
@@ -20,7 +21,7 @@ object PagosTable : Table("PAGOS") {
     val idBalance = long("id_balance") references BalancesTable.idBalance
     val idBalancePagado = long("id_balance_pagado") references BalancesTable.idBalance
     val monto = decimal("monto", 10, 2)
-    val idImagen = long("id_imagen") references ImagenesTable.idImagen
+    val idImagen = long("id_imagen").nullable()
     val fechaPago = date("fecha_pago")
     val fechaConfirmacion = date("fecha_confirmacion").nullable()
 

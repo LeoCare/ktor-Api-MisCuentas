@@ -38,8 +38,8 @@ fun PagoDto.toModel() = Pago(
     idBalancePagado = this.idBalancePagado,
     monto = this.monto.toBigDecimal(),
     idImagen = this.idImagen,
-    fechaPago = LocalDate.parse(this.fechaPago),
-    fechaConfirmacion = this.fechaConfirmacion?.let { LocalDate.parse(it) }
+    fechaPago = LocalDate.parse(this.fechaPago, dateFormatter),
+    fechaConfirmacion = this.fechaConfirmacion?.let { LocalDate.parse(it, dateFormatter) }
 )
 
 /**
@@ -53,8 +53,8 @@ fun PagoCrearDto.toModel() = Pago(
     idBalancePagado = this.idBalancePagado,
     monto = this.monto.toBigDecimal(),
     idImagen = this.idImagen,
-    fechaPago = LocalDate.parse(this.fechaPago),
-    fechaConfirmacion = this.fechaConfirmacion?.let { LocalDate.parse(it) }
+    fechaPago = LocalDate.parse(this.fechaPago, dateFormatter),
+    fechaConfirmacion = this.fechaConfirmacion?.let { LocalDate.parse(it, dateFormatter) }
 )
 
 /**

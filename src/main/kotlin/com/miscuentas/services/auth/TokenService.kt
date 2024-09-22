@@ -24,13 +24,14 @@ class TokensService {
     private val issuer by lazy { dotenv["JWT_ISSUER"] }
     private val expiresIn by lazy { dotenv["JWT_EXPIRATION"].toLong() }
     private val secret by lazy { dotenv["JWT_SECRET"] }
+    private val refreshExpiresIn by lazy { dotenv["JWT_REFRESH_EXPIRATION"].toLong() }
 
     init {
         logger.debug { "Servicio de token iniciado por: $audience" }
     }
 
     /** GENERACION DEL TOKEN **/
-    fun generateJWT(usuario: Usuario): String {
+    fun generateAccessToken(usuario: Usuario): String {
         return JWT.create()
             .withAudience(audience)
             .withIssuer(issuer)
@@ -47,6 +48,17 @@ class TokensService {
             )
     }
 
+    /** GENERACION DEL Refresh Token **/
+    fun generateRefreshToken(usuario: Usuario): String {
+        return JWT.create()
+            .withAudience(audience)
+            .withIssuer(issuer)
+            .withSubject("Refresh")
+            .withClaim("userId", usuario.idUsuario.toString())
+            .withExpiresAt(Date(System.currentTimeMillis() + refreshExpiresIn * 1000L))
+            .sign(Algorithm.HMAC512(secret))
+    }
+
 
     /** VERIFICACION DEL TOKEN **/
     fun verifyJWT(): JWTVerifier {
@@ -58,5 +70,14 @@ class TokensService {
         } catch (e: Exception) {
             throw TokenException.InvalidTokenException("Invalid token")
         }
+    }
+
+    /** Verificación del Refresh Token **/
+    fun verifyRefreshToken(): JWTVerifier {
+        return JWT.require(Algorithm.HMAC512(secret))
+            .withAudience(audience)
+            .withIssuer(issuer)
+            .withSubject("Refresh")
+            .build()
     }
 }

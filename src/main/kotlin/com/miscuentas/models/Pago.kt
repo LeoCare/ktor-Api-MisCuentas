@@ -19,7 +19,7 @@ data class Pago(
     val idBalance: Long,
     val idBalancePagado: Long,
     val monto: BigDecimal,
-    val idImagen: Long,
+    val idImagen: Long?,
     val fechaPago: LocalDate,
     val fechaConfirmacion: LocalDate?
 )

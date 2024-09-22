@@ -64,7 +64,8 @@ data class UsuarioLoginDto(
 @Serializable
 data class UsuarioWithTokenDto(
     val usuario: UsuarioDto,
-    val token: String
+    val accessToken: String,
+    val refreshToken: String
 )
 
 /** Serializacion de un usuario con la descripcion del perfil
@@ -77,3 +78,18 @@ data class UsuarioPerfil(
     val nombre: String,
     val descripcion: String,
 )
+
+/** Serializacion del token a regrescar.
+ * @property refreshToken token de autorizacion de refresco.
+ * @constructor Instancia a serializar.
+ * */
+@Serializable
+data class RefreshTokenRequest(val refreshToken: String)
+
+/** Serializacion de un nuevo token y token de refresco
+ * @property accessToken token de acceso a solicitudes.
+ * @property refreshToken toke de refresco tras vencimiento.
+ * @constructor Instancia a serializar.
+ * */
+@Serializable
+data class TokenResponse(val accessToken: String, val refreshToken: String)
