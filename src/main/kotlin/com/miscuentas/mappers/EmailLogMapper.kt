@@ -18,7 +18,7 @@ fun EmailLog.toDto() = EmailLogDto(
     destinatario = this.destinatario,
     asunto = this.asunto,
     contenido = this.contenido,
-    fechaEnvio = this.fechaEnvio.toString(),
+    fechaEnvio = this.fechaEnvio?.format(dateFormatter),
     estado = this.estado
 )
 

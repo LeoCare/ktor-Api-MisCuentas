@@ -23,7 +23,7 @@ data class EmailLogDto(
     val destinatario: String,
     val asunto: String,
     val contenido: String,
-    val fechaEnvio: String,
+    val fechaEnvio: String? = null,
     val estado: String
 )
 

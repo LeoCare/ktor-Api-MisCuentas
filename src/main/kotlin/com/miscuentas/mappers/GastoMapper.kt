@@ -15,7 +15,7 @@ fun Gasto.toDto() = GastoDto(
     tipo = this.tipo,
     concepto = this.concepto,
     importe = this.importe.toString(),
-    fechaGasto = this.fechaGasto.toString(),
+    fechaGasto = this.fechaGasto.format(dateFormatter),
     idParticipante = this.idParticipante,
     idImagen = this.idImagen
 )

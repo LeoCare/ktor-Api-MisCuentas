@@ -16,8 +16,8 @@ fun Pago.toDto() = PagoDto(
     idBalancePagado = this.idBalancePagado,
     monto = this.monto.toString(),
     idImagen = this.idImagen,
-    fechaPago = this.fechaPago.toString(),
-    fechaConfirmacion = this.fechaConfirmacion?.toString()
+    fechaPago = this.fechaPago.format(dateFormatter),
+    fechaConfirmacion = this.fechaConfirmacion?.format(dateFormatter)
 )
 
 /**
