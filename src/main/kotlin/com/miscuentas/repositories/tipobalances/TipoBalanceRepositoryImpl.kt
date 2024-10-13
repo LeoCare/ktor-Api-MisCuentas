@@ -30,7 +30,7 @@ class TipoBalanceRepositoryImpl : TipoBalanceRepository {
     override suspend fun getAllBy(c: String, q: String?): List<TipoBalance>? = dbQuery {
         val column = TipoBalancesTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        TipoBalancesTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        TipoBalancesTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToTipoBalance(it) }
     }
 

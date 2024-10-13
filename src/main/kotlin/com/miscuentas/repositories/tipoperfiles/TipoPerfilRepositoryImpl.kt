@@ -30,7 +30,7 @@ class TipoPerfilRepositoryImpl : TipoPerfilRepository {
     override suspend fun getAllBy(c: String, q: String?): List<TipoPerfil>? = dbQuery {
         val column = TipoPerfilesTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        TipoPerfilesTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        TipoPerfilesTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToTipoPerfil(it) }
     }
 

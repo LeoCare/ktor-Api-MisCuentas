@@ -32,7 +32,7 @@ class ImagenRepositoryImpl : ImagenRepository {
     override suspend fun getAllBy(c: String, q: String?): List<Imagen> = dbQuery {
         val column = ImagenesTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        ImagenesTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        ImagenesTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToImagen(it) }
     }
 

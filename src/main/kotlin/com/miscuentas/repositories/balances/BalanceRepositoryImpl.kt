@@ -40,7 +40,7 @@ class BalanceRepositoryImpl : BalanceRepository {
     override suspend fun getAllBy(c: String, q: String?): List<Balance> = dbQuery {
         val column = BalancesTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        BalancesTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        BalancesTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToBalance(it) }
     }
 

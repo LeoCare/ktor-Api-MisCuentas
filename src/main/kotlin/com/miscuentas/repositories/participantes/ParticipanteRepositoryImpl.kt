@@ -38,7 +38,7 @@ class ParticipanteRepositoryImpl : ParticipanteRepository {
     override suspend fun getAllBy(c: String, q: String?): List<Participante> = dbQuery {
         val column = ParticipantesTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        ParticipantesTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        ParticipantesTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToParticipante(it) }
     }
 

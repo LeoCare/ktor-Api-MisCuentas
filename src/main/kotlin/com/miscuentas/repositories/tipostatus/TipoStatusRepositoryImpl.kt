@@ -30,7 +30,7 @@ class TipoStatusRepositoryImpl : TipoStatusRepository {
     override suspend fun getAllBy(c: String, q: String?): List<TipoStatus>? = dbQuery {
         val column = TipoStatusTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        TipoStatusTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        TipoStatusTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToTipoStatus(it) }
     }
 

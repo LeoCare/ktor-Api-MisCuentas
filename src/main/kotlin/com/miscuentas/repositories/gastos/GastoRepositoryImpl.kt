@@ -42,7 +42,7 @@ class GastoRepositoryImpl : GastoRepository {
     override suspend fun getAllBy(c: String, q: String?): List<Gasto> = dbQuery {
         val column = GastosTable.columns.find { it.name == c }
             ?: throw IllegalArgumentException("La columna $c no existe.")
-        GastosTable.select { column.castTo<String>(TextColumnType()).lowerCase() like "%${q?.lowercase()}%" }
+        GastosTable.select { column.castTo<String>(TextColumnType()).lowerCase() eq "${q?.lowercase()}" }
             .map { resultRowToGasto(it) }
     }
 
@@ -70,7 +70,7 @@ class GastoRepositoryImpl : GastoRepository {
         insertStmt.resultedValues?.singleOrNull()?.let { resultRowToGasto(it) }
     }
 
-    override suspend fun saveAll(entities: Iterable<Gasto>): List<Gasto>? = dbQuery {
+    override suspend fun saveAll(entities: Iterable<Gasto>): List<Gasto> = dbQuery {
         entities.forEach { save(it) }
         this.getAll()
     }
@@ -83,11 +83,11 @@ class GastoRepositoryImpl : GastoRepository {
         GastosTable.deleteAll() > 0
     }
 
-    override suspend fun findByTipo(tipo: String): List<Gasto>? = dbQuery {
+    override suspend fun findByTipo(tipo: String): List<Gasto> = dbQuery {
         GastosTable.select { GastosTable.tipo eq tipo }.map { resultRowToGasto(it) }
     }
 
-    override suspend fun findByParticipante(idParticipante: Long): List<Gasto>? = dbQuery {
+    override suspend fun findByParticipante(idParticipante: Long): List<Gasto> = dbQuery {
         GastosTable.select { GastosTable.idParticipante eq idParticipante }.map { resultRowToGasto(it) }
     }
 }
