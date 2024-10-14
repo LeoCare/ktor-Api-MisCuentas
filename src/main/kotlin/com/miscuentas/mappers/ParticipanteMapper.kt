@@ -13,6 +13,7 @@ fun Participante.toDto() = ParticipanteDto(
     idParticipante = this.idParticipante,
     nombre = this.nombre,
     correo = this.correo,
+    tipo = this.tipo,
     idUsuario = this.idUsuario,
     idHoja = this.idHoja
 )
@@ -33,6 +34,7 @@ fun ParticipanteDto.toModel() = Participante(
     idParticipante = this.idParticipante,
     nombre = this.nombre,
     correo = this.correo,
+    tipo = this.tipo,
     idUsuario = this.idUsuario,
     idHoja = this.idHoja
 )
@@ -46,6 +48,7 @@ fun ParticipanteCrearDto.toModel() = Participante(
     idParticipante = 0,
     nombre = this.nombre,
     correo = this.correo,
+    tipo = this.tipo,
     idUsuario = this.idUsuario,
     idHoja = this.idHoja
 )

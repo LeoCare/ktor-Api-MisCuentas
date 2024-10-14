@@ -15,6 +15,7 @@ data class ParticipanteDto(
     val idParticipante: Long,
     val nombre: String,
     val correo: String? = null,
+    val tipo: String,
     val idUsuario: Long? = null,
     val idHoja: Long
 )
@@ -30,6 +31,7 @@ data class ParticipanteDto(
 data class ParticipanteCrearDto(
     val nombre: String,
     val correo: String? = null,
+    val tipo: String,
     val idUsuario: Long? = null,
     val idHoja: Long
 )
@@ -47,6 +49,7 @@ data class ParticipanteUpdateDto (
     val idParticipante: Long,
     val nombre: String,
     val correo: String,
+    val tipo: String,
     val idUsuario: Long?,
     val idHoja: Long
 )

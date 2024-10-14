@@ -6,6 +6,7 @@ import com.miscuentas.entities.ParticipantesTable.idHoja
 import com.miscuentas.entities.ParticipantesTable.idParticipante
 import com.miscuentas.entities.ParticipantesTable.idUsuario
 import com.miscuentas.entities.ParticipantesTable.nombre
+import com.miscuentas.entities.ParticipantesTable.tipo
 import com.miscuentas.models.Participante
 import com.miscuentas.plugins.dbQuery
 import mu.KotlinLogging
@@ -21,6 +22,7 @@ class ParticipanteRepositoryImpl : ParticipanteRepository {
             idParticipante = resultRow[idParticipante],
             nombre = resultRow[nombre],
             correo = resultRow[correo],
+            tipo = resultRow[tipo],
             idUsuario = resultRow[idUsuario],
             idHoja = resultRow[idHoja]
         )
@@ -46,6 +48,7 @@ class ParticipanteRepositoryImpl : ParticipanteRepository {
         ParticipantesTable.update({ idParticipante eq entity.idParticipante }) {
             it[nombre] = entity.nombre
             it[correo] = entity.correo
+            it[tipo] = entity.tipo
             it[idUsuario] = entity.idUsuario
             it[idHoja] = entity.idHoja
         }
@@ -56,6 +59,7 @@ class ParticipanteRepositoryImpl : ParticipanteRepository {
         val insertStmt = ParticipantesTable.insert {
             it[nombre] = entity.nombre
             it[correo] = entity.correo
+            it[tipo] = entity.tipo
             it[idUsuario] = entity.idUsuario
             it[idHoja] = entity.idHoja
         }

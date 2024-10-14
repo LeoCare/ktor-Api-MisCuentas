@@ -17,6 +17,7 @@ object ParticipantesTable : Table("PARTICIPANTES") {
     val idParticipante = long("id_participante").autoIncrement()
     val nombre = varchar("nombre", 255)
     val correo = varchar("correo", 255).uniqueIndex().nullable()
+    val tipo = varchar("tipo", 255)
     val idUsuario = long("id_usuario").nullable()
     val idHoja = long("id_hoja")  references HojasTable.idHoja
 
