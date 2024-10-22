@@ -12,6 +12,7 @@ import java.time.LocalDate
  */
 fun Pago.toDto() = PagoDto(
     idPago = this.idPago,
+    idParticipante = this.idParticipante,
     idBalance = this.idBalance,
     idBalancePagado = this.idBalancePagado,
     monto = this.monto.toString(),
@@ -34,6 +35,7 @@ fun List<Pago>.toDto() = this.map { it.toDto() }
  */
 fun PagoDto.toModel() = Pago(
     idPago = this.idPago,
+    idParticipante = this.idParticipante,
     idBalance = this.idBalance,
     idBalancePagado = this.idBalancePagado,
     monto = this.monto.toBigDecimal(),
@@ -49,6 +51,7 @@ fun PagoDto.toModel() = Pago(
  */
 fun PagoCrearDto.toModel() = Pago(
     idPago = 0,
+    idParticipante = this.idParticipante,
     idBalance = this.idBalance,
     idBalancePagado = this.idBalancePagado,
     monto = this.monto.toBigDecimal(),

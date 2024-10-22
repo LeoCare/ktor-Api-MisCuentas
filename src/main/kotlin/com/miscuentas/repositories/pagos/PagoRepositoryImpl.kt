@@ -7,6 +7,7 @@ import com.miscuentas.entities.PagosTable.idBalance
 import com.miscuentas.entities.PagosTable.idBalancePagado
 import com.miscuentas.entities.PagosTable.idImagen
 import com.miscuentas.entities.PagosTable.idPago
+import com.miscuentas.entities.PagosTable.idParticipante
 import com.miscuentas.entities.PagosTable.monto
 import com.miscuentas.models.Pago
 import com.miscuentas.plugins.dbQuery
@@ -20,6 +21,7 @@ class PagoRepositoryImpl : PagoRepository {
     private fun resultRowToPago(resultRow: ResultRow): Pago {
         return Pago(
             idPago = resultRow[idPago],
+            idParticipante = resultRow[idParticipante],
             idBalance = resultRow[idBalance],
             idBalancePagado = resultRow[idBalancePagado],
             monto = resultRow[monto],
@@ -59,6 +61,7 @@ class PagoRepositoryImpl : PagoRepository {
 
     override suspend fun save(entity: Pago): Pago? = dbQuery {
         val insertStmt = PagosTable.insert {
+            it[idParticipante] = entity.idParticipante
             it[idBalance] = entity.idBalance
             it[idBalancePagado] = entity.idBalancePagado
             it[monto] = entity.monto

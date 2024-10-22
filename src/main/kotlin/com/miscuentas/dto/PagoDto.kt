@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 /** Serialización de un pago general:
  * @property idPago id único para cada pago.
+ * @property idParticipante id del participante pagador.
  * @property idBalance id del balance asociado al pago.
  * @property idBalancePagado id del balance que ha sido pagado (si aplica).
  * @property monto monto del pago.
@@ -15,6 +16,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PagoDto(
     val idPago: Long,
+    val idParticipante: Long,
     val idBalance: Long,
     val idBalancePagado: Long,
     val monto: String,
@@ -24,6 +26,7 @@ data class PagoDto(
 )
 
 /** Serialización de un pago nuevo a crear:
+ * @property idParticipante id del participante pagador.
  * @property idBalance id del balance asociado al pago.
  * @property idBalancePagado id del balance que ha sido pagado (si aplica).
  * @property monto monto del pago.
@@ -33,6 +36,7 @@ data class PagoDto(
  * */
 @Serializable
 data class PagoCrearDto(
+    val idParticipante: Long,
     val idBalance: Long,
     val idBalancePagado: Long,
     val monto: String,

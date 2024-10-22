@@ -6,6 +6,7 @@ import java.time.LocalDate
 /**
  * MODELO DE CLASE PAGO:
  * @property idPago id único para cada pago.
+ * @property idParticipante id del participante pagador.
  * @property idBalance id del balance asociado al pago.
  * @property idBalancePagado id del balance pagado.
  * @property monto cantidad de dinero pagada.
@@ -16,6 +17,7 @@ import java.time.LocalDate
  */
 data class Pago(
     val idPago: Long,
+    val idParticipante: Long,
     val idBalance: Long,
     val idBalancePagado: Long,
     val monto: BigDecimal,

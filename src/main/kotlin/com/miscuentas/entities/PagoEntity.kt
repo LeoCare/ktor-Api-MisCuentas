@@ -1,6 +1,7 @@
 package com.miscuentas.entities
 
 import com.miscuentas.entities.GastosTable.nullable
+import com.miscuentas.models.Participante
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.date
 
@@ -8,6 +9,7 @@ import org.jetbrains.exposed.sql.javatime.date
  * Representa la tabla `PAGOS` en la base de datos.
  *
  * @property idPago Columna de ID único para cada pago, con auto-incremento.
+ * @property idParticipante id del participante pagador.
  * @property idBalance Columna que almacena el ID del balance asociado al pago. Es una clave foránea que referencia a la tabla `BalancesTable`.
  * @property idBalancePagado Columna que almacena el ID del balance que ha sido pagado (si aplica). Es una clave foránea que referencia a la tabla `BalancesTable`.
  * @property monto Columna que almacena el monto del pago.
@@ -18,6 +20,7 @@ import org.jetbrains.exposed.sql.javatime.date
  */
 object PagosTable : Table("PAGOS") {
     val idPago = long("id_pago").autoIncrement()
+    val idParticipante = long("id_participante") references ParticipantesTable.idParticipante
     val idBalance = long("id_balance") references BalancesTable.idBalance
     val idBalancePagado = long("id_balance_pagado") references BalancesTable.idBalance
     val monto = decimal("monto", 10, 2)
