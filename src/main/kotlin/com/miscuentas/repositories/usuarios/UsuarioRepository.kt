@@ -1,6 +1,7 @@
 package com.miscuentas.repositories.usuarios
 
 import com.miscuentas.models.Usuario
+import com.miscuentas.plugins.dbQuery
 import com.miscuentas.repositories.base.CrudRepository
 
 /**
@@ -8,6 +9,13 @@ import com.miscuentas.repositories.base.CrudRepository
  * Extiende las operaciones CRUD básicas de `CrudRepository`.
  */
 interface UsuarioRepository: CrudRepository<Usuario, Long> {
+    /**
+     * Genera un hash seguro para una contraseña dada.
+     *
+     * @param entity usuario con la contraseña actualizada.
+     * @return El usuario con la pass actualizada.
+     */
+    suspend fun updatePass(entity: Usuario): Usuario?
 
     /**
      * Genera un hash seguro para una contraseña dada.
@@ -33,4 +41,14 @@ interface UsuarioRepository: CrudRepository<Usuario, Long> {
      * @return `true` si el correo ya existe, `false` si no existe.
      */
     suspend fun checkCorreoExist(correo: String): Usuario?
+
+
+    /**
+     * Verifica si el codigo de recuperacion es valido para ese usuario.
+     *
+     * @param idUsuario id del usuario que pide recuperar.
+     * @param codigo codigo dado por el usuario.
+     * @return `true` si el codigo es valido, `false` si no.
+     */
+    suspend fun checkCodigoRecupPass(idUsuario: Long, codigo: Long): Boolean
 }

@@ -61,9 +61,19 @@ class UsuarioRepositoryImpl: UsuarioRepository {
     override suspend fun update(entity: Usuario): Usuario? = dbQuery {
         UsuariosTable.update({ id_usuario eq entity.idUsuario }) {
             it[nombre] = entity.nombre
-            it[correo] = entity.correo
-            it[contrasenna] = entity.contrasenna
             it[perfil] = entity.perfil.codigo
+            it[codigo_recup_pass] = 0
+        }
+        UsuariosTable.select { (id_usuario eq entity.idUsuario) }.map { resultRowToUsuario(it) }.singleOrNull()
+    }
+
+    override suspend fun updatePass(entity: Usuario): Usuario? = dbQuery {
+        UsuariosTable.update({ id_usuario eq entity.idUsuario }) {
+            it[nombre] = entity.nombre
+            it[correo] = entity.correo
+            it[contrasenna] = hashedPassword(entity.contrasenna)
+            it[perfil] = entity.perfil.codigo
+            it[codigo_recup_pass] = 1
         }
         UsuariosTable.select { (id_usuario eq entity.idUsuario) }.map { resultRowToUsuario(it) }.singleOrNull()
     }
@@ -103,5 +113,12 @@ class UsuarioRepositoryImpl: UsuarioRepository {
 
     override suspend fun checkCorreoExist(correo: String): Usuario? = dbQuery {
         UsuariosTable.select(UsuariosTable.correo eq correo).map { resultRowToUsuario(it) }.firstOrNull()
+    }
+
+    override suspend fun checkCodigoRecupPass(idUsuario: Long, codigo: Long): Boolean = dbQuery {
+        UsuariosTable.select {
+            (id_usuario eq idUsuario) and
+                    (UsuariosTable.codigo_recup_pass eq codigo)
+        }.singleOrNull() != null
     }
 }

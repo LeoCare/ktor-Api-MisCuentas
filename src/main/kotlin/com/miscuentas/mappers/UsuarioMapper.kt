@@ -38,6 +38,7 @@ fun UsuarioDto.toModel(contrasennaExistente: String) = Usuario(
     perfil = TipoPerfil.fromCodigo(this.perfil) ?: TipoPerfil.USER
 )
 
+
 /**
  * Extensión para convertir una instancia de `UsuarioCrearDto` a `Usuario`.
  *

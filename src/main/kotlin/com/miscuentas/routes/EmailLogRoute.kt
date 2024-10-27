@@ -218,8 +218,8 @@ fun Routing.emailLogRoute() {
                 }
                 response {
                     HttpStatusCode.Created to {
-                        description = "Log de email creado."
-                        body<EmailLogDto> {}
+                        description = "OK"
+                        body<String> {}
                     }
                     HttpStatusCode.BadRequest to {
                         description = "Error al crear el log de email."
@@ -237,7 +237,7 @@ fun Routing.emailLogRoute() {
                     val emailLogCrearDto = call.receive<EmailLogCrearDto>()
                     emailLogService.addEmailLog(emailLogCrearDto.toModel()).mapBoth(
                         success = { email ->
-                            call.respond(HttpStatusCode.Created, email.toDto())
+                            call.respond(HttpStatusCode.Created, "OK")
                         },
                         failure = { error ->
                             call.respond(HttpStatusCode.BadRequest, handleEmailError(error))

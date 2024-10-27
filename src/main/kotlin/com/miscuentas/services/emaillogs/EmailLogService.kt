@@ -68,20 +68,5 @@ interface EmailLogService {
      */
     suspend fun saveAllEmailLogs(emailLogs: Iterable<EmailLog>): Result<List<EmailLog>, EmailLogErrores>
 
-    /**
-     * Encuentra registros de correos electrónicos por destinatario.
-     *
-     * @param destinatario El destinatario de los registros de correos electrónicos a buscar.
-     * @return Un `Result` que contiene una lista de registros de correos electrónicos encontrados o un error de tipo `EmailLogErrores`.
-     */
-    suspend fun findEmailLogsByDestinatario(destinatario: String): Result<List<EmailLog>, EmailLogErrores>
-
-    /**
-     * Encuentra registros de correos electrónicos por estado.
-     *
-     * @param estado El estado de los registros de correos electrónicos a buscar.
-     * @return Un `Result` que contiene una lista de registros de correos electrónicos encontrados o un error de tipo `EmailLogErrores`.
-     */
-    suspend fun findEmailLogsByEstado(estado: String): Result<List<EmailLog>, EmailLogErrores>
 }
 

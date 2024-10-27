@@ -74,19 +74,4 @@ class EmailLogServiceImp(
         } ?: Err(EmailLogErrores.Forbidden("La inserción ha fallado."))
     }
 
-    override suspend fun findEmailLogsByDestinatario(destinatario: String): Result<List<EmailLog>, EmailLogErrores> {
-        logger.debug { "Servicio: findEmailLogsByDestinatario()" }
-
-        return emailLogRepository.findByDestinatario(destinatario)?.let {
-            Ok(it)
-        } ?: Err(EmailLogErrores.NotFound("Registros de correo electrónico no encontrados para el destinatario: $destinatario"))
-    }
-
-    override suspend fun findEmailLogsByEstado(estado: String): Result<List<EmailLog>, EmailLogErrores> {
-        logger.debug { "Servicio: findEmailLogsByEstado()" }
-
-        return emailLogRepository.findByEstado(estado)?.let {
-            Ok(it)
-        } ?: Err(EmailLogErrores.NotFound("Registros de correo electrónico no encontrados para el estado: $estado"))
-    }
 }

@@ -8,6 +8,7 @@ fun Application.configureRouting() {
     routing {
         usuarioRoute()
         balanceRoute()
+        emailLogRoute()
         gastoRoute()
         hojaRoute()
         imagenRoute()

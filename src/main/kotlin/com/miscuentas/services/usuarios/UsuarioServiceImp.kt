@@ -50,6 +50,15 @@ class UsuarioServiceImp(
         } ?: Err(UsuarioErrores.Forbidden("Usuario no actualizado"))
     }
 
+    override suspend fun updatePass(usuario: Usuario): Result<Usuario, UsuarioErrores> {
+        logger.debug { "Servicio: updatePass()" }
+
+        return usuarioRepository.updatePass(usuario)?.let {
+            logger.debug { "Servicio: pass del usuario actualizado desde el repositorio." }
+            Ok(it)
+        } ?: Err(UsuarioErrores.Forbidden("Pass del usuario no actualizado"))
+    }
+
     override suspend fun deleteUsuario(usuario: Usuario): Result<Boolean, UsuarioErrores> {
         logger.debug { "Servicio: deleteUsuario()" }
 
@@ -122,5 +131,10 @@ class UsuarioServiceImp(
             logger.debug { "Servicio: correo encontrado en repositorio." }
             Ok(it)
         } ?: Err(UsuarioErrores.NotFound("Correo no encontrado"))
+    }
+
+
+    override suspend fun checkCodigoRecupPass(idUsuario: Long, codigo: Long): Boolean {
+        return usuarioRepository.checkCodigoRecupPass(idUsuario, codigo)
     }
 }

@@ -3,58 +3,43 @@ package com.miscuentas.dto
 import kotlinx.serialization.Serializable
 
 /** Serialización de un registro de email general:
- * @property idEmail id único para cada registro de email.
- * @property idParticipante id del participante asociado al email.
- * @property idPago id del pago asociado al email.
- * @property tipo tipo de email (por ejemplo, "envío" o "solicitud").
- * @property destinatario dirección de correo electrónico del destinatario.
- * @property asunto asunto del email.
- * @property contenido contenido del email.
- * @property fechaEnvio fecha y hora en que se envió el email.
- * @property estado estado del email (por ejemplo, "pendiente", "enviado", "fallido").
- * @constructor Instancia a serializar.
- * */
+ * @property idEmail id único para cada registro de correo electrónico.
+ * @property idBalance id del balance.
+ * @property tipo tipo de correo (por ejemplo, 'envio' o 'solicitud').
+ * @property fechaEnvio fecha y hora en que se envió el correo.
+ * @property status estado del email (por ejemplo, 'E' o 'S').
+ * @constructor Instancia un registro de correo electrónico único.
+ */
 @Serializable
 data class EmailLogDto(
     val idEmail: Long,
-    val idParticipante: Long,
-    val idPago: Long,
+    val idBalance: Long,
     val tipo: String,
-    val destinatario: String,
-    val asunto: String,
-    val contenido: String,
     val fechaEnvio: String? = null,
-    val estado: String
+    val status: String
 )
 
 /** Serialización de un registro de email nuevo a crear:
- * @property idParticipante id del participante asociado al email.
- * @property idPago id del pago asociado al email.
- * @property tipo tipo de email (por ejemplo, "envío" o "solicitud").
- * @property destinatario dirección de correo electrónico del destinatario.
- * @property asunto asunto del email.
- * @property contenido contenido del email.
- * @property estado estado del email (por ejemplo, "pendiente", "enviado", "fallido").
- * @constructor Instancia a serializar.
+ * @property idBalance id del balance.
+ * @property tipo tipo de correo (por ejemplo, 'envio' o 'solicitud').
+ * @property fechaEnvio fecha y hora en que se envió el correo.
+ * @property status estado del email (por ejemplo, 'E' o 'S').
  * */
 @Serializable
 data class EmailLogCrearDto(
-    val idParticipante: Long,
-    val idPago: Long,
+    val idBalance: Long,
     val tipo: String,
-    val destinatario: String,
-    val asunto: String,
-    val contenido: String,
-    val estado: String
+    val fechaEnvio: String? = null,
+    val status: String
 )
 
 /** Serialización de un registro de email a actualizar:
  * @property idEmail id único del registro de email a actualizar.
- * @property estado nuevo estado del email (por ejemplo, "pendiente", "enviado", "fallido").
+ * @property status nuevo estado del email (por ejemplo, "pendiente", "enviado", "fallido").
  * @constructor Instancia a serializar.
  * */
 @Serializable
-data class EmailLogUpdateDto (
+data class EmailLogUpdateDto(
     val idEmail: Long,
-    val estado: String
+    val status: String
 )

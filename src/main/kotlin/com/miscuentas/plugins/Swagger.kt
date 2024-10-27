@@ -44,6 +44,5 @@ fun Application.configureSwagger() {
             bearerFormat = "jwt"
         }
 
-
     }
 }

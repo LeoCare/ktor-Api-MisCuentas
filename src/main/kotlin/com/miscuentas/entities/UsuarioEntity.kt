@@ -14,6 +14,7 @@ import org.jetbrains.exposed.sql.Table
  * @property contrasenna Columna que almacena la contraseña del usuario.
  * @property perfil Columna que almacena el tipo de perfil del usuario. Es una clave foránea que referencia a la tabla `TipoPerfilesTable`.
  * @property primaryKey Define la clave primaria de la tabla `USUARIOS` usando la columna `id_usuario`.
+ * @property codigo_recup_pass Codigo necesario para recuperar la contraseña.
  */
 object UsuariosTable : Table("USUARIOS") {
     val id_usuario = long("id_usuario").autoIncrement()
@@ -21,6 +22,7 @@ object UsuariosTable : Table("USUARIOS") {
     val correo = varchar("correo", 255).uniqueIndex()
     val contrasenna = varchar("contrasenna", 255)
     val perfil = varchar("perfil", 20).references(TipoPerfilesTable.tipo, ReferenceOption.CASCADE)
+    val codigo_recup_pass = long("codigo_recup_pass")
 
     /**
      * Define la clave primaria de la tabla `USUARIOS` usando la columna `id_usuario`.

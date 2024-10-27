@@ -2,7 +2,9 @@ package com.miscuentas.mappers
 
 import com.miscuentas.dto.EmailLogCrearDto
 import com.miscuentas.dto.EmailLogDto
+import com.miscuentas.entities.EmailLogTable.fechaEnvio
 import com.miscuentas.models.EmailLog
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -12,14 +14,10 @@ import java.time.LocalDateTime
  */
 fun EmailLog.toDto() = EmailLogDto(
     idEmail = this.idEmail,
-    idParticipante = this.idParticipante,
-    idPago = this.idPago,
+    idBalance = this.idBalance,
     tipo = this.tipo,
-    destinatario = this.destinatario,
-    asunto = this.asunto,
-    contenido = this.contenido,
     fechaEnvio = this.fechaEnvio?.format(dateFormatter),
-    estado = this.estado
+    status = this.status
 )
 
 /**
@@ -37,14 +35,10 @@ fun List<EmailLog>.toDto() = this.map { it.toDto() }
  */
 fun EmailLogDto.toModel() = EmailLog(
     idEmail = this.idEmail,
-    idParticipante = this.idParticipante,
-    idPago = this.idPago,
+    idBalance = this.idBalance,
     tipo = this.tipo,
-    destinatario = this.destinatario,
-    asunto = this.asunto,
-    contenido = this.contenido,
-    fechaEnvio = this.fechaEnvio.toString(),
-    estado = this.estado
+    fechaEnvio = this.fechaEnvio?.let { LocalDate.parse(it, dateFormatter) },
+    status = this.status
 )
 
 /**
@@ -54,14 +48,10 @@ fun EmailLogDto.toModel() = EmailLog(
  */
 fun EmailLogCrearDto.toModel() = EmailLog(
     idEmail = 0,
-    idParticipante = this.idParticipante,
-    idPago = this.idPago,
+    idBalance = this.idBalance,
     tipo = this.tipo,
-    destinatario = this.destinatario,
-    asunto = this.asunto,
-    contenido = this.contenido,
-    fechaEnvio = null,
-    estado = this.estado
+    fechaEnvio =  this.fechaEnvio?.let { LocalDate.parse(it, dateFormatter) },
+    status = this.status
 )
 
 /**

@@ -68,6 +68,7 @@ data class UsuarioWithTokenDto(
     val refreshToken: String
 )
 
+
 /** Serializacion de un usuario con la descripcion del perfil
  * @property nombre nombre del registro y usado para logearse.
  * @property descripcion descripcion del perfil.

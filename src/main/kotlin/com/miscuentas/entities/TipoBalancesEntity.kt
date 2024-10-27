@@ -27,7 +27,8 @@ object TipoBalancesTable : Table("TIPO_BALANCE") {
  */
 enum class TipoBalance(val codigo: String) {
     DEUDOR("D"),
-    ACREEDOR("A");
+    ACREEDOR("A"),
+    BALANCEADO("B");
 
     companion object {
         /**

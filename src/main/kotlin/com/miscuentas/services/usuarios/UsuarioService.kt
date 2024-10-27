@@ -53,6 +53,14 @@ interface UsuarioService {
     suspend fun updateUsuario(usuario: Usuario): Result<Usuario, UsuarioErrores>
 
     /**
+     * Actualiza la información de un usuario existente.
+     *
+     * @param usuario La entidad de usuario con la contraseña actualizada.
+     * @return Un `Result` que contiene el usuario actualizado o un error de tipo `UsuarioErrores`.
+     */
+    suspend fun updatePass(usuario: Usuario): Result<Usuario, UsuarioErrores>
+
+    /**
      * Elimina un usuario.
      *
      * @param usuario La entidad de usuario a eliminar.
@@ -92,4 +100,13 @@ interface UsuarioService {
      * @return Un `Result` que indica si el correo ya existe o un error de tipo `UsuarioErrores`.
      */
     suspend fun checkCorreoExist(correo: String): Result<Usuario, UsuarioErrores>
+
+    /**
+     * Verifica si el codigo de recuperacion es valido para ese usuario.
+     *
+     * @param idUsuario id del usuario que pide recuperar.
+     * @param codigo codigo dado por el usuario.
+     * @return `true` si el codigo es valido, `false` si no.
+     */
+    suspend fun checkCodigoRecupPass(idUsuario: Long, codigo: Long): Boolean
 }

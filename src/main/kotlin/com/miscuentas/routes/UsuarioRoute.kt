@@ -36,7 +36,7 @@ fun Routing.usuarioRoute() {
 
     route("/$ENDPOINT") {
 
-        // Obtencio de datos personales --> GET /api/usuarios/personal
+        // Obtencio de datos personales --> GET /api/usuarios/verify
         get("/verify", {
             description = "COMPRUEBA SI EL CORREO YA EXISTE."
             request {
@@ -93,6 +93,79 @@ fun Routing.usuarioRoute() {
                 call.respond(
                     HttpStatusCode.InternalServerError,
                     e.message ?: "Error desconocido al buscar el correo."
+                )
+            }
+        }
+
+        // Verificar código de recuperación de contraseña --> GET /api/usuarios/verifyCode
+        get("/verifyCode", {
+            description = "VERIFICA SI EL CÓDIGO DE RECUPERACIÓN ES CORRECTO PARA EL USUARIO."
+            request {
+                queryParameter<String>("correo") {
+                    description = "Correo electrónico del usuario."
+                    required = true
+                }
+                queryParameter<String>("codigo") {
+                    description = "Código de recuperación a verificar."
+                    required = true
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "El código es válido."
+                    body<String> { }
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Parámetros faltantes o inválidos."
+                    body<String> { }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "No se encontró el usuario o el código es incorrecto."
+                    body<String> { }
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Error interno del servidor."
+                    body<String> { }
+                }
+            }
+        }) {
+            logger.debug { "GET /usuarios/verifyCode" }
+
+            try {
+                val correo = call.request.queryParameters["correo"]
+                val codigoParam = call.request.queryParameters["codigo"]
+
+                if (!correo.isNullOrEmpty() && !codigoParam.isNullOrEmpty()) {
+                    val codigo = codigoParam.toLongOrNull()
+                    if (codigo == null) {
+                        call.respond(HttpStatusCode.BadRequest, "El código debe ser un número válido.")
+                        return@get
+                    }
+
+                    // Buscar el usuario por correo
+                    usuarioService.checkCorreoExist(correo).mapBoth(
+                        success = { usuario ->
+                            // Verificar el código de recuperación
+                            val esCodigoValido = usuarioService.checkCodigoRecupPass(usuario.idUsuario, codigo)
+                            if (esCodigoValido) {
+                                call.respond(HttpStatusCode.OK, "OK")
+                            } else {
+                                call.respond(HttpStatusCode.NotFound, "Código incorrecto.")
+                            }
+                        },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotFound, handleUserError(error))
+                        }
+                    )
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, "Debe proporcionar el correo y el código.")
+                }
+            } catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error al verificar el código.")
+            } catch (e: Exception) {
+                call.respond(
+                    HttpStatusCode.InternalServerError,
+                    e.message ?: "Error desconocido al verificar el código."
                 )
             }
         }
@@ -275,6 +348,137 @@ fun Routing.usuarioRoute() {
                 call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al solicitar nuevo token.")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al solicitar nuevo token.")
+            }
+        }
+
+
+        // Actualiza los datos de un usuario --> PUT  /api/usuarios
+        put ({
+            description = "SOLICITAR ACTUALIZACION DE UN USUARIO."
+            request {
+                body<UsuarioDto> {
+                    description = "Intancia de un usuario."
+                    required = true // Optional
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Retorna el usuario actualizado."
+                    body<UsuarioDto> { }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Retorna mensaje de aviso, si no encuentra los datos."
+                    body<String> { }
+                }
+                HttpStatusCode.NotImplemented to {
+                    description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                    body<String> { }
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Retorna mensaje de error SQL."
+                    body<String> { }
+                }
+                HttpStatusCode.Unauthorized to {
+                    description = "Usuario no autenticado."
+                    body<String> { }
+                }
+                HttpStatusCode.Forbidden to {
+                    description = "Acceso denegado por falta de permisos."
+                    body<String> { }
+                }
+            }
+        }) {
+            logger.debug { "Put usuario" }
+
+            try {
+                // Recoge y valida el usuario antes de convertirlo:
+                val usuarioDto = call.receive<UsuarioDto>()
+                if (usuarioDto.nombre.isBlank() || usuarioDto.correo.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, "Nombre o correo no pueden estar vacíos")
+                    return@put
+                }
+                // Convierte:
+                val usuario = usuarioDto.contrasenna?.let { it1 -> usuarioDto.toModel(contrasennaExistente = it1) }
+
+                // Actualizar usuario:
+                if (usuario != null) {
+                    usuarioService.updateUsuario(usuario).mapBoth(
+                        success = {
+                            call.respond(HttpStatusCode.OK, "OK")
+                        },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                        }
+                    )
+                }
+            } catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar usuario")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar usuario")
+            }
+        }
+
+
+        // Actualiza los datos de un usuario --> PUT  /api/usuarios
+        put ("/cambioPass",{
+            description = "SOLICITAR ACTUALIZACION DE LA PASS DE UN USUARIO"
+            request {
+                body<UsuarioDto> {
+                    description = "Intancia de un usuario."
+                    required = true // Optional
+                }
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Retorna el usuario actualizado."
+                    body<UsuarioDto> { }
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Retorna mensaje de aviso, si no encuentra los datos."
+                    body<String> { }
+                }
+                HttpStatusCode.NotImplemented to {
+                    description = "Retorna mensaje de error si la peticion a la BBDD falló."
+                    body<String> { }
+                }
+                HttpStatusCode.BadRequest to {
+                    description = "Retorna mensaje de error SQL."
+                    body<String> { }
+                }
+                HttpStatusCode.Unauthorized to {
+                    description = "Usuario no autenticado."
+                    body<String> { }
+                }
+                HttpStatusCode.Forbidden to {
+                    description = "Acceso denegado por falta de permisos."
+                    body<String> { }
+                }
+            }
+        }) {
+            logger.debug { "Put cambioPass" }
+
+            try {
+                // Recoge y valida el usuario antes de convertirlo:
+                val usuarioCamPassDto = call.receive<UsuarioDto>()
+
+                // Convierte:
+                val usuario = usuarioCamPassDto.contrasenna?.let { it1 -> usuarioCamPassDto.toModel(contrasennaExistente = it1) }
+
+                // Actualizar usuario:
+                if (usuario != null) {
+                    usuarioService.updatePass(usuario).mapBoth(
+                        success = { usuarioActualizado ->
+                            call.respond(HttpStatusCode.OK, usuarioActualizado.toDto())
+                        },
+                        failure = { error ->
+                            call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
+                        }
+                    )
+                }
+            } catch (e: ExposedSQLException) {
+                call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar la pass del usuario")
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar la pass del usuario")
             }
         }
 
@@ -558,88 +762,6 @@ fun Routing.usuarioRoute() {
                     call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL crear el usuario.")
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al crear el usuario.")
-                }
-            }
-
-
-            // Actualiza los datos de un usuario --> PUT  /api/usuarios
-            put ({
-                description = "SOLICITAR ACTUALIZACION DE UN USUARIO. (Necesario Token)"
-                operationId = "Se realiza comprobacion del Token y perfil Admin."
-                securitySchemeName = "JWT-Auth"
-                request {
-                    body<UsuarioDto> {
-                        description = "Intancia de un usuario."
-                        required = true // Optional
-                    }
-                }
-                response {
-                    HttpStatusCode.OK to {
-                        description = "Retorna el usuario actualizado."
-                        body<UsuarioDto> { }
-                    }
-                    HttpStatusCode.NotFound to {
-                        description = "Retorna mensaje de aviso, si no encuentra los datos."
-                        body<String> { }
-                    }
-                    HttpStatusCode.NotImplemented to {
-                        description = "Retorna mensaje de error si la peticion a la BBDD falló."
-                        body<String> { }
-                    }
-                    HttpStatusCode.BadRequest to {
-                        description = "Retorna mensaje de error SQL."
-                        body<String> { }
-                    }
-                    HttpStatusCode.Unauthorized to {
-                        description = "Usuario no autenticado."
-                        body<String> { }
-                    }
-                    HttpStatusCode.Forbidden to {
-                        description = "Acceso denegado por falta de permisos."
-                        body<String> { }
-                    }
-                }
-            }) {
-                logger.debug { "Put usuario" }
-
-                try {
-                    // Recoge Id del token y lo valida:
-                    val usuarioSolicitud = getAuthenticatedUsuario(usuarioService) ?: return@put
-
-                    // Comprobar si la peticion la realiza un Admin:
-                    usuarioService.isAdmin(usuarioSolicitud.idUsuario).onSuccess {isAdmin ->
-                        if (isAdmin) {
-
-                            // Recoge y valida el usuario antes de convertirlo:
-                            val usuarioDto = call.receive<UsuarioDto>()
-                            if (usuarioDto.nombre.isBlank() || usuarioDto.correo.isBlank()) {
-                                call.respond(HttpStatusCode.BadRequest, "Nombre o correo no pueden estar vacíos")
-                                return@put
-                            }
-                            // Convierte:
-                            val usuario = usuarioDto.contrasenna?.let { it1 -> usuarioDto.toModel(contrasennaExistente = it1) }
-
-                            // Actualizar usuario:
-                            if (usuario != null) {
-                                usuarioService.updateUsuario(usuario).mapBoth(
-                                    success = { usuarioActualizado ->
-                                        call.respond(HttpStatusCode.OK, usuarioActualizado.toDto())
-                                    },
-                                    failure = { error ->
-                                        call.respond(HttpStatusCode.NotImplemented, handleUserError(error))
-                                    }
-                                )
-                            }
-                        } else {
-                            call.respond(HttpStatusCode.Forbidden, "Acceso denegado: solo los administradores pueden actualizar usuarios")
-                        }
-                    }.onFailure { // No es admin:
-                        call.respond(HttpStatusCode.InternalServerError, "Error al verificar el perfil del usuario")
-                    }
-                } catch (e: ExposedSQLException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Excepción de SQL al actualizar usuario")
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error desconocido al actualizar usuario")
                 }
             }
 
