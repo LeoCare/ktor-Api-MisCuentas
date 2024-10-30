@@ -6,15 +6,13 @@ Rest Api para proyecto MisCuentas del ciclo DAM en MonteCastelo.
 [![LICENSE](https://img.shields.io/badge/Lisence-CC-%23e64545)](https://leocare.dev/docs/license/)
 ![GitHub](https://img.shields.io/github/last-commit/LeoCare/ktor-Api-MisCuentas)
 
-![imagen](https://www.howtodoandroid.com/wp-content/uploads/2024/01/Kotlin-HTTP-client-For-Android.png)
+![imagen](https://blog.jetbrains.com/wp-content/uploads/2020/07/Ktor_blog_1280x800.png)
 
 - [Ktor REST API para proyecto MisCuentas](#ktor-rest-api-proyecto-ciclo-dam)
   - [Acerca de..](#acerca-de)
     - [Caracteristicas](#caracteristicas)
     - [Librerias](#librerias)
     - [Aplicaciones que forman parte de este proyecto](#aplicaciones-que-forman-parte-de-este-proyecto)
-  - [Autor](#autor)
-    - [Contacto](#contacto)
   - [Instalacion](#instalacion)
     - [Desplegar servicio en Docker](#desplegar-servicio-en-docker)
     - [Desplear servicio en IDE](#desplegar-servicio-en-ide)
@@ -22,6 +20,8 @@ Rest Api para proyecto MisCuentas del ciclo DAM en MonteCastelo.
   - [Documentaciones](#documentaciones)
     - [Documentacion del codigo](#documentacion-del-codigo)
     - [Documentacion del API REST](#documentacion-del-api-rest)
+  - [Autor](#autor)
+      - [Contacto](#contacto)
   - [Contribucion](#contribucion)
   - [Licencia](#licencia)
 
@@ -53,7 +53,8 @@ En este proyecto se utilizan los siguientes plugins, librerias y servicios:
 
 ### Aplicaciones que forman parte de este proyecto:
 - #### [APP Movil MisCuentas](https://github.com/LeoCare/MisCuentas)
-- #### [APP Escritorio TodoCuentas](https://github.com/LeoCare/MisCuentas)
+- #### [APP Escritorio TodoCuentas](https://github.com/LeoCare/MisCuentas_desk)
+- #### [Servicio Windows](https://github.com/LeoCare/MailMyService)
 
 <a href="https://kotlinlang.org/" target="_blank"> <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin_Icon.png/1200px-Kotlin_Icon.png" height="30"></a>
 <a href="https://learn.microsoft.com/es-es/dotnet/csharp/" target="_blank"> <img loading="lazy" src="https://static-00.iconduck.com/assets.00/c-sharp-c-icon-1822x2048-wuf3ijab.png" height="30"></a><br>
@@ -63,26 +64,6 @@ Los proyectos tienen su repositorio en GitHub.
 
 ![image](https://1000logos.net/wp-content/uploads/2018/11/GitHub-logo.jpg)
 
-
-## Autor
-Mi nombre es <b>Leonardo David Care Prado</b>, soy tecnico en sistemas y desarrollador de aplicaciones multiplataforma, o eso espero con este proyecto...jjjjj.<br>
-A fecha de este año (2024) llevo 4 años realizando trabajos de desarrollo para la misma empresa, ademas de soporte y sistemas.<br>
-Estos desarrollos incluyen lenguajes como Html, C#, Xamarin, Oracle, Java y Kotlin.
-
-[![Html](https://img.shields.io/badge/Code-Htmnl-blue)](https://www.w3schools.com/html/)
-[![C#](https://img.shields.io/badge/Code-C_SHARP-green)](https://dotnet.microsoft.com/es-es/languages/csharp)
-[![Xamarin](https://img.shields.io/badge/Code-Xamarin-red)](https://dotnet.microsoft.com/es-es/apps/xamarin)
-[![Oracle](https://img.shields.io/badge/Code-Oracle-white)](https://www.oracle.com/es/)
-[![Java](https://img.shields.io/badge/Code-Java-orange)](https://www.java.com/es/)
-[![Kotlin](https://img.shields.io/badge/Code-Kotlin-blueviolet)](https://kotlinlang.org/)
-
- ### Contacto
-Para cualquier consulta o aporte puedes comunicarte conmigo por correo<br>
-[leon1982care@gmail.com](https://mail.google.com/mail/u/0/?pli=1#inbox)     
-<p><a href="https://mail.google.com/mail/u/0/?pli=1#inbox" target="_blank">
-        <img src="https://ams3.digitaloceanspaces.com/graffica/2021/06/logogmailgrafica-1-1024x576.png" 
-    height="30" alt="correo_electronico">
-</a></p> 
 
 ## Instalacion
 El proyecto esta desarrollado para ser subido a un contenedor Docker, al igual que la imagen de la BBDD en Mysql. Puedes ver los archivos docker-compose.yml y Dockerfile en la raiz del proyecto, para este proposito.<br>
@@ -199,6 +180,27 @@ Pueder ver y consumir las APIs arrancando el servicio y pinchando en el enlace o
 
 Imagen de ejemplo
 ![Imagen de swagger](docs/imagenes/docu_api.png)
+
+## Autor
+Mi nombre es <b>Leonardo David Care Prado</b>, soy tecnico en sistemas y desarrollador de aplicaciones multiplataforma, o eso espero con este proyecto...jjjjj.<br>
+A fecha de este año (2024) llevo 4 años realizando trabajos de desarrollo para la misma empresa, ademas de soporte y sistemas.<br>
+Estos desarrollos incluyen lenguajes como Html, C#, Xamarin, Oracle, Java y Kotlin.
+
+[![Html](https://img.shields.io/badge/Code-Htmnl-blue)](https://www.w3schools.com/html/)
+[![C#](https://img.shields.io/badge/Code-C_SHARP-green)](https://dotnet.microsoft.com/es-es/languages/csharp)
+[![Xamarin](https://img.shields.io/badge/Code-Xamarin-red)](https://dotnet.microsoft.com/es-es/apps/xamarin)
+[![Oracle](https://img.shields.io/badge/Code-Oracle-white)](https://www.oracle.com/es/)
+[![Java](https://img.shields.io/badge/Code-Java-orange)](https://www.java.com/es/)
+[![Kotlin](https://img.shields.io/badge/Code-Kotlin-blueviolet)](https://kotlinlang.org/)
+
+### Contacto
+Para cualquier consulta o aporte puedes comunicarte conmigo por correo<br>
+[leon1982care@gmail.com](https://mail.google.com/mail/u/0/?pli=1#inbox)
+<p><a href="https://mail.google.com/mail/u/0/?pli=1#inbox" target="_blank">
+        <img src="https://ams3.digitaloceanspaces.com/graffica/2021/06/logogmailgrafica-1-1024x576.png" 
+    height="30" alt="correo_electronico">
+</a></p> 
+
 ## Contribucion
 Gracias a todos los que aporten nuevas ideas de como mejorar mi proyecto. Sientance libres de participar, cambiar u opinar sobre el mismo.</br>
 Solo pido que al crear la rama, esta comience por 'contribucion/lo_que_aporteis'. Y, el commit sea claro y descriptivo.</br>
