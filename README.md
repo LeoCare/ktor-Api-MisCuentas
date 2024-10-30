@@ -53,14 +53,13 @@ En este proyecto se utilizan los siguientes plugins, librerias y servicios:
 
 ### Aplicaciones que forman parte de este proyecto:
 - #### [APP Movil MisCuentas](https://github.com/LeoCare/MisCuentas)
-- #### [APP Escritorio TodoCuentas](https://github.com/LeoCare/MisCuentas_desk)
+- #### [APP Escritorio MisCuentas_desk](https://github.com/LeoCare/MisCuentas_desk)
 - #### [Servicio Windows](https://github.com/LeoCare/MailMyService)
 
 <a href="https://kotlinlang.org/" target="_blank"> <img loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin_Icon.png/1200px-Kotlin_Icon.png" height="30"></a>
 <a href="https://learn.microsoft.com/es-es/dotnet/csharp/" target="_blank"> <img loading="lazy" src="https://static-00.iconduck.com/assets.00/c-sharp-c-icon-1822x2048-wuf3ijab.png" height="30"></a><br>
 
-Los proyectos tienen su repositorio en GitHub. 
-<b>Para acceder a ellos no olvides solicitarme una clave de acceso al repositorio.</b> [Solicitar acceso](#contacto)
+Cada proyecto tienen su repositorio en GitHub.
 
 ![image](https://1000logos.net/wp-content/uploads/2018/11/GitHub-logo.jpg)
 
